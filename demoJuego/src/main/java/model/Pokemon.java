@@ -84,6 +84,9 @@ public class Pokemon {
                 '}';
     }
 
+    /** Accion de recibir el daño, hace un calculo basico con lo que sería la defensa del bicho
+    Retorna el danio real tras el calculo
+    */
     public double recibirDanio(double danio)
     {
         double danioReal = Math.max(1, danio - defensa);
@@ -94,6 +97,7 @@ public class Pokemon {
         return danioReal;
     }
 
+//Accion de atacar verificando que no sea la vida 0 o menos
     public double atacar(Pokemon p)
     {
         if (p.vida <= 0)
