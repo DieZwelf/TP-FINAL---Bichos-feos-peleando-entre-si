@@ -1,6 +1,8 @@
 package model;
 
 public class Pokemon {
+    private static int contador = 0;
+    private int id;
     private String nombre;
     private double vida;
     private double danio;
@@ -9,15 +11,21 @@ public class Pokemon {
     private TipoPokemon tipo;
 
     public Pokemon() {
+        id = contador++;
     }
 
     public Pokemon(String nombre, double vida, double danio,double defensa, double velocidad, TipoPokemon tipo) {
+        id = contador++;
         this.nombre = nombre;
         this.vida = vida;
         this.danio = danio;
         this.defensa = defensa;
         this.velocidad = velocidad;
         this.tipo = tipo;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getNombre() {
@@ -82,7 +90,7 @@ public class Pokemon {
         danioReal = Math.min(danioReal, vida);
 
         vida -= danioReal;
-        
+
         return danioReal;
     }
 
