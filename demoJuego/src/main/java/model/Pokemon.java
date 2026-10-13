@@ -9,9 +9,11 @@ public class Pokemon {
     private double defensa;
     private double velocidad;
     private TipoPokemon tipo;
+    private final String rutaImagen;
 
     public Pokemon() {
         id = contador++;
+        this.rutaImagen = "/images/items" + nombre.toLowerCase() + ".png";
     }
 
     public Pokemon(String nombre, double vida, double danio,double defensa, double velocidad, TipoPokemon tipo) {
@@ -22,6 +24,7 @@ public class Pokemon {
         this.defensa = defensa;
         this.velocidad = velocidad;
         this.tipo = tipo;
+        this.rutaImagen = "/images/items" + nombre.toLowerCase() + ".png";
     }
 
     public int getId() {
