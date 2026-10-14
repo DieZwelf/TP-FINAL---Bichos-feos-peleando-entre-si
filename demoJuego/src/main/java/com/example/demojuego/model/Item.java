@@ -12,7 +12,7 @@ public abstract class Item {
     public Item(String nombre, String descripcion) {
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.rutaImagen = "/images/items" + nombre.toLowerCase() + ".png";
+        this.rutaImagen = "/images/items/" + nombre.toLowerCase() + ".png";
     }
 
     public String getNombre() {

@@ -1,5 +1,6 @@
 package com.example.demojuego.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -16,6 +17,7 @@ public class Entrenador {
     private List<Pokemon> equipo;
     private String rango;
     private Pokemon pokemonActivo;
+    private Inventario inventario;
 
     public Entrenador() {
         id = contador++;
@@ -65,7 +67,8 @@ public class Entrenador {
         this.rango = rango;
     }
 
-//Fundamental para el metodo atacar de combate, llamara al menos 2 veces por combate
+
+    //Fundamental para el metodo atacar de combate, llamara al menos 2 veces por combate
     public Pokemon getPokemonActivo() {
         return pokemonActivo;
     }
@@ -107,4 +110,17 @@ public class Entrenador {
             System.out.println(equipo.get(i));
         }
     }
+
+///Esto está incompleto, osea la idea correcta sería que dentro del if llamara al metodo consumir en
+/// inventario,java (a desarrollar)
+    public boolean usarItem(Item item)
+    {
+        int cantidadObj = inventario.contarCantidad(item);
+
+        if(cantidadObj > 0)
+        {
+            item.usar();
+        }
+    }
 }
+
