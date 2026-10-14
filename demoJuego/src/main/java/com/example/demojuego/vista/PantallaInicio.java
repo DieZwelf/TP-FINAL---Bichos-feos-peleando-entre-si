@@ -1,20 +1,25 @@
-package com.example.demojuego.vista;
 
+        package com.example.demojuego.vista;
+// Importaciones de JavaFX para la ventana, los controles y el diseño.
 import com.example.demojuego.vista.PantallaPartidaNueva;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.*;
+import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
+
+import java.net.URL;
 import java.util.Objects;
 
 public class PantallaInicio extends Application {
@@ -22,175 +27,283 @@ public class PantallaInicio extends Application {
     @Override
     public void start(Stage stage) {
 
-        // Fondo del menú
+        // ==================================================
+        // 1. CONTENEDOR PRINCIPAL
+        // ==================================================
+        // StackPane permite colocar el video detrás del menú.
         StackPane root = new StackPane();
 
-        Image imagenFondo = new Image(
-                PantallaInicio.class
-                        .getResource("/images/fondo.jpg")
-                        .toExternalForm()
+        // ==================================================
+        // 2. VIDEO DE FONDO
+        // ==================================================
+        // Busca el video dentro de src/main/resources/videos/.
+        URL archivoVideo = getClass().getResource("/videos/fondo.mp4");
+
+        // Si no encuentra el archivo, muestra un error claro.
+        if (archivoVideo == null) {
+            throw new IllegalStateException(
+                    "No se encontró videos/fondo.mp4 en resources"
+            );
+        }
+
+        // Crea el reproductor y configura el video para repetirse.
+        Media media = new Media(archivoVideo.toExternalForm());
+        MediaPlayer reproductor = new MediaPlayer(media);
+        reproductor.setCycleCount(MediaPlayer.INDEFINITE);
+
+        // MediaView muestra el video en pantalla.
+        MediaView fondoAnimado = new MediaView(reproductor);
+
+        // Estira el video para cubrir toda la ventana.
+        fondoAnimado.setPreserveRatio(false);
+        fondoAnimado.fitWidthProperty().bind(root.widthProperty());
+        fondoAnimado.fitHeightProperty().bind(root.heightProperty());
+
+        // Se agrega primero para que quede detrás de los demás elementos.
+        root.getChildren().add(fondoAnimado);
+
+        // Reproduce el video cuando está listo.
+        reproductor.setOnReady(reproductor::play);
+
+        // Informa errores de reproducción en la consola.
+        reproductor.setOnError(() ->
+                System.out.println(
+                        "Error al reproducir el video: "
+                                + reproductor.getError()
+                )
         );
 
-        ImageView fondo = new ImageView(imagenFondo);
-        fondo.setPreserveRatio(false);
-        fondo.fitWidthProperty().bind(root.widthProperty());
-        fondo.fitHeightProperty().bind(root.heightProperty());
+        // Libera los recursos del video al cerrar la ventana.
+        stage.setOnHidden(e -> reproductor.dispose());
 
-// El fondo queda detrás de los demás elementos
-        root.getChildren().add(fondo);
+        // ==================================================
+        // 3. DISEÑO GENERAL DEL MENÚ
+        // ==================================================
+        // BorderPane permite separar el título de las opciones.
+        BorderPane contentLayout = new BorderPane();
 
-        VBox contenido = new VBox(22);
-        contenido.setAlignment(Pos.CENTER);
+        // Márgenes internos: arriba, derecha, abajo e izquierda.
+        contentLayout.setPadding(new Insets(35, 45, 35, 45));
 
-        // Título
-        Label titulo = new Label("BICHOS FEOS");
-        titulo.setFont(Font.font("Arial", FontWeight.BOLD, 42));
-        titulo.setTextFill(Color.web("black"));
-        titulo.setEffect(new DropShadow(4, Color.web("#2546a8")));
+        // ==================================================
+        // 4. TÍTULO ARRIBA A LA IZQUIERDA
+        // ==================================================
+        VBox titleBox = new VBox(5);
+        titleBox.setAlignment(Pos.TOP_LEFT);
 
-        Label subtitulo = new Label("¡TU AVENTURA COMIENZA!");
-        subtitulo.setFont(Font.font("Monospaced", FontWeight.BOLD, 15));
-        subtitulo.setTextFill(Color.web("#244a65"));
+        // Primera línea del título.
+        Text tituloPrincipal = new Text("POKÉMON");
+        tituloPrincipal.setFill(Color.web("#ffde00"));
+        tituloPrincipal.setStroke(Color.web("#3b4cca"));
+        tituloPrincipal.setStrokeWidth(2.5);
+        tituloPrincipal.setFont(Font.font("System", 48));
 
-        // Personaje dibujado con emojis
+        // Segunda línea del título.
+        Text segundaLinea = new Text("VENTURA");
+        segundaLinea.setFill(Color.web("#ffde00"));
+        segundaLinea.setStroke(Color.web("#3b4cca"));
+        segundaLinea.setStrokeWidth(2.5);
+        segundaLinea.setFont(Font.font("System", 56));
 
+        // Texto pequeño debajo del título.
+        Text subtitulo = new Text("UNA AVENTURA COMIENZA...");
+        subtitulo.setFill(Color.WHITE);
+        subtitulo.setFont(Font.font("Monospaced", 13));
 
-        // Botones del menú
-        Button jugar = crearBoton("▶  NUEVA PARTIDA");
-        Button continuar = crearBoton("▣  CONTINUAR");
-        Button salir = crearBoton("✖  SALIR");
+        // Agrega los tres textos al contenedor del título.
+        titleBox.getChildren().addAll(
+                tituloPrincipal,
+                segundaLinea,
+                subtitulo
+        );
 
-        jugar.setOnAction(e -> mostrarMensaje(
-                root, "¡La aventura está por comenzar!"
-        ));
+        // Coloca el título en la parte superior.
+        contentLayout.setTop(titleBox);
 
-        jugar.setOnAction(e -> {
-            PantallaPartidaNueva nuevaPartida = new PantallaPartidaNueva();
+        // ==================================================
+        // 5. BOTONES DEL MENÚ
+        // ==================================================
+
+        // Separación vertical entre los botones: 40 píxeles.
+        VBox buttonsBox = new VBox(40);
+
+        // Alinea todos los botones desde el mismo borde izquierdo.
+        buttonsBox.setAlignment(Pos.TOP_LEFT);
+
+        // Ancho del área que contiene los botones.
+        buttonsBox.setPrefWidth(600);
+
+        // Crea los botones usando el método de estilo personalizado.
+        Button btnNuevaPartida =
+                crearBotonEstilizado("NUEVA PARTIDA");
+
+        Button btnCargarPartida =
+                crearBotonEstilizado("CARGAR PARTIDA");
+
+        Button btnSalir =
+                crearBotonEstilizado("SALIR");
+
+        // Ancho y alto de los dos botones principales.
+        btnNuevaPartida.setPrefSize(600, 100);
+        btnCargarPartida.setPrefSize(600, 100);
+
+        // SALIR mide la mitad del ancho de los otros botones.
+        btnSalir.setPrefSize(300, 100);
+
+        // --------------------------------------------------
+        // ACCIONES DE LOS BOTONES
+        // --------------------------------------------------
+
+        // Abre la pantalla para comenzar una partida nueva.
+        btnNuevaPartida.setOnAction(e -> {
+            PantallaPartidaNueva nuevaPartida =
+                    new PantallaPartidaNueva();
+
             nuevaPartida.mostrar(stage);
         });
 
-        continuar.setOnAction(e -> mostrarMensaje(
-                root, "Todavía no hay partidas guardadas."
-        ));
-
-        salir.setOnAction(e -> stage.close());
-
-        VBox menu = new VBox(12, jugar, continuar, salir);
-        menu.setAlignment(Pos.CENTER);
-
-        // Panel decorativo
-        VBox panel = new VBox(18,
-                titulo,
-                subtitulo,
-                menu
+        // Por ahora, CARGAR PARTIDA solo muestra un mensaje.
+        btnCargarPartida.setOnAction(e ->
+                System.out.println("Cargando partida...")
         );
-        panel.setAlignment(Pos.CENTER);
-        panel.setMaxWidth(540);
-        panel.setMaxHeight(520);
-        panel.setPadding(new javafx.geometry.Insets(30));
 
+        // Cierra la ventana cuando se pulsa SALIR.
+        btnSalir.setOnAction(e -> stage.close());
 
+        // Agrega los botones en el orden en que aparecerán.
+        buttonsBox.getChildren().addAll(
+                btnNuevaPartida,
+                btnCargarPartida,
+                btnSalir
+        );
 
-        // Decoración del paisaje
-        Label nubes = new Label("☁                 ☁");
-        nubes.setFont(Font.font(35));
-        nubes.setTextFill(Color.WHITE);
+        // Coloca el menú en el sector derecho de BorderPane.
+        // El título permanece arriba y no es reemplazado.
+        contentLayout.setRight(buttonsBox);
 
+        // Alinea el menú a la izquierda dentro de su sector.
+        // Así, SALIR comienza en el mismo punto que los demás.
+        BorderPane.setAlignment(buttonsBox, Pos.CENTER_LEFT);
 
-        BorderPane escenario = new BorderPane();
-        escenario.setTop(nubes);
-        BorderPane.setAlignment(nubes, Pos.CENTER);
-        escenario.setPadding(new javafx.geometry.Insets(15, 0, 12, 0));
-        escenario.setMouseTransparent(true);
+        // --------------------------------------------------
+        // AJUSTES FINOS DE POSICIÓN
+        // --------------------------------------------------
 
-        root.getChildren().addAll(escenario, panel);
+        // Mueve el menú horizontalmente.
+        // Negativo = izquierda. Positivo = derecha.
+        buttonsBox.setTranslateX(-20);
 
-        Scene scene = new Scene(root, 900, 650);
+        // Mueve el menú verticalmente.
+        // Positivo = abajo. Negativo = arriba.
+        buttonsBox.setTranslateY(-90);
 
+        // Agrega el diseño por encima del video.
+        root.getChildren().add(contentLayout);
 
-        stage.setTitle("Bichos feos");
+        // ==================================================
+        // 6. ESCENA Y CONFIGURACIÓN DE LA VENTANA
+        // ==================================================
+
+        // Tamaño inicial de la ventana.
+        Scene scene = new Scene(root, 1400, 800);
+
+        stage.setTitle("Pokémon Ventura - Inicio");
+
+        // Carga el icono de la aplicación desde resources/images/.
         Image icono = new Image(
                 Objects.requireNonNull(
-                        getClass().getResourceAsStream("/images/icono.png"),
+                        getClass().getResourceAsStream(
+                                "/images/icono.png"
+                        ),
                         "No se encontró icono.png en resources"
                 )
         );
 
         stage.getIcons().add(icono);
+
+        // Configura la escena y los tamaños mínimos.
         stage.setScene(scene);
-        stage.setMinWidth(700);
-        stage.setMinHeight(550);
+        stage.setMinWidth(900);
+        stage.setMinHeight(600);
+
+        // Muestra la ventana.
         stage.show();
     }
 
-    private Button crearBoton(String texto) {
+    // ==================================================
+    // 7. MÉTODO PARA CREAR LOS BOTONES CON ESTILO RETRO
+    // ==================================================
+    // Crea botones con estética de videojuego pixel art.
+    private Button crearBotonEstilizado(String texto) {
+
         Button boton = new Button(texto);
 
-        boton.setPrefWidth(270);
-        boton.setPrefHeight(45);
-        boton.setFont(Font.font("Monospaced", FontWeight.BOLD, 15));
+        // Tamaño del botón.
+        boton.setPrefWidth(600);
+        boton.setPrefHeight(100);
 
+        // El botón no tendrá fondo ni marco.
         boton.setStyle(
-                "-fx-background-color: #3979c3;" +
-                        "-fx-text-fill: white;" +
-                        "-fx-background-radius: 8;" +
-                        "-fx-border-color: #244a85;" +
-                        "-fx-border-width: 2;" +
-                        "-fx-border-radius: 8;" +
+                "-fx-background-color: transparent;" +
+                        "-fx-background-insets: 0;" +
+                        "-fx-border-color: transparent;" +
+                        "-fx-border-width: 0;" +
+                        "-fx-border-insets: 0;" +
+                        "-fx-background-radius: 0;" +
+                        "-fx-border-radius: 0;" +
+                        "-fx-padding: 0 0 0 35;" +
+                        "-fx-alignment: center-left;" +
+                        "-fx-text-fill: #f5f0d0;" +
+                        "-fx-font-family: 'Monospaced';" +
+                        "-fx-font-size: 25px;" +
+                        "-fx-font-weight: bold;" +
                         "-fx-cursor: hand;"
         );
 
-        boton.setOnMouseEntered(e ->
-                boton.setStyle(
-                        "-fx-background-color: #55a8e8;" +
-                                "-fx-text-fill: white;" +
-                                "-fx-background-radius: 8;" +
-                                "-fx-border-color: #244a85;" +
-                                "-fx-border-width: 2;" +
-                                "-fx-border-radius: 8;" +
-                                "-fx-cursor: hand;"
-                )
-        );
+        // Al pasar el mouse, destaca el texto en amarillo.
+        boton.setOnMouseEntered(e -> {
+            boton.setText("▶ " + texto);
+            boton.setStyle(
+                    "-fx-background-color: transparent;" +
+                            "-fx-background-insets: 0;" +
+                            "-fx-border-color: transparent;" +
+                            "-fx-border-width: 0;" +
+                            "-fx-background-radius: 0;" +
+                            "-fx-border-radius: 0;" +
+                            "-fx-padding: 0 0 0 35;" +
+                            "-fx-alignment: center-left;" +
+                            "-fx-text-fill: #ffde00;" +
+                            "-fx-font-family: 'Monospaced';" +
+                            "-fx-font-size: 25px;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-cursor: hand;"
+            );
+        });
 
-        boton.setOnMouseExited(e ->
-                boton.setStyle(
-                        "-fx-background-color: #3979c3;" +
-                                "-fx-text-fill: white;" +
-                                "-fx-background-radius: 8;" +
-                                "-fx-border-color: #244a85;" +
-                                "-fx-border-width: 2;" +
-                                "-fx-border-radius: 8;" +
-                                "-fx-cursor: hand;"
-                )
-        );
+        // Cuando el mouse sale, vuelve al aspecto original.
+        boton.setOnMouseExited(e -> {
+            boton.setText(texto);
+            boton.setStyle(
+                    "-fx-background-color: transparent;" +
+                            "-fx-background-insets: 0;" +
+                            "-fx-border-color: transparent;" +
+                            "-fx-border-width: 0;" +
+                            "-fx-background-radius: 0;" +
+                            "-fx-border-radius: 0;" +
+                            "-fx-padding: 0 0 0 35;" +
+                            "-fx-alignment: center-left;" +
+                            "-fx-text-fill: #f5f0d0;" +
+                            "-fx-font-family: 'Monospaced';" +
+                            "-fx-font-size: 25px;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-cursor: hand;"
+            );
+        });
 
         return boton;
     }
 
-    private void mostrarMensaje(StackPane root, String mensaje) {
-        Label aviso = new Label(mensaje);
-        aviso.setFont(Font.font("Monospaced", FontWeight.BOLD, 18));
-        aviso.setTextFill(Color.WHITE);
-        aviso.setStyle(
-                "-fx-background-color: #244a65;" +
-                        "-fx-padding: 20;" +
-                        "-fx-background-radius: 10;"
-        );
-
-        StackPane.setAlignment(aviso, Pos.BOTTOM_CENTER);
-        StackPane.setMargin(
-                aviso, new javafx.geometry.Insets(0, 0, 25, 0)
-        );
-
-        root.getChildren().removeIf(
-                nodo -> nodo instanceof Label
-                        && "aviso".equals(nodo.getUserData())
-        );
-
-        aviso.setUserData("aviso");
-        root.getChildren().add(aviso);
-    }
-
+    // Punto de entrada de la aplicación.
     public static void main(String[] args) {
         launch(args);
     }
