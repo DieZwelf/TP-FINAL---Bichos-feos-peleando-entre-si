@@ -1,9 +1,12 @@
 package com.example.demojuego.model;
 
+import java.util.Objects;
+
 public class Pokemon {
     private static int contador = 0;
     private int id;
     private String nombre;
+    private double vidaMaxima;
     private double vida;
     private double danio;
     private double defensa;
@@ -17,9 +20,10 @@ public class Pokemon {
         this.rutaImagen = "/images/items" + nombre.toLowerCase() + ".png";
     }
 
-    public Pokemon(String nombre, double vida, double danio,double defensa, double velocidad, TipoPokemon tipo, double nivel) {
+    public Pokemon(String nombre, double vidaMaxima, double vida, double danio,double defensa, double velocidad, TipoPokemon tipo, double nivel) {
         id = contador++;
         this.nombre = nombre;
+        this.vidaMaxima = vidaMaxima;
         this.vida = vida;
         this.danio = danio;
         this.defensa = defensa;
@@ -47,6 +51,10 @@ public class Pokemon {
 
     public void setDanio(double danio) {
         this.danio = danio;
+    }
+
+    public double getVidaMaxima() {
+        return vidaMaxima;
     }
 
     public double getVida() {
@@ -89,6 +97,17 @@ public class Pokemon {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Pokemon pokemon)) return false;
+        return id == pokemon.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
     /** Accion de recibir el daño, hace un calculo basico con lo que sería la defensa del bicho
     Retorna el danio real tras el calculo
     */
@@ -112,4 +131,13 @@ public class Pokemon {
 
         return p.recibirDanio(danio);
     }
+
+    public double curar(double cantidad)
+    {
+        double curado = Math.max(0,Math.min(cantidad,vidaMaxima-vida));
+
+        return vida+=curado;
+
+    }
+
 }

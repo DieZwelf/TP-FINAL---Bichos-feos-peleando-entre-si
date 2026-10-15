@@ -68,6 +68,36 @@ public class Combate {
         return false;
     }
 
+    public List<String> turno(Item item, Pokemon objetivo)
+    {
+        List<String> registros = new ArrayList<>();
+
+        if(estado != EstadoCombate.ACTIVO)
+        {
+            return registros;
+        }
+
+        if (!participa(objetivo))
+        {
+            registros.add("Ese pokemon no participa en el combate");
+            return registros;
+        }
+
+        if(!entrenador.usarItem(item,objetivo,registros))
+        {
+            return registros;
+        }
+
+        registros.add(ejecutarAtaque(pokemonSalvaje, entrenador.getPokemonActivo()));
+        verificarFinal(registros);
+
+        return registros;
+    }
+
+    private boolean participa(Pokemon p)
+    {
+        return p != null && (p == pokemonSalvaje || entrenador.getEquipo().contains(p));
+    }
 
 /** Clase turno de tipo List<String> para devolver el registro de lo que pasó
 Recibe la accion que va a venir de la interacción del usuario con la interfaz
@@ -82,6 +112,7 @@ Recibe la accion que va a venir de la interacción del usuario con la interfaz
         {
             return registrosCombate;
         }
+
 
         if (accion == AccionJugador.ATACAR)
          {

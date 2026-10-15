@@ -1,6 +1,7 @@
 package com.example.demojuego.model;
 
 
+import java.util.List;
 import java.util.Objects;
 
 public abstract class Item {
@@ -52,5 +53,5 @@ public abstract class Item {
                 '}';
     }
 
-    public abstract void usar();
+    public abstract boolean usar(Entrenador entrenador, Pokemon objetivo, List<String> registro);
 }

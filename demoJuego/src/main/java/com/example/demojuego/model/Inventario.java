@@ -57,7 +57,25 @@ public class Inventario {
     ///Verificacion, para que el Entrenador no pueda usar un objeto que no tiene
     public int contarCantidad(Item item)
     {
-        int cantidad = inventario.getOrDefault(item,0);
-        return cantidad;
+        return inventario.getOrDefault(item,0);
+    }
+
+    public boolean consumir(Item item)
+    {
+        int cantidad = contarCantidad(item);
+
+        if (cantidad <= 0)
+        {
+            return false;
+        }
+
+        if (cantidad == 1)
+        {
+            inventario.remove(item);
+        } else
+        {
+            inventario.put(item,cantidad-1);
+        }
+        return true;
     }
 }

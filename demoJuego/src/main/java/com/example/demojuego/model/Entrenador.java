@@ -113,15 +113,21 @@ public class Entrenador {
 
 ///Esto está incompleto, osea la idea correcta sería que dentro del if llamara al metodo consumir en
 /// inventario,java (a desarrollar)
-    public boolean usarItem(Item item)
+    public boolean usarItem(Item item, Pokemon objetivo, List<String> registro)
     {
-        int cantidadObj = inventario.contarCantidad(item);
-
-        if(cantidadObj > 0)
+        if(item == null || inventario.contarCantidad(item) < 0)
         {
-            item.usar();
+            registro.add("No tienes suficiente cantidad de ese item");
         }
-        return true;
+
+        boolean aplicado = item.usar(this, objetivo, registro);
+
+        if(aplicado)
+        {
+            return inventario.consumir(item);
+        }
+
+        return aplicado;
     }
 }
 
