@@ -121,6 +121,7 @@ public class Entrenador {
         {
             item.usar();
         }
+        return true;
     }
 }
 

@@ -20,7 +20,7 @@ public class PantallaPartidaNueva {
 
         Image imagenFondo = new Image(
                 PantallaInicio.class
-                        .getResource("/images/fondo.jpg")
+                        .getResource("/images/pantallaMenu/fondo.jpg")
                         .toExternalForm()
         );
 

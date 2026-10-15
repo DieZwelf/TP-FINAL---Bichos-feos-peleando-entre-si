@@ -21,10 +21,10 @@ public class MapaView extends Pane {
     public MapaView(Mapa mapa) {
         this.mapa = mapa;
 
-        pasto = cargarImagen("/images/pasto.png");
-        agua = cargarImagen("/images/agua.png");
-        tierra = cargarImagen("/images/tierra.png");
-        piedra = cargarImagen("/images/piedra.png");
+        pasto = cargarImagen("/images/mapa/pasto.png");
+        agua = cargarImagen("/images/mapa/agua.png");
+        tierra = cargarImagen("/images/mapa/tierra.png");
+        piedra = cargarImagen("/images/mapa/piedra.png");
 
         double ancho = (double) mapa.getColumnas() * TAM_CELDA;
         double alto = (double) mapa.getFilas() * TAM_CELDA;

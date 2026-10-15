@@ -6,7 +6,7 @@ import java.util.*;
 Hice esta clase para poder probar a medida se agregan funcionalidades al combate hasta
 que implementemos la interfaz, la idea sería borrarla a futuro.
  */
-public class PruebasCombate {
+/*public class PruebasCombate {
 
     public static void main(String[] args) {
     //Combate simple donde unicamente se ataca, deberia ganar Pikachu
@@ -35,3 +35,5 @@ public class PruebasCombate {
         }
     }
 }
+
+ */
