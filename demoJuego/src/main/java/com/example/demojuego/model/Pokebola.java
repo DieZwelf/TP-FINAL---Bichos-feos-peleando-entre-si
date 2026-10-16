@@ -1,5 +1,7 @@
 package com.example.demojuego.model;
 
+import java.util.List;
+
 public class Pokebola extends Item{
     private boolean ocupada;
     private final String rutaImagen;
@@ -23,7 +25,7 @@ public class Pokebola extends Item{
     }
 
     @Override
-    public void usar() {
-        System.out.println("Usando la Pokebola");
+    public boolean usar(Entrenador entrenador, Pokemon objetivo, List<String> registro) {
+        return false;
     }
 }

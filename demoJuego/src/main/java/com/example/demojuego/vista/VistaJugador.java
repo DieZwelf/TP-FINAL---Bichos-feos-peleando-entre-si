@@ -2,7 +2,9 @@ package com.example.demojuego.vista;
 
 import com.example.demojuego.controlador.JuegoController;
 import com.example.demojuego.model.Jugador;
+import com.example.demojuego.model.Mapa;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -19,17 +21,15 @@ public class VistaJugador {
     private Image[] framesDerecha;
 
     private ImageView vistaJugador;
-    private Pane root;
+    private Pane root; // Contenedor del mapa y jugador
 
     public void mostrar(Stage stage) {
-        root = new Pane();
 
-        // 1. Cargar Mapa de fondo
-        Image mapaImg = cargarImagen("/images/mapa/mapaPrueba.png");
-        ImageView vistaMapa = new ImageView(mapaImg);
+        // 1. Crear mapa
+        Mapa mapa = new Mapa(50, 80);
+        MapaView mapaView = new MapaView(mapa);
 
         // 2. Cargar Arreglos de Imágenes del Jugador
-        // Modifica los nombres según cómo se llamen tus archivos recortados
         framesAbajo = new Image[]{
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminando1.png"),
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminando2.png"),
@@ -55,13 +55,27 @@ public class VistaJugador {
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminandoD4.png")
         };
 
-        // 3. Crear ImageView con la imagen inicial
+        // 3. Crear ImageView del Jugador y configurar tamaño
         vistaJugador = new ImageView(framesAbajo[0]);
-        root.getChildren().addAll(vistaMapa, vistaJugador);
 
-        Scene scene = new Scene(root, 1200, 800);
+        double anchoDeseado = 64; // Subido a 64px para mejor visibilidad estilo retro
+        vistaJugador.setFitWidth(anchoDeseado);
+        vistaJugador.setPreserveRatio(true);
+        vistaJugador.setSmooth(false);
 
-        // 4. Instanciar Modelo y Controlador
+        // 4. INSTANCIAR EL PANE CONTENEDOR (Soluciona el NullPointerException)
+        root = new Pane();
+        root.getChildren().addAll(mapaView, vistaJugador); // Capa 0: Mapa, Capa 1: Jugador
+
+        // 5. Meter todo dentro del ScrollPane
+        ScrollPane scrollPane = new ScrollPane(root);
+        scrollPane.setPannable(true);
+        scrollPane.setFitToWidth(false);
+        scrollPane.setFitToHeight(false);
+
+        Scene scene = new Scene(scrollPane, 1000, 700);
+
+        // 6. Instanciar Modelo y Controlador
         Jugador jugador = new Jugador(200, 200, 4.0);
         JuegoController controller = new JuegoController(jugador, this, scene);
         controller.iniciarGameLoop();
