@@ -13,14 +13,19 @@ public class Pokemon {
     private double velocidad;
     private TipoPokemon tipo;
     private final String rutaImagen;
-    private double nivel;
+    private int nivel = 1;
+    private int experiencia = 0;
+    private double vidaBase;
+    private double danioBase;
+    private double defensaBase;
+    private double velocidadBase;
 
     public Pokemon() {
         id = contador++;
-        this.rutaImagen = "/images/items" + nombre.toLowerCase() + ".png";
+        this.rutaImagen = "/images/items/" + nombre.toLowerCase() + ".png";
     }
 
-    public Pokemon(String nombre, double vidaMaxima, double vida, double danio,double defensa, double velocidad, TipoPokemon tipo, double nivel) {
+    public Pokemon(String nombre, double vidaMaxima, double vida, double danio,double defensa, double velocidad, TipoPokemon tipo, int nivel, int experiencia,int danioBase, int defensaBase, int velocidadBase) {
         id = contador++;
         this.nombre = nombre;
         this.vidaMaxima = vidaMaxima;
@@ -29,8 +34,13 @@ public class Pokemon {
         this.defensa = defensa;
         this.velocidad = velocidad;
         this.tipo = tipo;
-        this.rutaImagen = "/images/items" + nombre.toLowerCase() + ".png";
-        this.nivel = 0;
+        this.rutaImagen = "/images/items/" + nombre.toLowerCase() + ".png";
+        this.nivel = nivel;
+        this.experiencia = experiencia;
+        this.vidaBase = vida;
+        this.danioBase = danioBase;
+        this.defensaBase = defensaBase;
+        this.velocidadBase = velocidadBase;
     }
 
     public int getId() {
@@ -85,6 +95,14 @@ public class Pokemon {
         return tipo;
     }
 
+    public int getNivel() {
+        return nivel;
+    }
+
+    public int getExperiencia() {
+        return experiencia;
+    }
+
     @Override
     public String toString() {
         return "Pokemon{" +
@@ -132,12 +150,89 @@ public class Pokemon {
         return p.recibirDanio(danio);
     }
 
+    //Recibe el atributo crudo, calcula lo que sería respecto a la vida actual del Pokemon y la maxima
+    // y retorna lo que realmente curó
     public double curar(double cantidad)
     {
         double curado = Math.max(0,Math.min(cantidad,vidaMaxima-vida));
 
-        return vida+=curado;
+        vida+=curado;
 
+        return curado;
     }
+
+    //===================================================MÉTODOS PARA GESTIONAR LA SUBIDA DE NIVEL
+    //Verificacion de que no sea el nivel maximo para no aplicar estadisticas a Pokemones maxeados
+    public boolean esNivelMaximo()
+    {
+        if(nivel >= TablaProgresion.NIVEL_MAXIMO)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public int ganarExperiencia(int cantidad)
+    {
+        //Verificar que no este en el lvl maximo, o q la cantidad de xp que ganó sea 0
+        if (esNivelMaximo() || cantidad <= 0)
+        {
+            return 0;
+        }
+
+        //Tope es la xp total que falta para estar en el nivel 5, lo uso como tope fijo
+        int tope = TablaProgresion.experienciaParaNivel(TablaProgresion.NIVEL_MAXIMO);
+        //Esto devuelve el menor de dos numeros, en teoría sería siempre experiencia a menos que este
+        //ya en el tope permitido de xp (nivel 5)
+        experiencia = Math.min(experiencia + cantidad, tope);
+
+        int nivelAnterior = nivel;
+        //Esto es una verificacion, si el nivel ya es el maximo no pasa nada
+        nivel = TablaProgresion.nivelPorExperiencia(experiencia);
+
+        //si el nivel actual no es el maximo entonces calcula las nuevas estadísticas
+        if (nivel > nivelAnterior)
+        {
+            recalcularEstadisticas();
+        }
+
+        //retorna el nivel actual actualizado
+        return nivel - nivelAnterior;
+    }
+
+    /**
+     *  En teoría esto iba en ganarExperiencia, pero se hacía un metodo de 100 lineas
+     *  El trato con la vida maxima es dif a propósito, para no regenerar al pokemon tras subir de nvel
+     */
+    private void recalcularEstadisticas()
+    {
+        double vidaMaximaAnterior = vidaMaxima;
+
+        //Llama a aplicarMejora, ésta recibe el valor base y el atributo
+        vidaMaxima = aplicarMejora(vidaBase, TablaProgresion.Estadistica.VIDA);
+        danio = aplicarMejora(danioBase, TablaProgresion.Estadistica.DANIO);
+        defensa = aplicarMejora(defensaBase, TablaProgresion.Estadistica.DEFENSA);
+        velocidad = aplicarMejora(velocidadBase, TablaProgresion.Estadistica.VELOCIDAD);
+
+        // subir nivel no te cura el bicho
+        vida += vidaMaxima - vidaMaximaAnterior;
+    }
+
+    /**
+     * Esto es la quinta versión de este metodo :(
+     * Base son todos los atributos (la mejora se calcula a partir de los atributos base)
+     * e es la estadística a mejorar (por nivel se reciben todas, por eso se llama 4 veces x nivel
+     */
+    private double aplicarMejora(double base, TablaProgresion.Estadistica e)
+    {
+        /**
+         * Multiplicar y dividir por 100 saca los redondeos, se multiplica el atributo base
+         * por las características que encuentre en TablaProgresion.porcentaje
+         */
+        return base * (100 + TablaProgresion.porcentaje(e,nivel)) / 100;
+    }
+
+
 
 }
