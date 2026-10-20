@@ -3,6 +3,7 @@ package com.example.demojuego.vista;
 import com.example.demojuego.controlador.JuegoController;
 import com.example.demojuego.model.Jugador;
 import com.example.demojuego.model.Mapa;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -12,49 +13,74 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
-public class VistaJugador {
+public class VistaJugador extends Pane{
 
-    // Arreglos con las imágenes ya cargadas
+    private ImageView vistaJugador;
+    private Jugador jugador;
     private Image[] framesAbajo;
     private Image[] framesArriba;
     private Image[] framesIzquierda;
     private Image[] framesDerecha;
 
-    private ImageView vistaJugador;
-    private Pane root; // Contenedor del mapa y jugador
+    public VistaJugador(Image[] framesAbajo, Image[] framesArriba, Image[] framesIzquierda, Image[] framesDerecha, ImageView vistaJugador) {
+        this.framesAbajo = framesAbajo;
+        this.framesArriba = framesArriba;
+        this.framesIzquierda = framesIzquierda;
+        this.framesDerecha = framesDerecha;
+        this.vistaJugador = vistaJugador;
+    }
 
-    public void mostrar(Stage stage) {
+    public VistaJugador(Image[] framesAbajo, Image[] framesArriba, Image[] framesIzquierda, Image[] framesDerecha, ImageView vistaJugador, Node... nodes) {
+        super(nodes);
+        this.framesAbajo = framesAbajo;
+        this.framesArriba = framesArriba;
+        this.framesIzquierda = framesIzquierda;
+        this.framesDerecha = framesDerecha;
+        this.vistaJugador = vistaJugador;
+    }
 
-        // 1. Crear mapa
-        Mapa mapa = new Mapa(50, 80);
-        MapaView mapaView = new MapaView(mapa);
+    public VistaJugador (Jugador jugador){
+        this.jugador = jugador;
+    }
 
-        // 2. Cargar Arreglos de Imágenes del Jugador
+    public VistaJugador (){
+
+    }
+
+
+    private void cargarFrames() {
         framesAbajo = new Image[]{
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminando1.png"),
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminando2.png"),
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminando3.png"),
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminando4.png")
         };
+
         framesArriba = new Image[]{
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminandoA1.png"),
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminandoA2.png"),
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminandoA3.png"),
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminandoA4.png")
         };
+
         framesIzquierda = new Image[]{
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminandoI1.png"),
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminandoI2.png"),
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminandoI3.png"),
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminandoI4.png")
         };
+
         framesDerecha = new Image[]{
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminandoD1.png"),
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminandoD2.png"),
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminandoD3.png"),
                 cargarImagen("/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminandoD4.png")
         };
+    }
 
+    public void mostrar(Stage stage) {
+
+        cargarFrames();
         // 3. Crear ImageView del Jugador y configurar tamaño
         vistaJugador = new ImageView(framesAbajo[0]);
 
@@ -63,26 +89,34 @@ public class VistaJugador {
         vistaJugador.setPreserveRatio(true);
         vistaJugador.setSmooth(false);
 
-        // 4. INSTANCIAR EL PANE CONTENEDOR (Soluciona el NullPointerException)
-        root = new Pane();
-        root.getChildren().addAll(mapaView, vistaJugador); // Capa 0: Mapa, Capa 1: Jugador
+        getChildren().add(vistaJugador);
+    }
 
-        // 5. Meter todo dentro del ScrollPane
-        ScrollPane scrollPane = new ScrollPane(root);
-        scrollPane.setPannable(true);
-        scrollPane.setFitToWidth(false);
-        scrollPane.setFitToHeight(false);
+    public void inicializar(Jugador jugador) {
+        this.jugador = jugador;
 
-        Scene scene = new Scene(scrollPane, 1000, 700);
+        // Si todavía no se cargaron las imágenes, cargarlas.
+        if (framesAbajo == null) {
+            cargarFrames();
+        }
 
-        // 6. Instanciar Modelo y Controlador
-        Jugador jugador = new Jugador(200, 200, 4.0);
-        JuegoController controller = new JuegoController(jugador, this, scene);
-        controller.iniciarGameLoop();
+        // Crear el ImageView si todavía no existe.
+        if (vistaJugador == null) {
+            vistaJugador = new ImageView();
+            vistaJugador.setFitWidth(64);
+            vistaJugador.setPreserveRatio(true);
+            vistaJugador.setSmooth(false);
+        }
 
-        stage.setTitle("Bichostrofe Ventura - Juego");
-        stage.setScene(scene);
-        stage.show();
+        // Asignar la imagen inicial.
+        vistaJugador.setImage(framesAbajo[0]);
+
+        // Agregarlo al Pane solamente si todavía no está agregado.
+        if (!getChildren().contains(vistaJugador)) {
+            getChildren().add(vistaJugador);
+        }
+
+        renderizar(jugador);
     }
 
     /**

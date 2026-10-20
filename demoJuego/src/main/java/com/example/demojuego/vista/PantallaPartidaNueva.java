@@ -1,5 +1,8 @@
 package com.example.demojuego.vista;
 
+import com.example.demojuego.controlador.JuegoController;
+import com.example.demojuego.model.Jugador;
+import com.example.demojuego.model.Mapa;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -11,7 +14,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class PantallaPartidaNueva {
+public class PantallaPartidaNueva implements iPantalla{
+
+    public void iniciarPartida(Stage stage) {
+        Mapa mapa = new Mapa(10, 10);
+        Jugador jugador = new Jugador(0, 0, 3);
+
+        VistaJuego vistaJuego = new VistaJuego(mapa, jugador);
+        vistaJuego.mostrar(stage);
+    }
 
     public static void mostrar(Stage stage) {
 
@@ -41,14 +52,20 @@ public class PantallaPartidaNueva {
         );
         mensaje.setFont(Font.font("Monospaced", 16));
 
-        Button volver = new Button("Volver al menú");
+        /**
+         * ===================================
+         */
 
+        Button llamarVistaJuego = new Button("Volver al menú");
+        llamarVistaJuego.setOnAction(e -> {
+            new VistaJuego().mostrar(stage);
+        });
 
         VBox contenido = new VBox(
                 25,
                 titulo,
                 mensaje,
-                volver
+                llamarVistaJuego
         );
 
         contenido.setAlignment(Pos.CENTER);
@@ -56,8 +73,8 @@ public class PantallaPartidaNueva {
 
 
         Scene escena = new Scene(contenido, 900, 650);
-
         stage.setTitle("Monster Quest - Nueva partida");
+        stage.setFullScreen(true);
         stage.setScene(escena);
     }
 }

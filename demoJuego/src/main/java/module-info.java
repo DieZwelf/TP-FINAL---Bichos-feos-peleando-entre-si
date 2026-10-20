@@ -10,12 +10,6 @@ module com.example.demojuego {
     opens com.example.demojuego.model to javafx.fxml;
     exports com.example.demojuego.model;
 
-    exports com.example.demojuego.demoJuego;
-    opens com.example.demojuego.demoJuego to javafx.fxml;
-
-    exports com.example.demojuego;
-    opens com.example.demojuego to javafx.fxml;
-
     exports com.example.demojuego.vista;
     opens com.example.demojuego.vista to javafx.fxml;
 }

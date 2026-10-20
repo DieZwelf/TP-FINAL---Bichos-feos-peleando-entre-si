@@ -115,11 +115,7 @@ public class PantallaInicio extends Application {
 
         // ACCIONES
         btnNuevaPartida.setOnAction(e -> {
-            // Instancias la vista del juego
-            VistaJugador pantallaJuego = new VistaJugador();
-
-            // Le pasas el stage actual para reemplazar la escena del menú por la del juego
-            pantallaJuego.mostrar(stage);
+            PantallaPartidaNueva.mostrar(stage);
         });
 
         btnCargarPartida.setOnAction(e ->
