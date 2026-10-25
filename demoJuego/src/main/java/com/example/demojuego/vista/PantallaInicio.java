@@ -1,7 +1,6 @@
 package com.example.demojuego.vista;
 
 // Importaciones de JavaFX para la ventana, los controles y el diseño.
-import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -18,9 +17,8 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.Objects;
 
-public class PantallaInicio extends Application {
+public class PantallaInicio {
 
-    @Override
     public void start(Stage stage) {
 
         // ==================================================
@@ -160,6 +158,8 @@ public class PantallaInicio extends Application {
         );
 
         stage.getIcons().add(icono);
+        URL css = getClass().getResource("/images/pantallaMenu/estilo.css");
+        scene.getStylesheets().add(Objects.requireNonNull(css, "No se encontró estilo.css").toExternalForm());
         stage.setScene(scene);
         stage.setMinWidth(900);
         stage.setMinHeight(600);
@@ -167,62 +167,17 @@ public class PantallaInicio extends Application {
     }
 
     // ==================================================
-    // 7. MÉTODO PARA CREAR LOS BOTONES CON ESTILO RETRO
+    // 7. METODO PARA CREAR LOS BOTONES CON ESTILO RETRO
     // ==================================================
     private Button crearBotonEstilizado(String texto) {
-
         Button boton = new Button(texto);
+        //Aca en la direccion si ponen boton-retro queda con una cajita, no me decido
+        boton.getStyleClass().add("boton-menu");   // el estilo viene del CSS
 
-        boton.setPrefWidth(700);
-        boton.setPrefHeight(100);
-
-        String estiloBase =
-                "-fx-background-color: transparent;" +
-                        "-fx-background-insets: 0;" +
-                        "-fx-border-color: transparent;" +
-                        "-fx-border-width: 0;" +
-                        "-fx-border-insets: 0;" +
-                        "-fx-background-radius: 0;" +
-                        "-fx-border-radius: 0;" +
-                        "-fx-padding: 0 0 0 35;" +
-                        "-fx-alignment: center-left;" +
-                        "-fx-text-fill: #f5f0d0;" +
-                        "-fx-font-family: 'Monospaced';" +
-                        "-fx-font-size: 34px;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-cursor: hand;";
-
-        String estiloHover =
-                "-fx-background-color: transparent;" +
-                        "-fx-background-insets: 0;" +
-                        "-fx-border-color: transparent;" +
-                        "-fx-border-width: 0;" +
-                        "-fx-background-radius: 0;" +
-                        "-fx-border-radius: 0;" +
-                        "-fx-padding: 0 0 0 35;" +
-                        "-fx-alignment: center-left;" +
-                        "-fx-text-fill: #ffde00;" +
-                        "-fx-font-family: 'Monospaced';" +
-                        "-fx-font-size: 38px;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-cursor: hand;";
-
-        boton.setStyle(estiloBase);
-
-        boton.setOnMouseEntered(e -> {
-            boton.setText("▶ " + texto);
-            boton.setStyle(estiloHover);
-        });
-
-        boton.setOnMouseExited(e -> {
-            boton.setText(texto);
-            boton.setStyle(estiloBase);
-        });
+        boton.setOnMouseEntered(e -> boton.setText("▶ " + texto));
+        boton.setOnMouseExited(e -> boton.setText(texto));
 
         return boton;
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
 }

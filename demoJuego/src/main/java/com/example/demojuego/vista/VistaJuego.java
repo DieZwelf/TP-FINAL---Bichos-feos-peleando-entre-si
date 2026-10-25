@@ -16,29 +16,17 @@ import java.util.Objects;
 
 public class VistaJuego extends Pane implements iPantalla{
 
-    private  VistaJugador vistaJugador;
-    private  MapaView vistaMapa;
+    private final Jugador jugador;
+    private final VistaJugador vistaJugador;
+    private final MapaView vistaMapa;
+    private JuegoController controlador;
 
-    public VistaJuego (Mapa mapa, Jugador jugador){
-        vistaMapa = new MapaView(mapa);
-        vistaJugador = new VistaJugador(jugador);
-        vistaJugador.inicializar(jugador);
-
-        getChildren().addAll(vistaMapa,vistaJugador);
-    }
-
-    public VistaJuego (Mapa mapa){
-        this.vistaJugador = new VistaJugador();
+    public VistaJuego(Mapa mapa, Jugador jugador) {
+        this.jugador = jugador;
         this.vistaMapa = new MapaView(mapa);
+        this.vistaJugador = new VistaJugador(jugador);
 
-        getChildren().addAll(vistaMapa,vistaJugador);
-    }
-
-    public VistaJuego() {
-        this.vistaJugador = new VistaJugador();
-        this.vistaMapa = new MapaView();
-
-        getChildren().addAll(vistaMapa,vistaJugador);
+        getChildren().addAll(vistaMapa, vistaJugador);
     }
 
     public VistaJugador getVistaJugador() {
@@ -48,8 +36,11 @@ public class VistaJuego extends Pane implements iPantalla{
     public void mostrar(Stage stage)
     {
         Scene escena = new Scene(this,500,500);
+
+        controlador = new JuegoController(jugador,vistaJugador,escena);
+        controlador.iniciarGameLoop();
+
         stage.setScene(escena);
         stage.setFullScreen(true);
-        stage.show();
     }
 }
