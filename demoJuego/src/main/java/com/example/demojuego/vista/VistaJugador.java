@@ -18,7 +18,7 @@ public class VistaJugador extends Pane {
     private final Image[] framesDerecha = cargarFrames("D");
 
     public VistaJugador(Jugador jugador) {
-        imagenJugador.setFitWidth(64);
+        imagenJugador.setFitWidth(48);
         imagenJugador.setPreserveRatio(true);
         imagenJugador.setSmooth(false);
 

@@ -1,7 +1,9 @@
+
 package com.example.demojuego.controlador;
 
 import com.example.demojuego.model.Jugador;
 import com.example.demojuego.vista.VistaJugador;
+import com.example.demojuego.vista.VistaJuego;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
@@ -10,16 +12,23 @@ public class JuegoController {
 
     private final Jugador jugador;
     private final VistaJugador vista;
+    private final VistaJuego vistaJuego;
 
     private boolean arriba, abajo, izquierda, derecha;
     private long ultimoTiempoAnimacion = 0;
-    private static final long INTERVALO_ANIMACION = 120_000_000L; // 120 milisegundos
 
-    public JuegoController(Jugador jugador, VistaJugador vista, Scene escena) {
+    private static final long INTERVALO_ANIMACION = 120_000_000L;
+
+    public JuegoController(
+            Jugador jugador,
+            VistaJugador vista,
+            VistaJuego vistaJuego,
+            Scene escena) {
+
         this.jugador = jugador;
         this.vista = vista;
+        this.vistaJuego = vistaJuego;
 
-        // Escuchar teclado
         escena.setOnKeyPressed(this::onKeyPressed);
         escena.setOnKeyReleased(this::onKeyReleased);
     }
@@ -30,30 +39,39 @@ public class JuegoController {
             public void handle(long now) {
                 actualizarLogica(now);
                 vista.renderizar(jugador);
+                vistaJuego.actualizarCamara();
             }
         };
+
         loop.start();
     }
 
     private void actualizarLogica(long now) {
         boolean seMovio = false;
 
-        if (arriba) { jugador.moverArriba(); seMovio = true; }
-        else if (abajo) { jugador.moverAbajo(); seMovio = true; }
-
-        if (izquierda) { jugador.moverIzquierda(); seMovio = true; }
-        else if (derecha) { jugador.moverDerecha(); seMovio = true; }
+        if (arriba) {
+            jugador.moverArriba();
+            seMovio = true;
+        } else if (abajo) {
+            jugador.moverAbajo();
+            seMovio = true;
+        } else if (izquierda) {
+            jugador.moverIzquierda();
+            seMovio = true;
+        } else if (derecha) {
+            jugador.moverDerecha();
+            seMovio = true;
+        }
 
         jugador.setEnMovimiento(seMovio);
 
-        // Control del ciclo de animación (cambio de fotograma)
         if (seMovio) {
             if (now - ultimoTiempoAnimacion >= INTERVALO_ANIMACION) {
                 jugador.setFrameActual(jugador.getFrameActual() + 1);
                 ultimoTiempoAnimacion = now;
             }
         } else {
-            jugador.setFrameActual(0); // Vuelve al frame parado
+            jugador.setFrameActual(0);
         }
     }
 

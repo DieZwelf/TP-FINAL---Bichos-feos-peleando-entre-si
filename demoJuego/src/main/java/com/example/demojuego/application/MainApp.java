@@ -1,13 +1,15 @@
 
 package com.example.demojuego.application;
 
+import com.example.demojuego.vista.CargadorMapaTiled;
 import com.example.demojuego.vista.GestorPantallas;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-    @Override
+
+   @Override
     public void start(Stage stage) {
         stage.setTitle("Bichos");
         stage.setFullScreen(true);
@@ -18,6 +20,7 @@ public class MainApp extends Application {
         pantallas.mostrarInicio();
 
     }
+
 
     public static void main(String[] args) {
         launch(args);

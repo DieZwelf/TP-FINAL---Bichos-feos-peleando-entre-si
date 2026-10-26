@@ -3,6 +3,7 @@ module com.example.demojuego {
     requires javafx.fxml;
     requires javafx.media;
     requires java.desktop;
+    requires com.google.gson;
 
     exports com.example.demojuego.application to javafx.graphics;
     opens com.example.demojuego.application to javafx.fxml;
