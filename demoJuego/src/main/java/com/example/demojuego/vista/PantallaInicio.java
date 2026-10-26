@@ -1,6 +1,7 @@
 
 package com.example.demojuego.vista;
 
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
@@ -14,7 +15,8 @@ public class PantallaInicio extends PantallaMenuBase {
     @Override
     public void mostrar(Stage stage) {
         stage.setTitle("Pokémon Ventura");
-        mostrarMenu(stage);
+        Scene escena = super.mostrarMenu(stage);
+        pantallas.mostrarEscena(escena);
     }
 
     // Botones propios del inicio.

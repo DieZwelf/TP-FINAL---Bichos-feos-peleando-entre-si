@@ -18,7 +18,7 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.Objects;
 
-public abstract class PantallaMenuBase implements IPantalla {
+public abstract class PantallaMenuBase  implements IPantalla {
 
     protected final GestorPantallas pantallas;
 
@@ -41,7 +41,7 @@ public abstract class PantallaMenuBase implements IPantalla {
     // CREAR EL MENÚ COMPARTIDO UNA SOLA VEZ
     // --------------------------------------------------
 
-    protected void mostrarMenu(Stage stage) {
+    protected Scene mostrarMenu(Stage stage) {
 
         // Si todavía no existe la escena, la creamos.
         if (escena == null) {
@@ -50,6 +50,7 @@ public abstract class PantallaMenuBase implements IPantalla {
 
         // Animamos el cambio de botones, no el fondo.
         cambiarBotones();
+        return escena;
     }
 
     private void crearMenuCompartido(Stage stage) {

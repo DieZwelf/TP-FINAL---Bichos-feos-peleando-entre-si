@@ -11,8 +11,6 @@ public class MainApp extends Application {
 
    @Override
     public void start(Stage stage) {
-        stage.setTitle("Bichos");
-        stage.setFullScreen(true);
 
         GestorPantallas pantallas = new GestorPantallas(stage);
 

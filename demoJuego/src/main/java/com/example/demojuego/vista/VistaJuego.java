@@ -17,14 +17,21 @@ public class VistaJuego extends Pane implements IPantalla {
 
     private JuegoController controlador;
     private Scene escena;
+    protected GestorPantallas pantallas;
 
-    public VistaJuego(Mapa mapa, Jugador jugador) {
+    public VistaJuego(
+            Mapa mapa,
+            Jugador jugador,
+            GestorPantallas pantallas) {
+
         this.jugador = jugador;
+        this.pantallas = pantallas;
 
         vistaMapa = new VistaMapa(mapa);
         vistaJugador = new VistaJugador(jugador);
 
         mundo.getChildren().addAll(vistaMapa, vistaJugador);
+
         mundo.setPrefSize(
                 vistaMapa.getPrefWidth(),
                 vistaMapa.getPrefHeight()
@@ -55,12 +62,10 @@ public class VistaJuego extends Pane implements IPantalla {
                 escena
         );
 
-        stage.setScene(escena);
-        stage.setMaximized(true);
-        stage.show();
 
         actualizarCamara();
         controlador.iniciarGameLoop();
+        pantallas.mostrarEscena(escena);
     }
 
 

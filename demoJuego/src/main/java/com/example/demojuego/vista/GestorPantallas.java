@@ -50,7 +50,7 @@ public class GestorPantallas {
         Mapa mapa = new Mapa(10, 10);
         Jugador jugador = new Jugador(0, 0, 3);
 
-        new VistaJuego(mapa, jugador).mostrar(stage);
+        new VistaJuego(mapa, jugador, this).mostrar(stage);
     }
 
     public void mostrarCargarPartida (){
