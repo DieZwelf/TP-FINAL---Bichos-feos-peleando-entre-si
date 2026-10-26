@@ -1,17 +1,8 @@
 
 package com.example.demojuego.application;
 
-import com.example.demojuego.vista.PantallaInicio;
-import com.example.demojuego.vista.VistaJugador;
+import com.example.demojuego.vista.GestorPantallas;
 import javafx.application.Application;
-import javafx.stage.Stage;
-
-import com.example.demojuego.controlador.JuegoController;
-import com.example.demojuego.model.Jugador;
-import com.example.demojuego.model.Mapa;
-import com.example.demojuego.vista.VistaJuego;
-import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -21,10 +12,10 @@ public class MainApp extends Application {
         stage.setTitle("Bichos");
         stage.setFullScreen(true);
 
-        PantallaInicio pantallaInicio = new PantallaInicio();
+        GestorPantallas pantallas = new GestorPantallas(stage);
 
 
-        pantallaInicio.start(stage);
+        pantallas.mostrarInicio();
 
     }
 
