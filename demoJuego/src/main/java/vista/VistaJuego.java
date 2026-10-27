@@ -7,6 +7,8 @@ import controlador.JuegoController;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.scene.transform.Affine;
+import javafx.scene.shape.Rectangle;
 
 public class VistaJuego extends Pane implements IPantalla {
 
@@ -14,6 +16,9 @@ public class VistaJuego extends Pane implements IPantalla {
     private final VistaJugador vistaJugador;
     private final VistaMapa vistaMapa;
     private final Pane mundo = new Pane();
+    private static final double ZOOM = 1.4;
+    private final Affine transformacionCamara = new Affine();
+    private final Rectangle recorte = new Rectangle();
 
     private JuegoController controlador;
     private Scene escena;
@@ -29,6 +34,20 @@ public class VistaJuego extends Pane implements IPantalla {
         mundo.setPrefSize(vistaMapa.getPrefWidth(), vistaMapa.getPrefHeight());
 
         getChildren().add(mundo);
+
+        mundo.getTransforms().setAll(transformacionCamara);
+
+        setClip(recorte);
+
+        widthProperty().addListener((obs, antes, ahora) -> {
+            recorte.setWidth(ahora.doubleValue());
+            actualizarCamara();
+        });
+
+        heightProperty().addListener((obs, antes, ahora) -> {
+            recorte.setHeight(ahora.doubleValue());
+            actualizarCamara();
+        });
     }
 
     public VistaJugador getVistaJugador() {
@@ -39,59 +58,67 @@ public class VistaJuego extends Pane implements IPantalla {
     public void mostrar(Stage stage) {
         escena = new Scene(this, 1000, 800);
 
-        escena.widthProperty().addListener(
-                (obs, anterior, nuevo) -> actualizarCamara()
-        );
-        escena.heightProperty().addListener(
-                (obs, anterior, nuevo) -> actualizarCamara()
-        );
+// Primero mostrar la escena
+        pantallas.mostrarEscena(escena);
 
+// Después calcular la cámara
+        actualizarCamara();
+
+// Finalmente iniciar el bucle
         controlador = new JuegoController(
                 jugador,
                 vistaJugador,
                 this,
-                escena
+                escena,
+                vistaMapa.getColisiones()
         );
-
-
-        actualizarCamara();
         controlador.iniciarGameLoop();
-        pantallas.mostrarEscena(escena);
     }
 
 
+
+
     public void actualizarCamara() {
-        if (escena == null) {
-            return;
-        }
+        if (escena == null) return;
 
         double anchoVentana = escena.getWidth();
         double altoVentana = escena.getHeight();
 
+        if (anchoVentana <= 0 || altoVentana <= 0) return;
+
         double anchoMapa = vistaMapa.getPrefWidth();
         double altoMapa = vistaMapa.getPrefHeight();
 
-        double centroJugadorX = jugador.getX() + 24;
-        double centroJugadorY = jugador.getY() + 24;
+        double anchoEscalado = anchoMapa * ZOOM;
+        double altoEscalado = altoMapa * ZOOM;
 
-        double desplazamientoX = anchoVentana / 2 - centroJugadorX;
-        double desplazamientoY = altoVentana / 2 - centroJugadorY;
+        // Centro del personaje
+        double centroX = jugador.getX() + 24;
+        double centroY = jugador.getY() + 24;
 
-        // No mostrar el exterior del mapa por los costados.
-        if (anchoMapa >= anchoVentana) {
-            desplazamientoX = Math.max(anchoVentana - anchoMapa, Math.min(0, desplazamientoX));
+        // Posición necesaria para centrar al personaje
+        double x = anchoVentana / 2 - centroX * ZOOM;
+        double y = altoVentana / 2 - centroY * ZOOM;
+
+        // Evitar que se vea el exterior del mapa
+        if (anchoEscalado >= anchoVentana) {
+            x = Math.max(anchoVentana - anchoEscalado, Math.min(0, x));
         } else {
-            desplazamientoX = (anchoVentana - anchoMapa) / 2;
+            x = (anchoVentana - anchoEscalado) / 2;
         }
 
-        if (altoMapa >= altoVentana) {
-            desplazamientoY = Math.max(altoVentana - altoMapa, Math.min(0, desplazamientoY));
+        if (altoEscalado >= altoVentana) {
+            y = Math.max(altoVentana - altoEscalado, Math.min(0, y));
         } else {
-            desplazamientoY = (altoVentana - altoMapa) / 2;
+            y = (altoVentana - altoEscalado) / 2;
         }
 
-        mundo.setTranslateX(desplazamientoX);
-        mundo.setTranslateY(desplazamientoY);
+        // Escala desde el origen (0, 0), sin pivote automático
+        transformacionCamara.setToTransform(
+                ZOOM, 0, x,
+                0, ZOOM, y
+        );
     }
+
 
 }

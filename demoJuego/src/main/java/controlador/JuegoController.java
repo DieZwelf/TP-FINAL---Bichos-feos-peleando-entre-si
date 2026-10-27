@@ -7,6 +7,8 @@ import vista.VistaJuego;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
+import javafx.geometry.Rectangle2D;
+import java.util.List;
 
 public class JuegoController {
 
@@ -18,16 +20,19 @@ public class JuegoController {
     private long ultimoTiempoAnimacion = 0;
 
     private static final long INTERVALO_ANIMACION = 120_000_000L;
+    private final List<Rectangle2D> colisiones;
 
     public JuegoController(
             Jugador jugador,
             VistaJugador vista,
             VistaJuego vistaJuego,
-            Scene escena) {
+            Scene escena,
+            List<Rectangle2D> colisiones) {
 
         this.jugador = jugador;
         this.vista = vista;
         this.vistaJuego = vistaJuego;
+        this.colisiones = colisiones;
 
         escena.setOnKeyPressed(this::onKeyPressed);
         escena.setOnKeyReleased(this::onKeyReleased);
@@ -47,6 +52,9 @@ public class JuegoController {
     }
 
     private void actualizarLogica(long now) {
+        double xAnterior = jugador.getX();
+        double yAnterior = jugador.getY();
+
         boolean seMovio = false;
 
         if (arriba) {
@@ -61,6 +69,12 @@ public class JuegoController {
         } else if (derecha) {
             jugador.moverDerecha();
             seMovio = true;
+        }
+
+        if (hayColision(jugador.getX(), jugador.getY())) {
+            jugador.setX(xAnterior);
+            jugador.setY(yAnterior);
+            seMovio = false;
         }
 
         jugador.setEnMovimiento(seMovio);
@@ -92,4 +106,29 @@ public class JuegoController {
             case D, RIGHT -> derecha = false;
         }
     }
+
+    private boolean hayColision(double nuevoX, double nuevoY) {
+        // Zona de colisión pequeña, ubicada en los pies
+        double anchoJugador = 24;
+        double altoJugador = 16;
+
+        double desplazamientoX = (48 - anchoJugador) / 2;
+        double desplazamientoY = 48 - altoJugador;
+
+        Rectangle2D jugadorProximo = new Rectangle2D(
+                nuevoX + desplazamientoX,
+                nuevoY + desplazamientoY,
+                anchoJugador,
+                altoJugador
+        );
+
+        for (Rectangle2D obstaculo : colisiones) {
+            if (jugadorProximo.intersects(obstaculo)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }

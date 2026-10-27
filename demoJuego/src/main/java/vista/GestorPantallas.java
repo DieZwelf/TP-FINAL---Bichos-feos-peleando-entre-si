@@ -48,7 +48,7 @@ public class GestorPantallas {
     // Crear los objetos necesarios e iniciar el juego
     public void iniciarPartida() {
         Mapa mapa = new Mapa(10, 10);
-        Jugador jugador = new Jugador(130, 130, 3);
+        Jugador jugador = new Jugador(290, 0, 3);
 
         new VistaJuego(mapa, jugador, this).mostrar(stage);
     }

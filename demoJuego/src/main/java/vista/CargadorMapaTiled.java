@@ -27,6 +27,7 @@ public class CargadorMapaTiled {
     private static final int COLUMNAS_TILESET = 27;
     private static final int ESCALA = 3;
     private final List<Rectangle2D> colisiones = new ArrayList<>();
+    private Canvas capaFrontal;
 
     public List<Rectangle2D> getColisiones() {
         return colisiones;
@@ -73,6 +74,12 @@ public class CargadorMapaTiled {
                 ancho * TAM_TILE * ESCALA,
                 alto * TAM_TILE * ESCALA
         );
+
+        capaFrontal = new Canvas(
+                ancho * TAM_TILE * ESCALA,
+                alto * TAM_TILE * ESCALA
+        );
+        capaFrontal.getGraphicsContext2D().setImageSmoothing(false);
 
         double w = canvas.getWidth();
         double h = canvas.getHeight();
