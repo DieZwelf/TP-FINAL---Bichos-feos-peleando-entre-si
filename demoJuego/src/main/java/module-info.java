@@ -1,4 +1,4 @@
-module java {
+module demojuego {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.media;
