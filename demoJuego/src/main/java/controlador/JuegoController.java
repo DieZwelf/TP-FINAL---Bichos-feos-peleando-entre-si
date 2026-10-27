@@ -9,6 +9,9 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.geometry.Rectangle2D;
 import java.util.List;
+import javafx.geometry.Bounds;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 
 public class JuegoController {
 
@@ -20,14 +23,14 @@ public class JuegoController {
     private long ultimoTiempoAnimacion = 0;
 
     private static final long INTERVALO_ANIMACION = 120_000_000L;
-    private final List<Rectangle2D> colisiones;
+    private final List<Shape> colisiones;
 
     public JuegoController(
             Jugador jugador,
             VistaJugador vista,
             VistaJuego vistaJuego,
             Scene escena,
-            List<Rectangle2D> colisiones) {
+            List<Shape> colisiones) {
 
         this.jugador = jugador;
         this.vista = vista;
@@ -107,28 +110,40 @@ public class JuegoController {
         }
     }
 
+
     private boolean hayColision(double nuevoX, double nuevoY) {
-        // Zona de colisión pequeña, ubicada en los pies
+
+        // Zona de colisión del jugador: solamente los pies.
         double anchoJugador = 24;
         double altoJugador = 16;
 
         double desplazamientoX = (48 - anchoJugador) / 2;
         double desplazamientoY = 48 - altoJugador;
 
-        Rectangle2D jugadorProximo = new Rectangle2D(
+        Rectangle jugadorProximo = new Rectangle(
                 nuevoX + desplazamientoX,
                 nuevoY + desplazamientoY,
                 anchoJugador,
                 altoJugador
         );
 
-        for (Rectangle2D obstaculo : colisiones) {
-            if (jugadorProximo.intersects(obstaculo)) {
+        for (Shape obstaculo : colisiones) {
+
+            Shape interseccion = Shape.intersect(
+                    jugadorProximo,
+                    obstaculo
+            );
+
+            Bounds limites = interseccion.getBoundsInLocal();
+
+            if (limites.getWidth() > 0
+                    && limites.getHeight() > 0) {
                 return true;
             }
         }
 
         return false;
     }
+
 
 }

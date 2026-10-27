@@ -6,14 +6,18 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 
 import javafx.geometry.Rectangle2D;
+
+import java.awt.*;
+import java.util.List;
+import javafx.scene.shape.Shape;
 import java.util.List;
 
 public class VistaMapa extends Pane {
 
     private final Canvas canvas;
-    private final List<Rectangle2D> colisiones;
+    private final List<Shape> colisiones;
 
-    public List<Rectangle2D> getColisiones() {
+    public List<Shape> getColisiones() {
         return colisiones;
     }
 

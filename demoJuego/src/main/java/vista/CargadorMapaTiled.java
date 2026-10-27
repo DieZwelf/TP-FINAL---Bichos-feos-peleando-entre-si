@@ -5,14 +5,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 
-import javafx.geometry.Rectangle2D;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -21,87 +24,128 @@ import java.util.List;
 
 public class CargadorMapaTiled {
 
-    private static final String RUTA_MAPA = "/images/mapa/samplemap1.tmj";
-    private static final String RUTA_TILESET = "/images/mapa/punyworld-overworld-tileset.png";
+    private static final String RUTA_MAPA =
+            "/images/mapa/samplemap1.tmj";
+
+    private static final String RUTA_TILESET =
+            "/images/mapa/punyworld-overworld-tileset.png";
+
     private static final int TAM_TILE = 16;
     private static final int COLUMNAS_TILESET = 27;
     private static final int ESCALA = 3;
-    private final List<Rectangle2D> colisiones = new ArrayList<>();
-    private Canvas capaFrontal;
 
-    public List<Rectangle2D> getColisiones() {
+    private final List<Shape> colisiones = new ArrayList<>();
+
+    public List<Shape> getColisiones() {
         return colisiones;
     }
 
-    private void leerColisiones(JsonObject capa, String tipo, int anchoMapa)
-    {
-        double t = TAM_TILE * ESCALA;
+    private void leerColisiones(
+            JsonObject capa,
+            String tipo,
+            int anchoMapa) {
 
-        if(tipo.equals("tilelayer"))
-        {
+        double tam = TAM_TILE * ESCALA;
+
+        if (tipo.equals("tilelayer")) {
+
             JsonArray datos = capa.getAsJsonArray("data");
-            for(int i = 0; i < datos.size(); i++)
-            {
-                if (datos.get(i).getAsLong() != 0)
-                {
-                    colisiones.add(new Rectangle2D((i % anchoMapa) * t, (i / anchoMapa) * t, t, t));
+
+            for (int i = 0; i < datos.size(); i++) {
+                if (datos.get(i).getAsLong() != 0) {
+                    colisiones.add(new Rectangle(
+                            (i % anchoMapa) * tam,
+                            (i / anchoMapa) * tam,
+                            tam,
+                            tam
+                    ));
                 }
             }
-        } else
-        {
-            for (JsonElement element: capa.getAsJsonArray("objects"))
-            {
-                JsonObject o = element.getAsJsonObject();
-                colisiones.add(new Rectangle2D(o.get("x").getAsDouble() * ESCALA,
-                        o.get("y").getAsDouble() * ESCALA,
-                        o.get("width").getAsDouble() * ESCALA,
-                        o.get("height").getAsDouble() * ESCALA));
 
+        } else if (tipo.equals("objectgroup")) {
+
+            JsonArray objetos = capa.getAsJsonArray("objects");
+
+            for (JsonElement elemento : objetos) {
+
+                JsonObject objeto = elemento.getAsJsonObject();
+
+                double x = objeto.get("x").getAsDouble() * ESCALA;
+                double y = objeto.get("y").getAsDouble() * ESCALA;
+
+                if (objeto.has("polygon")) {
+
+                    JsonArray puntos =
+                            objeto.getAsJsonArray("polygon");
+
+                    Polygon poligono = new Polygon();
+
+                    for (JsonElement puntoElemento : puntos) {
+
+                        JsonObject punto =
+                                puntoElemento.getAsJsonObject();
+
+                        double px = x
+                                + punto.get("x").getAsDouble() * ESCALA;
+
+                        double py = y
+                                + punto.get("y").getAsDouble() * ESCALA;
+
+                        poligono.getPoints().addAll(px, py);
+                    }
+
+                    colisiones.add(poligono);
+
+                } else {
+
+                    double ancho =
+                            objeto.get("width").getAsDouble() * ESCALA;
+
+                    double alto =
+                            objeto.get("height").getAsDouble() * ESCALA;
+
+                    colisiones.add(new Rectangle(
+                            x, y, ancho, alto
+                    ));
+                }
             }
-
         }
-
     }
 
     public Canvas cargarMapa() throws Exception {
+
+        colisiones.clear();
 
         JsonObject mapa = leerJson(RUTA_MAPA);
 
         int ancho = mapa.get("width").getAsInt();
         int alto = mapa.get("height").getAsInt();
 
-        Canvas canvas = new Canvas(
-                ancho * TAM_TILE * ESCALA,
-                alto * TAM_TILE * ESCALA
-        );
+        double anchoCanvas = ancho * TAM_TILE * ESCALA;
+        double altoCanvas = alto * TAM_TILE * ESCALA;
 
-        capaFrontal = new Canvas(
-                ancho * TAM_TILE * ESCALA,
-                alto * TAM_TILE * ESCALA
-        );
-        capaFrontal.getGraphicsContext2D().setImageSmoothing(false);
+        Canvas canvas = new Canvas(anchoCanvas, altoCanvas);
 
         double w = canvas.getWidth();
         double h = canvas.getHeight();
-        colisiones.add(new Rectangle2D(-10,0,10,h));
-        colisiones.add(new Rectangle2D(w, 0, 10, h));
-        colisiones.add(new Rectangle2D(0, -10, w, 10));
-        colisiones.add(new Rectangle2D(0, h, w, 10));
+
+        // Límites del mapa.
+        colisiones.add(new Rectangle(-10, 0, 10, h));
+        colisiones.add(new Rectangle(w, 0, 10, h));
+        colisiones.add(new Rectangle(0, -10, w, 10));
+        colisiones.add(new Rectangle(0, h, w, 10));
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        // Evita el suavizado que puede generar bordes borrosos.
         gc.setImageSmoothing(false);
 
         Image tileset;
 
-        try (InputStream imagen = getClass()
-                .getResourceAsStream(RUTA_TILESET)) {
+        try (InputStream imagen =
+                     getClass().getResourceAsStream(RUTA_TILESET)) {
 
             if (imagen == null) {
                 throw new IllegalStateException(
-                        "No se encontró el tileset: " + RUTA_TILESET
-                );
+                        "No se encontró el tileset: " + RUTA_TILESET);
             }
 
             tileset = new Image(imagen);
@@ -116,21 +160,25 @@ public class CargadorMapaTiled {
 
         JsonArray capas = mapa.getAsJsonArray("layers");
 
-        // Dibujamos las capas en el orden de Tiled.
-        for (int i = 0; i < capas.size(); i++) {
-            JsonObject capa = capas.get(i).getAsJsonObject();
+        // Todas las capas visuales vuelven a dibujarse en el mismo canvas.
+        for (JsonElement elemento : capas) {
+
+            JsonObject capa = elemento.getAsJsonObject();
+
+            String nombre = capa.get("name").getAsString();
             String tipo = capa.get("type").getAsString();
 
-            if (capa.get("name").getAsString().equals("colisiones")) {
+            if (nombre.equals("colisiones")) {
                 leerColisiones(capa, tipo, ancho);
                 continue;
             }
 
-            if (!capa.get("type").getAsString().equals("tilelayer")) {
+            if (!tipo.equals("tilelayer")) {
                 continue;
             }
 
-            if (capa.has("visible") && !capa.get("visible").getAsBoolean()) {
+            if (capa.has("visible")
+                    && !capa.get("visible").getAsBoolean()) {
                 continue;
             }
 
@@ -141,27 +189,26 @@ public class CargadorMapaTiled {
 
             for (int y = 0; y < altoCapa; y++) {
                 for (int x = 0; x < anchoCapa; x++) {
-                    int gid = datos.get(y * anchoCapa + x).getAsInt();
 
-                    // GID 0 significa que no hay tile.
+                    int gid = datos.get(
+                            y * anchoCapa + x).getAsInt();
+
                     if (gid == 0) {
                         continue;
                     }
 
-                    // El tileset comienza en firstgid = 1.
                     int tileId = gid - 1;
 
-                    // Coordenadas del tile dentro del PNG.
-                    int origenX = (tileId % COLUMNAS_TILESET) * TAM_TILE;
+                    int origenX =
+                            (tileId % COLUMNAS_TILESET) * TAM_TILE;
 
-                    int origenY = (tileId / COLUMNAS_TILESET) * TAM_TILE;
+                    int origenY =
+                            (tileId / COLUMNAS_TILESET) * TAM_TILE;
 
-                    // Coordenadas en el mapa ampliado.
                     double destinoX = x * TAM_TILE * ESCALA;
                     double destinoY = y * TAM_TILE * ESCALA;
                     double tamDestino = TAM_TILE * ESCALA;
 
-                    // Solapamiento mínimo para disimular huecos.
                     gc.drawImage(
                             tileset,
                             origenX,
@@ -180,19 +227,19 @@ public class CargadorMapaTiled {
         return canvas;
     }
 
-
     private JsonObject leerJson(String ruta) throws Exception {
 
-        InputStream archivo = getClass().getResourceAsStream(ruta);
+        InputStream archivo =
+                getClass().getResourceAsStream(ruta);
 
         if (archivo == null) {
-            throw new IllegalStateException("No se encontró el archivo: " + ruta);
+            throw new IllegalStateException(
+                    "No se encontró el archivo: " + ruta);
         }
 
         try (InputStreamReader lector = new InputStreamReader(
-                archivo,
-                StandardCharsets.UTF_8
-        )) {
+                archivo, StandardCharsets.UTF_8)) {
+
             return JsonParser.parseReader(lector).getAsJsonObject();
         }
     }
