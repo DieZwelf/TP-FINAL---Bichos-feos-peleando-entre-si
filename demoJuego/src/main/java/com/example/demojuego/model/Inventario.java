@@ -2,6 +2,18 @@ package com.example.demojuego.model;
 
 import java.util.*;
 
+/**
+ * La clase INVENTARIO tiene como atributos la capacidad del mismo, y un HashMap representativo del inv
+ * Tiene un constructor con el HashMap, la capacidad no será modificable.
+ * métodos: getter capacidad.
+ * otros métodos: agregarObjeto(): agrega un item al inventario.
+ * mostrar(): Retorna un set del inventario ordenado.
+ * contarCantidad(): cuenta cuantos items de un mismo tipo hay en el inventario.
+ * consumir(): Usa un item del inventario.
+ * @author Uriel
+ * @since 2026
+ * @version 1.0
+ */
 public class Inventario {
     private int capacidad = 50;
     private HashMap<Item, Integer> inventario;
@@ -14,6 +26,13 @@ public class Inventario {
         return capacidad;
     }
 
+
+    /**
+     * Este metodo verifica si está o no el item, para poder sumar a la cantidad existente el que se
+     * agrega ahora. Verifica que el inventario no sea mayor a la capacidad y después lo agrega.
+     * @param item es el que se va a agregar al inventario.
+     * @return true or false
+     */
     public boolean agregarObjeto(Item item)
     {
         if (inventario.containsKey(item))
@@ -40,6 +59,7 @@ public class Inventario {
      * NO HACER SET SOBRE LOS VALORES, MODIFICARÍA LA CANTIDAD SIN PASAR POR agregarObjeto() NI USAR()!!!!
      * LA LISTA ORDENADA VALE HASTA EL SIGUIENTE CAMBIO, LA INTERFAZ DEBERÍA LLAMARLA NUEVAMENTE CUANDO
      * HAYA UN CAMBIO
+     * @return el inventario ordenado.
      */
     public List<Map.Entry<Item, Integer>> mostrar()
     {

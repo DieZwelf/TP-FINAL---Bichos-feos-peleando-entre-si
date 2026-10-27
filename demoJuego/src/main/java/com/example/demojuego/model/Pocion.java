@@ -2,6 +2,15 @@ package com.example.demojuego.model;
 
 import java.util.List;
 
+/**
+ * La clase POCIÓN, hija de ITEM tiene como atributos el nivel de la poción, la duración y cuánto cura
+ * Tiene un constructor con todos los atributos propios y los que hereda de Item.
+ * Métodos: getters y setters.
+ * Otros métodos: usar(): implementación del heredado de ITEM.
+ * @author Uriel
+ * @since 2026
+ * @version 1.0
+ */
 public class Pocion extends Item{
     private int nivel;
     private int duracion;
@@ -30,6 +39,15 @@ public class Pocion extends Item{
         this.duracion = duracion;
     }
 
+    /**
+     * Usar la poción, verifica que la vida no sea menor o igual a 0, lo cura y si ésta cura es menor
+     * o igual a 0 entonces no pierde el turno y añade que ya está al máximo.
+     * Si no pasa lo anterior, entonces si se añade el registro correctamente.
+     * @param entrenador El que dirige la acción.
+     * @param objetivo El que recibe la poción.
+     * @param registro Lo que se registra.
+     * @return verdadero o falso.
+     */
     @Override
     public boolean usar(Entrenador entrenador, Pokemon objetivo, List<String> registro) {
         if(objetivo.getVida() <= 0)

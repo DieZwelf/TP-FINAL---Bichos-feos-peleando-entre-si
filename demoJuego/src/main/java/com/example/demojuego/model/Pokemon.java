@@ -2,6 +2,25 @@ package com.example.demojuego.model;
 
 import java.util.Objects;
 
+/**
+ * La clase POKEMON tiene como atributo un id autoincremental, nombre, tipo, experiencia y todas las
+ * formas de los atributos (vida, danio, defensa, velocidad) que se necesitan en los diferentes
+ * momentos del progreso del pokemon (son recalculados conforme sube de nivel).
+ * Tiene un constructor vacío y uno con todos los atributos.
+ * Métodos: toString(), equals() y hashCode() y getters y setters de todos los atirbutos menos los que
+ * terminan en 'Base' (estos se usan en el cálculo de la ganancia de experiencia).
+ * Otros métodos: recibirDanio(): calcula cuánto daño recibió el Pokemon.
+ * atacar(): 'ataca' usando la auxiliar.
+ * curar(): Calcula cuánto realmente curó la poción.
+ * esNivelMaximo(): verifica que no haya llegado al nivel máximo.
+ * ganarExperiencia(): recibe la cantidad ganada, verifica en qué nivel está y llama a recalcularEstadisticas().
+ * recalcularEstadisticas(): llama a aplicarMejora() y le pasa todos los atributos 'Base'
+ * aplicarMejora(): hace el cálculo estadistica x estadistica recibiendo el nivel y el atributo. Llama a
+ * TablaProgresion.porcentaje
+ * @author Uriel
+ * @since 2026
+ * @version 1.0
+ */
 public class Pokemon {
     private static int contador = 0;
     private int id;
@@ -127,8 +146,10 @@ public class Pokemon {
     }
 
     /** Accion de recibir el daño, hace un calculo basico con lo que sería la defensa del bicho
-    Retorna el danio real tras el calculo
-    */
+     *  Retorna el danio real tras el calculo.
+     * @param danio El danio 'crudo' que recibe.
+     * @return el danio real tras el calculo
+     */
     public double recibirDanio(double danio)
     {
         double danioReal = Math.max(1, danio - defensa);
@@ -139,7 +160,11 @@ public class Pokemon {
         return danioReal;
     }
 
-//Accion de atacar verificando que no sea la vida 0 o menos
+    /**
+     * Accion de atacar verificando que no sea la vida 0 o menos
+     * @param p el pokemon atacado
+     * @return danio real causado al objetivo.
+     */
     public double atacar(Pokemon p)
     {
         if (p.vida <= 0)
@@ -150,8 +175,12 @@ public class Pokemon {
         return p.recibirDanio(danio);
     }
 
-    //Recibe el atributo crudo, calcula lo que sería respecto a la vida actual del Pokemon y la maxima
-    // y retorna lo que realmente curó
+    /**
+     * Recibe el atributo crudo, calcula lo que sería respecto a la vida actual del Pokemon y la maxima
+     * y retorna lo que realmente curó
+     * @param cantidad lo que cura la poción
+     * @return cantidad real que curó de vida.
+     */
     public double curar(double cantidad)
     {
         double curado = Math.max(0,Math.min(cantidad,vidaMaxima-vida));
@@ -162,7 +191,11 @@ public class Pokemon {
     }
 
     //===================================================MÉTODOS PARA GESTIONAR LA SUBIDA DE NIVEL
-    //Verificacion de que no sea el nivel maximo para no aplicar estadisticas a Pokemones maxeados
+
+    /**
+     * Verificacion de que no sea el nivel maximo para no aplicar estadisticas a Pokemones maxeados
+     * @return llegó o no (T/F)
+     */
     public boolean esNivelMaximo()
     {
         if(nivel >= TablaProgresion.NIVEL_MAXIMO)
@@ -173,6 +206,14 @@ public class Pokemon {
         return false;
     }
 
+    /**
+     * Verifica que la cantidad no sea menor a 0 o que haya llegado al máximo. Calcula el 'techo' como un
+     * limite fijo para sacar cuánta experiencia se sacó (Si bien es aleatorio, tiene parámetros).
+     * Si el nivel actual no es el máximo, entonces calcula las nuevas estadísticas y retorna el nivel
+     * actual nuevo.
+     * @param cantidad cantidad de xp ganada.
+     * @return nivel actual o 0 en caso de fallo.
+     */
     public int ganarExperiencia(int cantidad)
     {
         //Verificar que no este en el lvl maximo, o q la cantidad de xp que ganó sea 0
@@ -202,8 +243,8 @@ public class Pokemon {
     }
 
     /**
-     *  En teoría esto iba en ganarExperiencia, pero se hacía un metodo de 100 lineas
-     *  El trato con la vida maxima es dif a propósito, para no regenerar al pokemon tras subir de nvel
+     * Esto es un metodo intermedio. Es llamado por ganarExperiencia() y busca la nueva estadística
+     * en TablaProgresion.Estadistica y las asigna tras hacer el calculo a través de aplicarMejora().
      */
     private void recalcularEstadisticas()
     {
@@ -223,6 +264,9 @@ public class Pokemon {
      * Esto es la quinta versión de este metodo :(
      * Base son todos los atributos (la mejora se calcula a partir de los atributos base)
      * e es la estadística a mejorar (por nivel se reciben todas, por eso se llama 4 veces x nivel
+     * @param base el valor base a recalcular. TODA ESTADISTICA SE CALCULA A PARTIR DEL VALOR BASE
+     * @param e estadística a buscar en TablaProgresion.Estadistica
+     * @return la nueva estadistica, buscada en el metodo de Tabla.Progresion que busca x nivel.
      */
     private double aplicarMejora(double base, TablaProgresion.Estadistica e)
     {

@@ -1,5 +1,18 @@
 package com.example.demojuego.model;
 
+/**
+ * La clase final TABLAPROGRESION tiene como atributo el nivel maximo, el nivel actual, la xp acumulada y
+ * los 4 atributos de todos los Pokemones.
+ * Tiene un constructor con todos los atributos. Inicializa un array de tipo TablaProgresion.
+ * Métodos: no se necesitan getters y setters.
+ * Otros métodos: experienciaParaNivel(): cuánto xp te falta para 'x' nivel.
+ * nivelPorExperiencia(): viendo cuánta xp tiene, se observa el lvl en el que está.
+ * Enum Estadística: La implementación desde afuera daba problemas, fue llevada acá para facilitar.
+ * porcentaje(): recibe el nivel que le pasaron y devuelve la estadística correspondiente al tal.
+ * @author Uriel
+ * @since 2026
+ * @version 1.0
+ */
 public final class TablaProgresion {
 
     public static final int  NIVEL_MAXIMO = 5;

@@ -4,6 +4,15 @@ package com.example.demojuego.model;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ *  La clase abstracta ITEM tiene como atributos el nombre, la descripcion y la ruta de su imagen.
+ *  Tiene un constructor con todos los parametros.
+ *  métodos: getters y setters, equals(), hashCode() y toString()
+ *  Otros métodos: usar(): abstracto heredado por las hijas.
+ *  @author Uriel
+ *  @since 2026
+ *  @version 1.0
+ */
 public abstract class Item {
     private final String nombre;
     private String descripcion;

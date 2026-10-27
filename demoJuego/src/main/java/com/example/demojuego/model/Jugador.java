@@ -27,9 +27,19 @@ public class Jugador {
     // Getters y Setters
     public double getX() { return x; }
     public double getY() { return y; }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
     public String getDireccion() { return direccion; }
     public int getFrameActual() { return frameActual; }
     public void setFrameActual(int frameActual) { this.frameActual = frameActual; }
     public boolean isEnMovimiento() { return enMovimiento; }
     public void setEnMovimiento(boolean enMovimiento) { this.enMovimiento = enMovimiento; }
+
 }

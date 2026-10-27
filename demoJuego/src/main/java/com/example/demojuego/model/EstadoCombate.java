@@ -1,7 +1,12 @@
 package com.example.demojuego.model;
 
 /**
-Los posibles estados de un combate visto desde el punto de vista de un Entrenador
+ * La enumeración ESTADOCOMBATE tiene como posibilidades ACTIVO, VICTORIA, DERROTA O HUIDA.
+ * Tiene un constructor que inicializa un mensaje personalizado para cada estado.
+ * Métodos: getter
+ * @author Uriel
+ * @since 2026
+ * @version 1.0
  */
 public enum EstadoCombate {
     ACTIVO("El combate está en curso"),
