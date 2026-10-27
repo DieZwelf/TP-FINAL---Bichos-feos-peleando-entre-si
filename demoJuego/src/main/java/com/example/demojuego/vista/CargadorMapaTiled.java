@@ -2,6 +2,7 @@
 package com.example.demojuego.vista;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import javafx.scene.Group;
@@ -11,21 +12,55 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import javafx.geometry.Rectangle2D;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CargadorMapaTiled {
 
-    private static final String RUTA_MAPA =
-            "/images/mapa/samplemap1.tmj";
-
-    private static final String RUTA_TILESET =
-            "/images/mapa/punyworld-overworld-tileset.png";
-
+    private static final String RUTA_MAPA = "/images/mapa/samplemap1.tmj";
+    private static final String RUTA_TILESET = "/images/mapa/punyworld-overworld-tileset.png";
     private static final int TAM_TILE = 16;
     private static final int COLUMNAS_TILESET = 27;
     private static final int ESCALA = 3;
+    private final List<Rectangle2D> colisiones = new ArrayList<>();
+
+    public List<Rectangle2D> getColisiones() {
+        return colisiones;
+    }
+
+    private void leerColisiones(JsonObject capa, String tipo, int anchoMapa)
+    {
+        double t = TAM_TILE * ESCALA;
+
+        if(tipo.equals("tilelayer"))
+        {
+            JsonArray datos = capa.getAsJsonArray("data");
+            for(int i = 0; i < datos.size(); i++)
+            {
+                if (datos.get(i).getAsLong() != 0)
+                {
+                    colisiones.add(new Rectangle2D((i % anchoMapa) * t, (i / anchoMapa) * t, t, t));
+                }
+            }
+        } else
+        {
+            for (JsonElement element: capa.getAsJsonArray("objects"))
+            {
+                JsonObject o = element.getAsJsonObject();
+                colisiones.add(new Rectangle2D(o.get("x").getAsDouble() * ESCALA,
+                        o.get("y").getAsDouble() * ESCALA,
+                        o.get("width").getAsDouble() * ESCALA,
+                        o.get("height").getAsDouble() * ESCALA));
+
+            }
+
+        }
+
+    }
 
     public Canvas cargarMapa() throws Exception {
 
@@ -38,6 +73,13 @@ public class CargadorMapaTiled {
                 ancho * TAM_TILE * ESCALA,
                 alto * TAM_TILE * ESCALA
         );
+
+        double w = canvas.getWidth();
+        double h = canvas.getHeight();
+        colisiones.add(new Rectangle2D(-10,0,10,h));
+        colisiones.add(new Rectangle2D(w, 0, 10, h));
+        colisiones.add(new Rectangle2D(0, -10, w, 10));
+        colisiones.add(new Rectangle2D(0, h, w, 10));
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -69,16 +111,19 @@ public class CargadorMapaTiled {
 
         // Dibujamos las capas en el orden de Tiled.
         for (int i = 0; i < capas.size(); i++) {
-
             JsonObject capa = capas.get(i).getAsJsonObject();
+            String tipo = capa.get("type").getAsString();
 
-            if (!capa.get("type").getAsString()
-                    .equals("tilelayer")) {
+            if (capa.get("name").getAsString().equals("colisiones")) {
+                leerColisiones(capa, tipo, ancho);
                 continue;
             }
 
-            if (capa.has("visible")
-                    && !capa.get("visible").getAsBoolean()) {
+            if (!capa.get("type").getAsString().equals("tilelayer")) {
+                continue;
+            }
+
+            if (capa.has("visible") && !capa.get("visible").getAsBoolean()) {
                 continue;
             }
 
@@ -89,10 +134,7 @@ public class CargadorMapaTiled {
 
             for (int y = 0; y < altoCapa; y++) {
                 for (int x = 0; x < anchoCapa; x++) {
-
-                    int gid = datos.get(
-                            y * anchoCapa + x
-                    ).getAsInt();
+                    int gid = datos.get(y * anchoCapa + x).getAsInt();
 
                     // GID 0 significa que no hay tile.
                     if (gid == 0) {
@@ -103,11 +145,9 @@ public class CargadorMapaTiled {
                     int tileId = gid - 1;
 
                     // Coordenadas del tile dentro del PNG.
-                    int origenX =
-                            (tileId % COLUMNAS_TILESET) * TAM_TILE;
+                    int origenX = (tileId % COLUMNAS_TILESET) * TAM_TILE;
 
-                    int origenY =
-                            (tileId / COLUMNAS_TILESET) * TAM_TILE;
+                    int origenY = (tileId / COLUMNAS_TILESET) * TAM_TILE;
 
                     // Coordenadas en el mapa ampliado.
                     double destinoX = x * TAM_TILE * ESCALA;
@@ -133,23 +173,20 @@ public class CargadorMapaTiled {
         return canvas;
     }
 
+
     private JsonObject leerJson(String ruta) throws Exception {
 
-        InputStream archivo =
-                getClass().getResourceAsStream(ruta);
+        InputStream archivo = getClass().getResourceAsStream(ruta);
 
         if (archivo == null) {
-            throw new IllegalStateException(
-                    "No se encontró el archivo: " + ruta
-            );
+            throw new IllegalStateException("No se encontró el archivo: " + ruta);
         }
 
         try (InputStreamReader lector = new InputStreamReader(
                 archivo,
                 StandardCharsets.UTF_8
         )) {
-            return JsonParser.parseReader(lector)
-                    .getAsJsonObject();
+            return JsonParser.parseReader(lector).getAsJsonObject();
         }
     }
 

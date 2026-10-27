@@ -19,23 +19,14 @@ public class VistaJuego extends Pane implements IPantalla {
     private Scene escena;
     protected GestorPantallas pantallas;
 
-    public VistaJuego(
-            Mapa mapa,
-            Jugador jugador,
-            GestorPantallas pantallas) {
-
+    public VistaJuego(Mapa mapa, Jugador jugador, GestorPantallas pantallas) {
         this.jugador = jugador;
         this.pantallas = pantallas;
-
         vistaMapa = new VistaMapa(mapa);
         vistaJugador = new VistaJugador(jugador);
 
         mundo.getChildren().addAll(vistaMapa, vistaJugador);
-
-        mundo.setPrefSize(
-                vistaMapa.getPrefWidth(),
-                vistaMapa.getPrefHeight()
-        );
+        mundo.setPrefSize(vistaMapa.getPrefWidth(), vistaMapa.getPrefHeight());
 
         getChildren().add(mundo);
     }
@@ -59,7 +50,8 @@ public class VistaJuego extends Pane implements IPantalla {
                 jugador,
                 vistaJugador,
                 this,
-                escena
+                escena,
+                vistaMapa.getColisiones()
         );
 
 
@@ -88,19 +80,13 @@ public class VistaJuego extends Pane implements IPantalla {
 
         // No mostrar el exterior del mapa por los costados.
         if (anchoMapa >= anchoVentana) {
-            desplazamientoX = Math.max(
-                    anchoVentana - anchoMapa,
-                    Math.min(0, desplazamientoX)
-            );
+            desplazamientoX = Math.max(anchoVentana - anchoMapa, Math.min(0, desplazamientoX));
         } else {
             desplazamientoX = (anchoVentana - anchoMapa) / 2;
         }
 
         if (altoMapa >= altoVentana) {
-            desplazamientoY = Math.max(
-                    altoVentana - altoMapa,
-                    Math.min(0, desplazamientoY)
-            );
+            desplazamientoY = Math.max(altoVentana - altoMapa, Math.min(0, desplazamientoY));
         } else {
             desplazamientoY = (altoVentana - altoMapa) / 2;
         }
