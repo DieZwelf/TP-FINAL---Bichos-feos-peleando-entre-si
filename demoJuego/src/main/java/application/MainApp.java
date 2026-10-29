@@ -14,7 +14,7 @@ public class MainApp extends Application {
         GestorPantallas pantallas = new GestorPantallas(stage);
 
 
-        pantallas.mostrarInicio();
+        pantallas.mostrarLogin();
 
     }
 

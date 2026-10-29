@@ -35,6 +35,11 @@ public class GestorPantallas {
         stage.show();
     }
 
+    //Mostrar pantalla login
+    public void mostrarLogin() {
+        new PantallaLogin().mostrar(stage);
+    }
+
     // Mostrar menú principal
     public void mostrarInicio() {
         new PantallaInicio(this).mostrar(stage);

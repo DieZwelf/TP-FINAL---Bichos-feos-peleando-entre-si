@@ -229,8 +229,7 @@ public class CargadorMapaTiled {
 
     private JsonObject leerJson(String ruta) throws Exception {
 
-        InputStream archivo =
-                getClass().getResourceAsStream(ruta);
+        InputStream archivo = getClass().getResourceAsStream(ruta);
 
         if (archivo == null) {
             throw new IllegalStateException(
