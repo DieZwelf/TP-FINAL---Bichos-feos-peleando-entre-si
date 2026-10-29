@@ -7,7 +7,6 @@ import vista.VistaJuego;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
-import javafx.geometry.Rectangle2D;
 import java.util.List;
 import javafx.geometry.Bounds;
 import javafx.scene.shape.Rectangle;
@@ -18,6 +17,7 @@ public class JuegoController {
     private final Jugador jugador;
     private final VistaJugador vista;
     private final VistaJuego vistaJuego;
+    private long ultimoTiempoIdle = 0;
 
     private boolean arriba, abajo, izquierda, derecha;
     private long ultimoTiempoAnimacion = 0;
@@ -54,6 +54,7 @@ public class JuegoController {
         loop.start();
     }
 
+
     private void actualizarLogica(long now) {
         double xAnterior = jugador.getX();
         double yAnterior = jugador.getY();
@@ -87,10 +88,23 @@ public class JuegoController {
                 jugador.setFrameActual(jugador.getFrameActual() + 1);
                 ultimoTiempoAnimacion = now;
             }
+
+            // Reinicia el reloj del idle al caminar.
+            ultimoTiempoIdle = now;
+
         } else {
-            jugador.setFrameActual(0);
+            // El idle alterna entre sus dos imágenes.
+            if (ultimoTiempoIdle == 0) {
+                ultimoTiempoIdle = now;
+            }
+
+            if (now - ultimoTiempoIdle >= 500_000_000L) {
+                jugador.setFrameActual(jugador.getFrameActual() + 1);
+                ultimoTiempoIdle = now;
+            }
         }
     }
+
 
     private void onKeyPressed(KeyEvent e) {
         switch (e.getCode()) {
