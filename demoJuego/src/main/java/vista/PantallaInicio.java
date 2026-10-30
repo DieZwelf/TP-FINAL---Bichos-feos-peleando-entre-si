@@ -14,7 +14,6 @@ public class PantallaInicio extends PantallaMenuBase {
     // Mostrar el menú inicial.
     @Override
     public void mostrar(Stage stage) {
-        stage.setTitle("Pokémon Ventura");
         Scene escena = super.mostrarMenu(stage);
         pantallas.mostrarEscena(escena);
     }

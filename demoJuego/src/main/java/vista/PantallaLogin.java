@@ -7,9 +7,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
 import javafx.geometry.Insets;
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
+import javafx.animation.FadeTransition;
 
 public class PantallaLogin implements IPantalla {
 
@@ -20,6 +22,8 @@ public class PantallaLogin implements IPantalla {
 
     @Override
     public void mostrar(Stage stage) {
+        PauseTransition pausa = new PauseTransition(Duration.seconds(1)); //para que un label desaparezca despues de 3 segundos
+
         StackPane root = new StackPane();
         VBox vbox = new VBox(12);
         GestorPantallas pantallas = new GestorPantallas(stage);
@@ -53,14 +57,35 @@ public class PantallaLogin implements IPantalla {
 
        root.getChildren().setAll(vbox);
 
+        botonIngresar.setDefaultButton(true);
+
         botonIngresar.setOnAction(e -> {
             String con = contraseña.getText();
             if(con.equals(CONTRASEÑA)){
                 pantallas.mostrarInicio();
             }else{
-                mensaje.setText("Contrseña incorrecta");
-            }
-        });
+                mensaje.setText("Contraseña incorrecta");
+
+                pausa.setOnFinished(evento -> {
+                    FadeTransition fade = new FadeTransition(
+                            Duration.seconds(1),
+                            mensaje
+                    );
+
+                    fade.setFromValue(1.0);
+                    fade.setToValue(0.0);
+
+                    fade.setOnFinished(fin -> {
+                        mensaje.setText("");
+                        mensaje.setOpacity(1.0);
+                    });
+
+                    fade.play();
+                });
+
+                pausa.play();
+        }
+                });
 
         formulario.setAlignment(Pos.CENTER);
         formulario.setPadding(new Insets(30));
@@ -73,6 +98,5 @@ public class PantallaLogin implements IPantalla {
        Scene escena = new Scene(root,900, 650);
        pantallas.mostrarEscena(escena);
 
-
-    }
+        }
 }

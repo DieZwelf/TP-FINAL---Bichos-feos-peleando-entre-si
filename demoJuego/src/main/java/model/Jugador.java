@@ -3,7 +3,7 @@ package model;
 public class Jugador {
     private double x;
     private double y;
-    private double velocidad;
+    private final double velocidad;
 
     private String direccion; // "ABAJO", "ARRIBA", "IZQUIERDA", "DERECHA"
     private int frameActual;

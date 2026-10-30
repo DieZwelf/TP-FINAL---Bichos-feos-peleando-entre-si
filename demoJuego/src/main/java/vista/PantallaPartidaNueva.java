@@ -13,7 +13,6 @@ public class PantallaPartidaNueva extends PantallaMenuBase {
     // Mostrar la pantalla de nueva partida.
     @Override
     public void mostrar(Stage stage) {
-        stage.setTitle("Pokémon Ventura - Nueva partida");
         mostrarMenu(stage);
     }
 

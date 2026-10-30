@@ -75,9 +75,6 @@ public class VistaJuego extends Pane implements IPantalla {
         controlador.iniciarGameLoop();
     }
 
-
-
-
     public void actualizarCamara() {
         if (escena == null) return;
 
