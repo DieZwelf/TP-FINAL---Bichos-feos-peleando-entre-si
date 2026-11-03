@@ -4,6 +4,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
@@ -22,32 +23,49 @@ public class PantallaLogin implements IPantalla {
 
     @Override
     public void mostrar(Stage stage) {
-        PauseTransition pausa = new PauseTransition(Duration.seconds(1)); //para que un label desaparezca despues de 3 segundos
+        PauseTransition pausa = new PauseTransition(Duration.seconds(1));
 
         StackPane root = new StackPane();
-        VBox vbox = new VBox(12);
+        root.getStyleClass().add("root-login");
+
+        HBox botones = new HBox(24);
+        botones.setAlignment(Pos.CENTER);
+
+        Label labelLoginInicio = new Label("LOGIN");
+        labelLoginInicio.getStyleClass().add("texto-login-inicio");
+
+        VBox contenedorInicio = new VBox(20, labelLoginInicio, botones);
+        contenedorInicio.setAlignment(Pos.CENTER);
+
         GestorPantallas pantallas = new GestorPantallas(stage);
 
         Button botonAdministrador = new Button("Administrador");
         Button botonUsuario = new Button("Usuario");
         Button botonIngresar = new Button("Ingresar");
 
+        botonUsuario.getStyleClass().addAll("boton-retro", "boton-login");
+        botonAdministrador.getStyleClass().addAll("boton-retro", "boton-login");
+        botonIngresar.getStyleClass().add("boton-retro");
+
         Label titulo = new Label("Ingrese contraseña");
+        titulo.getStyleClass().add("titulo-retro");
         Label mensaje = new Label();
+        mensaje.getStyleClass().addAll("texto-retro", "mensaje-error");
 
         PasswordField contraseña = new PasswordField();
         contraseña.setPromptText("Contraseña");
+        contraseña.getStyleClass().add("campo-retro");
 
-        vbox.getChildren().addAll(botonUsuario, botonAdministrador);
+        botones.getChildren().addAll(botonUsuario, botonAdministrador);
 
-        VBox formulario = new VBox(
-                12, titulo, contraseña, botonIngresar, mensaje
-        );
+        VBox formulario = new VBox(12, titulo, contraseña, botonIngresar, mensaje);
+        formulario.setAlignment(Pos.CENTER);
+        formulario.setPadding(new Insets(30));
+        formulario.getStyleClass().add("formulario-login");
 
-        botonUsuario.setOnAction( e -> {
+        botonUsuario.setOnAction(e -> {
             pantallas.mostrarInicio();
         });
-
 
         botonAdministrador.setOnAction(e -> {
             contraseña.clear();
@@ -55,7 +73,7 @@ public class PantallaLogin implements IPantalla {
             root.getChildren().setAll(formulario);
         });
 
-       root.getChildren().setAll(vbox);
+        root.getChildren().setAll(contenedorInicio);
 
         botonIngresar.setDefaultButton(true);
 
@@ -63,7 +81,7 @@ public class PantallaLogin implements IPantalla {
             String con = contraseña.getText();
             if(con.equals(CONTRASEÑA)){
                 pantallas.mostrarInicio();
-            }else{
+            } else {
                 mensaje.setText("Contraseña incorrecta");
 
                 pausa.setOnFinished(evento -> {
@@ -84,19 +102,15 @@ public class PantallaLogin implements IPantalla {
                 });
 
                 pausa.play();
-        }
-                });
+            }
+        });
 
-        formulario.setAlignment(Pos.CENTER);
-        formulario.setPadding(new Insets(30));
-        formulario.setMaxWidth(360);
+        botones.getStyleClass().add("caja-botones");
 
-        vbox.setAlignment(Pos.CENTER);
-        vbox.setPadding(new Insets(30));
-        vbox.setMaxWidth(360);
+        Scene escena = new Scene(root, 900, 650);
 
-       Scene escena = new Scene(root,900, 650);
-       pantallas.mostrarEscena(escena);
+        escena.getStylesheets().add(getClass().getResource("/images/pantallaMenu/estilo.css").toExternalForm());
 
-        }
+        pantallas.mostrarEscena(escena);
+    }
 }
