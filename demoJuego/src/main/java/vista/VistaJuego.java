@@ -1,6 +1,7 @@
 
 package vista;
 
+import model.GeneradorPokemonSalvaje;
 import model.Mapa;
 import model.Jugador;
 import controlador.JuegoController;
@@ -9,6 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.scene.transform.Affine;
 import javafx.scene.shape.Rectangle;
+import model.Pokemon;
 
 public class VistaJuego extends Pane implements IPantalla {
 
@@ -66,6 +68,29 @@ public class VistaJuego extends Pane implements IPantalla {
 
 // Finalmente iniciar el bucle
         controlador = new JuegoController(jugador, vistaJugador, this, escena,vistaMapa.getColisiones());
+
+        controlador.setOnEncuentroGenerado(() -> {
+            // Obtiene el nivel del Pokémon activo del jugador
+            Pokemon pokemonActivo = jugador.getEntrenador().getPokemonActivo();
+            int nivelJugador = pokemonActivo.getNivel();
+
+            // Pokémon salvaje acorde a ese nivel
+            Pokemon pokemonSalvaje = GeneradorPokemonSalvaje.generarPokemonSegunNivel(nivelJugador);
+
+            // Mensaje de prueba por consola
+            System.out.println("==================================================");
+            System.out.println(" ¡ENCUENTRO SALVAJE ACTIVADO!");
+            System.out.println(" Tu Pokémon (" + pokemonActivo.getNombre() + " Nv." + nivelJugador + ")");
+            System.out.println(" se enfrenta contra un salvaje:");
+            System.out.println(" " + pokemonSalvaje.toString());
+            System.out.println("==================================================");
+
+
+                pantallas.iniciarCombate(jugador.getEntrenador(), pokemonSalvaje);
+
+        });
+
+
         controlador.iniciarGameLoop();
     }
 
