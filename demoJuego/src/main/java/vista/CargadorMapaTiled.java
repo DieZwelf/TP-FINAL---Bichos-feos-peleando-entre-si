@@ -24,11 +24,9 @@ import java.util.List;
 
 public class CargadorMapaTiled {
 
-    private static final String RUTA_MAPA =
-            "/images/mapa/samplemap1.tmj";
+    private static final String RUTA_MAPA = "/images/mapa/samplemap1.tmj";
 
-    private static final String RUTA_TILESET =
-            "/images/mapa/punyworld-overworld-tileset.png";
+    private static final String RUTA_TILESET = "/images/mapa/punyworld-overworld-tileset.png";
 
     private static final int TAM_TILE = 16;
     private static final int COLUMNAS_TILESET = 27;
@@ -40,10 +38,7 @@ public class CargadorMapaTiled {
         return colisiones;
     }
 
-    private void leerColisiones(
-            JsonObject capa,
-            String tipo,
-            int anchoMapa) {
+    private void leerColisiones(JsonObject capa, String tipo, int anchoMapa) {
 
         double tam = TAM_TILE * ESCALA;
 
@@ -53,12 +48,8 @@ public class CargadorMapaTiled {
 
             for (int i = 0; i < datos.size(); i++) {
                 if (datos.get(i).getAsLong() != 0) {
-                    colisiones.add(new Rectangle(
-                            (i % anchoMapa) * tam,
-                            (i / anchoMapa) * tam,
-                            tam,
-                            tam
-                    ));
+                    colisiones.add(new Rectangle((i % anchoMapa) * tam, (i / anchoMapa) * tam,
+                            tam, tam));
                 }
             }
 
@@ -75,21 +66,17 @@ public class CargadorMapaTiled {
 
                 if (objeto.has("polygon")) {
 
-                    JsonArray puntos =
-                            objeto.getAsJsonArray("polygon");
+                    JsonArray puntos = objeto.getAsJsonArray("polygon");
 
                     Polygon poligono = new Polygon();
 
                     for (JsonElement puntoElemento : puntos) {
 
-                        JsonObject punto =
-                                puntoElemento.getAsJsonObject();
+                        JsonObject punto = puntoElemento.getAsJsonObject();
 
-                        double px = x
-                                + punto.get("x").getAsDouble() * ESCALA;
+                        double px = x + punto.get("x").getAsDouble() * ESCALA;
 
-                        double py = y
-                                + punto.get("y").getAsDouble() * ESCALA;
+                        double py = y + punto.get("y").getAsDouble() * ESCALA;
 
                         poligono.getPoints().addAll(px, py);
                     }
@@ -98,15 +85,11 @@ public class CargadorMapaTiled {
 
                 } else {
 
-                    double ancho =
-                            objeto.get("width").getAsDouble() * ESCALA;
+                    double ancho = objeto.get("width").getAsDouble() * ESCALA;
 
-                    double alto =
-                            objeto.get("height").getAsDouble() * ESCALA;
+                    double alto = objeto.get("height").getAsDouble() * ESCALA;
 
-                    colisiones.add(new Rectangle(
-                            x, y, ancho, alto
-                    ));
+                    colisiones.add(new Rectangle(x, y, ancho, alto));
                 }
             }
         }
@@ -140,21 +123,16 @@ public class CargadorMapaTiled {
 
         Image tileset;
 
-        try (InputStream imagen =
-                     getClass().getResourceAsStream(RUTA_TILESET)) {
+        try (InputStream imagen = getClass().getResourceAsStream(RUTA_TILESET)) {
 
             if (imagen == null) {
-                throw new IllegalStateException(
-                        "No se encontró el tileset: " + RUTA_TILESET);
+                throw new IllegalStateException("No se encontró el tileset: " + RUTA_TILESET);
             }
 
             tileset = new Image(imagen);
 
             if (tileset.isError()) {
-                throw new IllegalStateException(
-                        "No se pudo cargar el tileset.",
-                        tileset.getException()
-                );
+                throw new IllegalStateException("No se pudo cargar el tileset.", tileset.getException());
             }
         }
 
@@ -177,8 +155,7 @@ public class CargadorMapaTiled {
                 continue;
             }
 
-            if (capa.has("visible")
-                    && !capa.get("visible").getAsBoolean()) {
+            if (capa.has("visible") && !capa.get("visible").getAsBoolean()) {
                 continue;
             }
 
@@ -190,8 +167,7 @@ public class CargadorMapaTiled {
             for (int y = 0; y < altoCapa; y++) {
                 for (int x = 0; x < anchoCapa; x++) {
 
-                    int gid = datos.get(
-                            y * anchoCapa + x).getAsInt();
+                    int gid = datos.get(y * anchoCapa + x).getAsInt();
 
                     if (gid == 0) {
                         continue;
@@ -199,11 +175,9 @@ public class CargadorMapaTiled {
 
                     int tileId = gid - 1;
 
-                    int origenX =
-                            (tileId % COLUMNAS_TILESET) * TAM_TILE;
+                    int origenX = (tileId % COLUMNAS_TILESET) * TAM_TILE;
 
-                    int origenY =
-                            (tileId / COLUMNAS_TILESET) * TAM_TILE;
+                    int origenY = (tileId / COLUMNAS_TILESET) * TAM_TILE;
 
                     double destinoX = x * TAM_TILE * ESCALA;
                     double destinoY = y * TAM_TILE * ESCALA;
@@ -218,8 +192,7 @@ public class CargadorMapaTiled {
                             destinoX,
                             destinoY,
                             tamDestino + 0.5,
-                            tamDestino + 0.5
-                    );
+                            tamDestino + 0.5);
                 }
             }
         }
@@ -232,13 +205,10 @@ public class CargadorMapaTiled {
         InputStream archivo = getClass().getResourceAsStream(ruta);
 
         if (archivo == null) {
-            throw new IllegalStateException(
-                    "No se encontró el archivo: " + ruta);
+            throw new IllegalStateException("No se encontró el archivo: " + ruta);
         }
 
-        try (InputStreamReader lector = new InputStreamReader(
-                archivo, StandardCharsets.UTF_8)) {
-
+        try (InputStreamReader lector = new InputStreamReader(archivo, StandardCharsets.UTF_8)) {
             return JsonParser.parseReader(lector).getAsJsonObject();
         }
     }

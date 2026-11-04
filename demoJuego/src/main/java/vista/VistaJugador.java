@@ -10,11 +10,9 @@ import java.util.Objects;
 
 public class VistaJugador extends Pane {
 
-    private static final String RUTA_CAMINANDO =
-            "/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminando";
+    private static final String RUTA_CAMINANDO = "/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminando";
 
-    private static final String RUTA_QUIETO =
-            "/images/personajes/entrenador/entrenadorQuieto/entrenador";
+    private static final String RUTA_QUIETO = "/images/personajes/entrenador/entrenadorQuieto/entrenador";
 
     private final ImageView imagenJugador = new ImageView();
 
@@ -64,9 +62,7 @@ public class VistaJugador extends Pane {
                 default -> framesAbajo;
             };
 
-            imagenJugador.setImage(
-                    frames[jugador.getFrameActual() % frames.length]
-            );
+            imagenJugador.setImage(frames[jugador.getFrameActual() % frames.length]);
         } else {
             frames = switch (jugador.getDireccion()) {
                 case "ARRIBA" -> idleArriba;
@@ -76,9 +72,7 @@ public class VistaJugador extends Pane {
             };
 
             // El frame cambia entre 0 y 1 para generar el idle.
-            imagenJugador.setImage(
-                    frames[jugador.getFrameActual() % frames.length]
-            );
+            imagenJugador.setImage(frames[jugador.getFrameActual() % frames.length]);
         }
     }
 
@@ -89,9 +83,7 @@ public class VistaJugador extends Pane {
         Image[] frames = new Image[4];
 
         for (int i = 0; i < frames.length; i++) {
-            frames[i] = cargarImagen(
-                    RUTA_CAMINANDO + sufijo + (i + 1) + ".png"
-            );
+            frames[i] = cargarImagen(RUTA_CAMINANDO + sufijo + (i + 1) + ".png");
         }
 
         return frames;
@@ -104,20 +96,14 @@ public class VistaJugador extends Pane {
         Image[] frames = new Image[2];
 
         for (int i = 0; i < frames.length; i++) {
-            frames[i] = cargarImagen(
-                    RUTA_QUIETO + (primerNumero + i) + ".png"
-            );
+            frames[i] = cargarImagen(RUTA_QUIETO + (primerNumero + i) + ".png");
         }
 
         return frames;
     }
 
     private Image cargarImagen(String ruta) {
-        return new Image(
-                Objects.requireNonNull(
-                        getClass().getResourceAsStream(ruta),
-                        "No se encontró la imagen: " + ruta
-                )
-        );
+        return new Image(Objects.requireNonNull(getClass().getResourceAsStream(ruta),
+                        "No se encontró la imagen: " + ruta));
     }
 }

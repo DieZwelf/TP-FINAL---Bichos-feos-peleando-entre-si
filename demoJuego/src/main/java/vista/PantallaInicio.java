@@ -22,14 +22,11 @@ public class PantallaInicio extends PantallaMenuBase {
     @Override
     protected void configurarBotones() {
 
-        Button btnNuevaPartida =
-                crearBotonEstilizado("NUEVA PARTIDA");
+        Button btnNuevaPartida = crearBotonEstilizado("NUEVA PARTIDA");
 
-        Button btnCargarPartida =
-                crearBotonEstilizado("CARGAR PARTIDA");
+        Button btnCargarPartida = crearBotonEstilizado("CARGAR PARTIDA");
 
-        Button btnSalir =
-                crearBotonEstilizado("SALIR");
+        Button btnSalir = crearBotonEstilizado("SALIR");
 
         btnNuevaPartida.setPrefSize(600, 100);
         btnCargarPartida.setPrefSize(600, 100);
@@ -47,10 +44,6 @@ public class PantallaInicio extends PantallaMenuBase {
                 pantallas.salir()
         );
 
-        getBotonesBox().getChildren().addAll(
-                btnNuevaPartida,
-                btnCargarPartida,
-                btnSalir
-        );
+        getBotonesBox().getChildren().addAll(btnNuevaPartida, btnCargarPartida, btnSalir);
     }
 }

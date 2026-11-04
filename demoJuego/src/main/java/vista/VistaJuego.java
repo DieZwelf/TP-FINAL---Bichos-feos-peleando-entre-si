@@ -65,13 +65,7 @@ public class VistaJuego extends Pane implements IPantalla {
         actualizarCamara();
 
 // Finalmente iniciar el bucle
-        controlador = new JuegoController(
-                jugador,
-                vistaJugador,
-                this,
-                escena,
-                vistaMapa.getColisiones()
-        );
+        controlador = new JuegoController(jugador, vistaJugador, this, escena,vistaMapa.getColisiones());
         controlador.iniciarGameLoop();
     }
 
@@ -111,10 +105,7 @@ public class VistaJuego extends Pane implements IPantalla {
         }
 
         // Escala desde el origen (0, 0), sin pivote automático
-        transformacionCamara.setToTransform(
-                ZOOM, 0, x,
-                0, ZOOM, y
-        );
+        transformacionCamara.setToTransform(ZOOM, 0, x, 0, ZOOM, y);
     }
 
 

@@ -27,14 +27,10 @@ public class VistaMapa extends Pane {
         try {
             canvas = cargador.cargarMapa();
         } catch (Exception e) {
-            throw new IllegalStateException(
-                    "No se pudo cargar el mapa de Tiled.", e
-            );
+            throw new IllegalStateException("No se pudo cargar el mapa de Tiled.", e);
         }
 
         colisiones = cargador.getColisiones();
-
-
 
         setMinSize(canvas.getWidth(), canvas.getHeight());
         setPrefSize(canvas.getWidth(), canvas.getHeight());
