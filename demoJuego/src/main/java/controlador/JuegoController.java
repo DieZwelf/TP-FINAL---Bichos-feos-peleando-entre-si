@@ -25,12 +25,18 @@ public class JuegoController {
     private static final long INTERVALO_ANIMACION = 120_000_000L;
     private final List<Shape> colisiones;
 
-    public JuegoController(
-            Jugador jugador,
-            VistaJugador vista,
-            VistaJuego vistaJuego,
-            Scene escena,
-            List<Shape> colisiones) {
+    private long ultimoTiempoEncuentro = 0;
+    private static final long INTERVALO_VERIFICACION = 10_000_000_000L; // 10 segundos en nanosegundos
+    private final double PROBABILIDAD_ENCUENTRO = 0.40; // 40%
+
+    //esto es una interfaz, se usa para definir una tarea que se ejecuta con concurrencia
+    private Runnable onEncuentroGenerado;
+
+    public void setOnEncuentroGenerado(Runnable onEncuentroGenerado) {
+        this.onEncuentroGenerado = onEncuentroGenerado;
+    }
+
+    public JuegoController(Jugador jugador, VistaJugador vista, VistaJuego vistaJuego, Scene escena, List<Shape> colisiones) {
 
         this.jugador = jugador;
         this.vista = vista;
@@ -84,6 +90,7 @@ public class JuegoController {
         jugador.setEnMovimiento(seMovio);
 
         if (seMovio) {
+
             if (now - ultimoTiempoAnimacion >= INTERVALO_ANIMACION) {
                 jugador.setFrameActual(jugador.getFrameActual() + 1);
                 ultimoTiempoAnimacion = now;
@@ -92,7 +99,23 @@ public class JuegoController {
             // Reinicia el reloj del idle al caminar.
             ultimoTiempoIdle = now;
 
+            if (ultimoTiempoEncuentro == 0) {
+                ultimoTiempoEncuentro = now;
+            }
+
+            if (now - ultimoTiempoEncuentro >= INTERVALO_VERIFICACION) {
+                ultimoTiempoEncuentro = now; // Reinicia el reloj de los 10 segundos
+
+                if (Math.random() < PROBABILIDAD_ENCUENTRO) {
+                    System.out.println("¡Un Pokémon salvaje apareció!");
+                    if (onEncuentroGenerado != null) {
+                        onEncuentroGenerado.run();
+                    }
+                }
+            }
+
         } else {
+            ultimoTiempoEncuentro = 0;
             // El idle alterna entre sus dos imágenes.
             if (ultimoTiempoIdle == 0) {
                 ultimoTiempoIdle = now;
@@ -158,6 +181,7 @@ public class JuegoController {
 
         return false;
     }
+
 
 
 }
