@@ -83,8 +83,8 @@ public abstract class PantallaMenuBase  implements IPantalla {
         VBox titulo = new VBox(0);
         titulo.setAlignment(Pos.TOP_LEFT);
 
-        Label linea1 = new Label("BICHOSTROFE");
-        Label linea2 = new Label("VENTURA");
+        Label linea1 = new Label("POKEMON");
+        Label linea2 = new Label("ARGENTINO");
 
         String estiloTitulo =
                 "-fx-text-fill: #ffde00;" +
