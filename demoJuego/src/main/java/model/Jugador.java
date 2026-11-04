@@ -8,11 +8,13 @@ public class Jugador {
     private String direccion; // "ABAJO", "ARRIBA", "IZQUIERDA", "DERECHA"
     private int frameActual;
     private boolean enMovimiento;
+    private Entrenador entrenador;
 
-    public Jugador(double xInicial, double yInicial, double velocidad) {
+    public Jugador(double xInicial, double yInicial, double velocidad, Entrenador entrenador) {
         this.x = xInicial;
         this.y = yInicial;
         this.velocidad = velocidad;
+        this.entrenador = entrenador;
         this.direccion = "ABAJO";
         this.frameActual = 0;
         this.enMovimiento = false;
@@ -42,4 +44,11 @@ public class Jugador {
     public boolean isEnMovimiento() { return enMovimiento; }
     public void setEnMovimiento(boolean enMovimiento) { this.enMovimiento = enMovimiento; }
 
+    public Entrenador getEntrenador() {
+        return entrenador;
+    }
+
+    public void setEntrenador(Entrenador entrenador) {
+        this.entrenador = entrenador;
+    }
 }

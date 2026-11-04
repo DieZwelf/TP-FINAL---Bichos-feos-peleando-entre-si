@@ -5,5 +5,6 @@ interfaz futura.
 */
 
 public enum AccionJugador {
-    ATACAR
+    ATACAR,
+    HUIR;
 }
