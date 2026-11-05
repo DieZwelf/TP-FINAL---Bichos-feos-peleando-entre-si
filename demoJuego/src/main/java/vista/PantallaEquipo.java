@@ -57,12 +57,11 @@ public class PantallaEquipo extends BorderPane implements IPantalla {
         setCenter(listaPokemon);
 
         // Botón volver
-        Button btnVolver = new Button("VOLVER AL COMBATE");
+        Button btnVolver = new Button("VOLVER");
         btnVolver.getStyleClass().add("boton-retro");
 
         btnVolver.setOnAction(e ->
-                pantallas.volverAlCombate()
-        );
+                pantallas.volverDesdeEquipo());
 
         HBox inferior = new HBox(btnVolver);
         inferior.setAlignment(Pos.CENTER);
@@ -119,7 +118,7 @@ public class PantallaEquipo extends BorderPane implements IPantalla {
             boolean cambiado = entrenador.elegirPokemonActivo(posicion);
 
             if (cambiado) {
-                pantallas.volverAlCombate();
+                pantallas.volverDesdeEquipo();
             }
         });
 

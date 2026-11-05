@@ -32,6 +32,7 @@ public class GestorPantallas {
     private CombateViewModel combateViewModel;
     private boolean combateActivo = false;
     private Entrenador entrenador;
+    private Scene escenaAnteriorEquipo;
 
     public GestorPantallas(Stage stage) {
         this.stage = stage;
@@ -60,10 +61,22 @@ public class GestorPantallas {
         new PantallaPartidaNueva(this).mostrar(stage);
     }
 
-    public void mostrarEquipo()
-    {
-        PantallaEquipo pantallaEquipo = new PantallaEquipo( this, entrenador);
+    public void mostrarEquipo() {
+
+        escenaAnteriorEquipo = stage.getScene();
+
+        PantallaEquipo pantallaEquipo = new PantallaEquipo(this, entrenador);
+
         pantallaEquipo.mostrar(stage);
+    }
+
+    public void volverDesdeEquipo() {
+
+        if (escenaAnteriorEquipo != null) {
+            stage.setScene(escenaAnteriorEquipo);
+            stage.setFullScreen(true);
+            stage.show();
+        }
     }
 
     public void volverAlCombate() {
@@ -116,39 +129,48 @@ public class GestorPantallas {
         new VistaJuego(mapa, jugador, this).mostrar(stage);
     }
 
-    public void iniciarCombate(Entrenador entrenadorJugador, Pokemon pokemonSalvaje) {
-        System.out.println("DEBUG: Entrando a GestorPantallas.iniciarCombate()");
+    public void iniciarCombate(
+            Entrenador entrenadorJugador,
+            Pokemon pokemonSalvaje) {
 
-        this.escenaMapaAnterior = stage.getScene();
-
-        // Si ya hay un combate, no iniciamos otro.
+        // Evitar combates simultáneos
         if (combateActivo) {
             System.out.println("Ya hay un combate activo.");
             return;
         }
 
+        // Bloquear inmediatamente
         combateActivo = true;
 
-        combateViewModel = new CombateViewModel(
-                entrenadorJugador,
-                pokemonSalvaje
-        );
+        try {
+            escenaMapaAnterior = stage.getScene();
 
-        combateViewModel.setOnTerminarCombateCallback(
-                this::regresarAlMapa
-        );
+            combateViewModel = new CombateViewModel(
+                    entrenadorJugador,
+                    pokemonSalvaje
+            );
 
-        combateActivo = false;
+            combateViewModel.setOnTerminarCombateCallback(
+                    this::regresarAlMapa
+            );
 
-        pantallaCombate = new PantallaCombate(
-                combateViewModel,
-                this
-        );
+            pantallaCombate = new PantallaCombate(
+                    combateViewModel,
+                    this
+            );
 
-        escenaCombate = new Scene(pantallaCombate, 1000, 800);
-        stage.setScene(escenaCombate);
-        stage.setFullScreen(true);
-        stage.show();
+            Scene escena = new Scene(pantallaCombate, 1000, 800);
+
+            stage.setScene(escena);
+            stage.setFullScreen(true);
+            stage.show();
+
+        } catch (Exception e) {
+
+            combateActivo = false;
+
+            e.printStackTrace();
+        }
     }
 
     public void regresarAlMapa() {
