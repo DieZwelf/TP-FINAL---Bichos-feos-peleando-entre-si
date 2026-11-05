@@ -122,6 +122,10 @@ public class Pokemon {
         return experiencia;
     }
 
+    public void setNivel(int nivel) {
+        this.nivel = nivel;
+    }
+
     @Override
     public String toString() {
         return "Pokemon{" +

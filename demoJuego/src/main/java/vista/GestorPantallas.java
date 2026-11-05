@@ -19,6 +19,10 @@ import model.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
+
 public class GestorPantallas {
 
     private final Stage stage;
@@ -55,12 +59,21 @@ public class GestorPantallas {
     public void iniciarPartida() {
         Mapa mapa = new Mapa(10, 10);
 
-        Entrenador entrenador = new Entrenador();
+        TreeMap<Integer, Pokemon> treeMap = new TreeMap<>();
+
+
 
         Pokemon pokemonInicial = new Pokemon("Picachu", 50.0, 50.0, 12.0, 5.0, 10.0,
                 TipoPokemon.ELECTRICO, 1, 0, 12, 5, 10);
 
+        List<Pokemon> pokemons = new ArrayList<>();
+        Entrenador entrenador = new Entrenador("Pepe", treeMap, pokemons, "20" );
+
         entrenador.getEquipo().add(pokemonInicial);
+        entrenador.setPokemonActivo(pokemonInicial);
+
+
+
 
         Jugador jugador = new Jugador(290, 0, 3,entrenador);
 

@@ -146,7 +146,7 @@ public class PantallaCombate extends StackPane implements IPantalla {
     }
 
     private void cargarEstilosCSS() {
-        var cssUrl = getClass().getResource("images/pantallaMenu/estilo.css");
+        var cssUrl = getClass().getResource("/images/estilos/estilo.css");
         if (cssUrl != null) {
             this.getStylesheets().add(cssUrl.toExternalForm());
         } else {

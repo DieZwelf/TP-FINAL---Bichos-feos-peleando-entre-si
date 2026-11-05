@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -34,7 +35,7 @@ public class Entrenador {
         id = contador++;
         this.nombre = nombre;
         this.pokemonesCapturados = pokemonesCapturados;
-        this.equipo = equipo;
+        this.equipo =  new ArrayList<>();
         this.rango = rango;
     }
 
@@ -74,6 +75,9 @@ public class Entrenador {
         this.rango = rango;
     }
 
+    public void setPokemonActivo(Pokemon pokemonActivo) {
+        this.pokemonActivo = pokemonActivo;
+    }
 
     /**
      * Fundamental para el metodo atacar de combate, llamara al menos 2 veces por combate
