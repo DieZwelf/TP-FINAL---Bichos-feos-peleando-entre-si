@@ -26,7 +26,7 @@ public class JuegoController {
     private final List<Shape> colisiones;
 
     private long ultimoTiempoEncuentro = 0;
-    private static final long INTERVALO_VERIFICACION = 5_000_000_000L; // 10 segundos en nanosegundos
+    private static final long INTERVALO_VERIFICACION = 3_000_000_000L; // 10 segundos en nanosegundos
     private final double PROBABILIDAD_ENCUENTRO = 0.80; // 40%
 
     //esto es una interfaz, se usa para definir una tarea que se ejecuta con concurrencia
@@ -135,6 +135,7 @@ public class JuegoController {
             case S, DOWN -> abajo = true;
             case A, LEFT -> izquierda = true;
             case D, RIGHT -> derecha = true;
+
         }
     }
 

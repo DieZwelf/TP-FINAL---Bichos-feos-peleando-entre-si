@@ -6,5 +6,6 @@ interfaz futura.
 
 public enum AccionJugador {
     ATACAR,
+    ELEGIR_POKEMON,
     HUIR;
 }

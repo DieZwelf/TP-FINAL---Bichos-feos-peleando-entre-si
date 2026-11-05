@@ -4,6 +4,7 @@ module demojuego {
     requires javafx.media;
     requires java.desktop;
     requires com.google.gson;
+    requires javafx.graphics;
 
     exports application to javafx.graphics;
     opens application to javafx.fxml;

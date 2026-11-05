@@ -26,9 +26,12 @@ public class PantallaCombate extends StackPane implements IPantalla {
     private Button btnAtacar;
     private Button btnMochila;
     private Button btnHuir;
+    private Button btnEquipo;
+    private GestorPantallas pantallas;
 
-    public PantallaCombate(CombateViewModel viewModel) {
+    public PantallaCombate(CombateViewModel viewModel, GestorPantallas pantallas) {
         this.viewModel = viewModel;
+        this.pantallas = pantallas;
 
         inicializarComponentes();
         organizarLayout();
@@ -42,6 +45,7 @@ public class PantallaCombate extends StackPane implements IPantalla {
         stage.setScene(scene);
         stage.setFullScreen(true);
         stage.show();
+
     }
 
     private void inicializarComponentes() {
@@ -67,18 +71,26 @@ public class PantallaCombate extends StackPane implements IPantalla {
         btnAtacar = new Button("LUCHA");
         btnMochila = new Button("MOCHILA");
         btnHuir = new Button("HUIR");
+        btnEquipo = new Button("POKEMONES");
 
         btnAtacar.getStyleClass().add("boton-retro");
         btnMochila.getStyleClass().add("boton-retro");
         btnHuir.getStyleClass().add("boton-retro");
+        btnEquipo.getStyleClass().add("boton-retro");
 
-        btnAtacar.setPrefSize(160, 50);
-        btnMochila.setPrefSize(160, 50);
-        btnHuir.setPrefSize(160, 50);
+        btnAtacar.setPrefSize(320, 80);
+        btnMochila.setPrefSize(320, 80);
+        btnHuir.setPrefSize(320, 80);
+        btnEquipo.setPrefSize(320, 80);
+
+
+
 
         // Acciones
         btnAtacar.setOnAction(e -> viewModel.ejecutarAccion(AccionJugador.ATACAR));
-        btnHuir.setOnAction(e -> viewModel.ejecutarAccion(AccionJugador.HUIR));
+        btnHuir.setOnAction(e -> {viewModel.ejecutarAccion(AccionJugador.HUIR); pantallas.regresarAlMapa();});
+        btnEquipo.setOnAction( e -> {viewModel.ejecutarAccion(AccionJugador.ELEGIR_POKEMON); pantallas.mostrarEquipo();});
+
     }
 
     private void organizarLayout() {
@@ -110,6 +122,7 @@ public class PantallaCombate extends StackPane implements IPantalla {
         panelBotonesMenu.add(btnAtacar, 0, 0);
         panelBotonesMenu.add(btnMochila, 1, 0);
         panelBotonesMenu.add(btnHuir, 0, 1);
+        panelBotonesMenu.add(btnEquipo,1 , 1);
 
         // Contenedor horizontal inferior unificado (Mini-HUD izq + Caja de texto centro + Botones der)
         HBox contenedorInferiorPrincipal = new HBox(15, miniHudJugador, cajaDialogo, panelBotonesMenu);

@@ -11,6 +11,8 @@ import model.Combate;
 import model.Entrenador;
 import model.Pokemon;
 
+import java.util.List;
+
 public class CombateViewModel {
 
     private final Combate modeloCombate;
@@ -54,12 +56,35 @@ public class CombateViewModel {
                 hpJugador.set(jugadorActivo.getVida() / jugadorActivo.getVidaMaxima());
             }
             nombreJugador.set(jugadorActivo.getNombre());
-            nivelJugador.set("Nv. " + jugadorActivo.getNivel());
+            nivelJugador.set("Nivel: " + jugadorActivo.getNivel());
         }
 
         if (enemigo != null && enemigo.getVidaMaxima() > 0) {
             hpEnemigo.set(enemigo.getVida() / enemigo.getVidaMaxima());
         }
+    }
+
+    public boolean cambiarPokemonActivo(int posicion) {
+
+        boolean cambiado = modeloCombate.getEntrenador().elegirPokemonActivo(posicion);
+
+        if (!cambiado) {
+            logsCombate.add("No puedes seleccionar ese Pokémon.");
+            return false;
+        }
+
+        // Actualizar nombre, nivel y vida del HUD.
+        sincronizarEstado();
+
+        Pokemon nuevoActivo = modeloCombate.getEntrenador().getPokemonActivo();
+
+        logsCombate.add("¡Adelante, " + nuevoActivo.getNombre() + "!");
+
+        return true;
+    }
+
+    public List<Pokemon> getEquipoJugador() {
+        return modeloCombate.getEntrenador().getEquipo();
     }
 
     public void setOnTerminarCombateCallback(Runnable callback) {

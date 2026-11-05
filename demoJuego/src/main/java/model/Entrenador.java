@@ -35,7 +35,7 @@ public class Entrenador {
         id = contador++;
         this.nombre = nombre;
         this.pokemonesCapturados = pokemonesCapturados;
-        this.equipo =  new ArrayList<>();
+        this.equipo =  new ArrayList<>(5);
         this.rango = rango;
     }
 
@@ -115,14 +115,20 @@ public class Entrenador {
      * Añadir el pokemon pasado por parametro al equipo.
      * @param p es el Pokemon a agregar al equipo.
      */
-    public void aniadir(Pokemon p)
+    public boolean aniadir(Pokemon p)
     {
+        if (equipo.size() >= 5 || p == null) {
+            return false;
+        }
+
         equipo.add(p);
 
         if (pokemonActivo == null)
         {
             pokemonActivo = p;
         }
+
+        return true;
     }
 
     /**

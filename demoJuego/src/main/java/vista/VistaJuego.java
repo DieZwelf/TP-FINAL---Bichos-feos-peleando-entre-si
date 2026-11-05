@@ -1,6 +1,7 @@
 
 package vista;
 
+import javafx.scene.input.KeyEvent;
 import model.GeneradorPokemonSalvaje;
 import model.Mapa;
 import model.Jugador;
@@ -11,6 +12,7 @@ import javafx.stage.Stage;
 import javafx.scene.transform.Affine;
 import javafx.scene.shape.Rectangle;
 import model.Pokemon;
+import javafx.scene.input.KeyCode;
 
 public class VistaJuego extends Pane implements IPantalla {
 
@@ -60,8 +62,11 @@ public class VistaJuego extends Pane implements IPantalla {
     public void mostrar(Stage stage) {
         escena = new Scene(this, 1000, 800);
 
+        configurarTeclas(escena);
 // Primero mostrar la escena
         pantallas.mostrarEscena(escena);
+
+
 
 // Después calcular la cámara
         actualizarCamara();
@@ -133,5 +138,19 @@ public class VistaJuego extends Pane implements IPantalla {
         transformacionCamara.setToTransform(ZOOM, 0, x, 0, ZOOM, y);
     }
 
+    private void configurarTeclas(Scene escena) {
+
+        escena.addEventFilter(KeyEvent.KEY_PRESSED, evento -> {
+
+            if (evento.getCode() == KeyCode.TAB) {
+
+                System.out.println("TAB PRESIONADO");
+
+                pantallas.mostrarEquipo();
+
+                evento.consume();
+            }
+        });
+    }
 
 }
