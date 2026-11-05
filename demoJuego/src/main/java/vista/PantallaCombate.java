@@ -9,9 +9,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import model.AccionJugador;
+
+import java.net.URL;
+import java.util.Objects;
 
 public class PantallaCombate extends StackPane implements IPantalla {
 
@@ -83,9 +88,6 @@ public class PantallaCombate extends StackPane implements IPantalla {
         btnHuir.setPrefSize(320, 80);
         btnEquipo.setPrefSize(320, 80);
 
-
-
-
         // Acciones
         btnAtacar.setOnAction(e -> viewModel.ejecutarAccion(AccionJugador.ATACAR));
         btnHuir.setOnAction(e -> {viewModel.ejecutarAccion(AccionJugador.HUIR); pantallas.regresarAlMapa();});
@@ -133,7 +135,17 @@ public class PantallaCombate extends StackPane implements IPantalla {
         StackPane.setAlignment(contenedorInferiorPrincipal, Pos.BOTTOM_CENTER);
         StackPane.setMargin(contenedorInferiorPrincipal, new Insets(0, 20, 20, 20));
 
-        this.getChildren().addAll(hudEnemigo, contenedorInferiorPrincipal);
+        URL fondoCombate = Objects.requireNonNull(getClass().getResource("/images/mapa/escenario_prueba.jpg"));
+
+        Image imagen = new Image(fondoCombate.toExternalForm());
+
+        ImageView vistaFondo = new ImageView(imagen);
+
+        vistaFondo.setPreserveRatio(false);
+        vistaFondo.fitWidthProperty().bind(this.widthProperty());
+        vistaFondo.fitHeightProperty().bind(this.heightProperty());
+
+        this.getChildren().addAll(vistaFondo,hudEnemigo, contenedorInferiorPrincipal);
     }
 
     private void aplicarBindingsYListeners() {
