@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -37,6 +38,7 @@ public class Entrenador {
         this.pokemonesCapturados = pokemonesCapturados;
         this.equipo =  new ArrayList<>(5);
         this.rango = rango;
+        this.inventario = new Inventario(new HashMap<>());
     }
 
     public int getId() {
@@ -85,6 +87,10 @@ public class Entrenador {
      */
     public Pokemon getPokemonActivo() {
         return pokemonActivo;
+    }
+
+    public Inventario getInventario() {
+        return inventario;
     }
 
     /**

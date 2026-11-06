@@ -144,13 +144,19 @@ public class VistaJuego extends Pane implements IPantalla {
 
             if (evento.getCode() == KeyCode.TAB) {
 
-                System.out.println("TAB PRESIONADO");
-
                 pantallas.mostrarEquipo();
 
                 evento.consume();
             }
+            if (evento.getCode() == KeyCode.E) {
+
+                pantallas.mostrarInventario();
+
+                evento.consume();
+            }
         });
+
+
     }
 
 }

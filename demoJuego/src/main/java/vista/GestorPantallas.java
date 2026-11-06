@@ -15,13 +15,19 @@
 package vista;
 
 import controlador.CombateViewModel;
+import controlador.InventarioViewModel;
 import model.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 
+import java.awt.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.TreeMap;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class GestorPantallas {
 
@@ -41,6 +47,11 @@ public class GestorPantallas {
     //Metodo de configuracion del Stage
     public void mostrarEscena(Scene escena) {
         stage.setTitle("Bichos feos");
+
+        URL iconoURL = Objects.requireNonNull(getClass().getResource("/images/pantallaMenu/icono.png"));
+        Image icono = new Image(iconoURL.toExternalForm());
+
+        stage.getIcons().setAll(icono);
         stage.setScene(escena);
         stage.setFullScreen(true);
         stage.show();
@@ -68,6 +79,16 @@ public class GestorPantallas {
         PantallaEquipo pantallaEquipo = new PantallaEquipo(this, entrenador);
 
         pantallaEquipo.mostrar(stage);
+    }
+
+    public void mostrarInventario (){
+
+        PantallaInventario pantallaInventario = new PantallaInventario(this);
+
+        InventarioViewModel inventarioViewModel = new InventarioViewModel(entrenador.getInventario(), pantallaInventario);
+
+        pantallaInventario.mostrar(stage);
+
     }
 
     public void volverDesdeEquipo() {
@@ -126,6 +147,8 @@ public class GestorPantallas {
 
         Jugador jugador = new Jugador(290, 0, 3,entrenador);
 
+        Pocion item = new Pocion("Pocion", "Cura", 2, 2, 2.5);
+        jugador.getEntrenador().getInventario().agregarObjeto(item);
         new VistaJuego(mapa, jugador, this).mostrar(stage);
     }
 
