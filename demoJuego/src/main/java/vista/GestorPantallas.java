@@ -112,7 +112,7 @@ public class GestorPantallas {
 
         TreeMap<Integer, Pokemon> treeMap = new TreeMap<>();
 
-        Pokemon pokemonInicial = new Pokemon("Picachu", 50.0, 50.0, 12.0, 5.0, 10.0,
+        Pokemon pokemonInicial = new Pokemon("Pikachu", 50.0, 50.0, 12.0, 5.0, 10.0,
                 TipoPokemon.ELECTRICO, 1, 0, 12, 5, 10);
 
         Pokemon pokemonInicial2 = new Pokemon("Pepe", 50.0, 50.0, 12.0, 5.0, 10.0,
@@ -124,10 +124,10 @@ public class GestorPantallas {
         Pokemon pokemonInicial4 = new Pokemon("Jose", 50.0, 50.0, 12.0, 5.0, 10.0,
                 TipoPokemon.TIERRA, 1, 0, 12, 5, 10);
 
-        Pokemon pokemonInicial5 = new Pokemon("Abril", 50.0, 50.0, 12.0, 5.0, 10.0,
+        Pokemon pokemonInicial5 = new Pokemon("Roberto", 50.0, 50.0, 12.0, 5.0, 10.0,
                 TipoPokemon.TIERRA, 1, 0, 12, 5, 10);
 
-        Pokemon pokemonInicial6 = new Pokemon("Uriel", 50.0, 50.0, 12.0, 5.0, 10.0,
+        Pokemon pokemonInicial6 = new Pokemon("Fernando", 50.0, 50.0, 12.0, 5.0, 10.0,
                 TipoPokemon.TIERRA, 1, 0, 12, 5, 10);
 
 

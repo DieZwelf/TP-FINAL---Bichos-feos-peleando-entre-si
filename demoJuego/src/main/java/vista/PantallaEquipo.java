@@ -70,15 +70,9 @@ public class PantallaEquipo extends BorderPane implements IPantalla {
         setBottom(inferior);
     }
 
-    private void agregarPokemon(
-            VBox lista,
-            Pokemon pokemon,
-            int posicion
-    ) {
+    private void agregarPokemon(VBox lista, Pokemon pokemon, int posicion) {
 
-        Label nombre = new Label(
-                pokemon.getNombre() + "  Nv. " + pokemon.getNivel()
-        );
+        Label nombre = new Label(pokemon.getNombre() + "  Nv. " + pokemon.getNivel());
 
         nombre.getStyleClass().add("texto-retro");
 
@@ -92,21 +86,14 @@ public class PantallaEquipo extends BorderPane implements IPantalla {
         barraVida.setPrefWidth(250);
         barraVida.getStyleClass().add("barra-hp");
 
-        Label vida = new Label(
-                pokemon.getVida() + " / " + vidaMaxima + " PS"
-        );
+        Label vida = new Label(pokemon.getVida() + " / " + vidaMaxima + " PS");
 
         vida.getStyleClass().add("texto-retro");
 
-        VBox informacion = new VBox(
-                5,
-                nombre,
-                barraVida,
-                vida
-        );
+        VBox informacion = new VBox(5, nombre, barraVida, vida);
 
         Button btnSeleccionar = new Button("SELECCIONAR");
-        btnSeleccionar.getStyleClass().add("boton-retro");
+        btnSeleccionar.getStyleClass().add("boton-equipo");
 
         if (pokemon == entrenador.getPokemonActivo()) {
             btnSeleccionar.setText("ACTIVO");
@@ -122,11 +109,7 @@ public class PantallaEquipo extends BorderPane implements IPantalla {
             }
         });
 
-        HBox tarjeta = new HBox(
-                25,
-                informacion,
-                btnSeleccionar
-        );
+        HBox tarjeta = new HBox(25,informacion,btnSeleccionar);
 
         tarjeta.setAlignment(Pos.CENTER);
         tarjeta.setPadding(new Insets(15));
@@ -141,6 +124,8 @@ public class PantallaEquipo extends BorderPane implements IPantalla {
     public void mostrar(Stage stage) {
 
         Scene scene = new Scene(this, 1000, 800);
+
+        scene.getStylesheets().add(getClass().getResource("/images/pantallaMenu/estilo.css").toExternalForm());
 
         stage.setScene(scene);
         stage.setFullScreen(true);
