@@ -16,6 +16,7 @@ package vista;
 
 import controlador.CombateViewModel;
 import controlador.InventarioViewModel;
+import javafx.scene.Cursor;
 import model.*;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -39,6 +40,7 @@ public class GestorPantallas {
     private boolean combateActivo = false;
     private Entrenador entrenador;
     private Scene escenaAnteriorEquipo;
+    private Scene escenaAnteriorInventario;
 
     public GestorPantallas(Stage stage) {
         this.stage = stage;
@@ -55,6 +57,14 @@ public class GestorPantallas {
         stage.setScene(escena);
         stage.setFullScreen(true);
         stage.show();
+    }
+
+    public Entrenador getEntrenador() {
+        return entrenador;
+    }
+
+    public void setEntrenador(Entrenador entrenador) {
+        this.entrenador = entrenador;
     }
 
     //Mostrar pantalla login
@@ -81,20 +91,29 @@ public class GestorPantallas {
         pantallaEquipo.mostrar(stage);
     }
 
-    public void mostrarInventario (){
+    public void mostrarInventario() {
+        escenaAnteriorInventario = stage.getScene();
 
-        PantallaInventario pantallaInventario = new PantallaInventario(this);
-
-        InventarioViewModel inventarioViewModel = new InventarioViewModel(entrenador.getInventario(), pantallaInventario);
-
+        PantallaInventario pantallaInventario = new PantallaInventario(this, entrenador);
         pantallaInventario.mostrar(stage);
-
     }
 
     public void volverDesdeEquipo() {
 
         if (escenaAnteriorEquipo != null) {
             stage.setScene(escenaAnteriorEquipo);
+            escenaMapaAnterior.setCursor(Cursor.NONE);
+            stage.setFullScreen(true);
+            stage.show();
+        }
+    }
+
+
+    public void volverDesdeInventario() {
+
+        if (escenaAnteriorInventario != null) {
+            stage.setScene(escenaAnteriorInventario);
+            escenaMapaAnterior.setCursor(Cursor.NONE);
             stage.setFullScreen(true);
             stage.show();
         }
@@ -142,7 +161,6 @@ public class GestorPantallas {
         entrenador.aniadir(pokemonInicial5);
         entrenador.aniadir(pokemonInicial6);
 
-
         entrenador.setPokemonActivo(pokemonInicial);
 
         Jugador jugador = new Jugador(290, 0, 3,entrenador);
@@ -152,9 +170,7 @@ public class GestorPantallas {
         new VistaJuego(mapa, jugador, this).mostrar(stage);
     }
 
-    public void iniciarCombate(
-            Entrenador entrenadorJugador,
-            Pokemon pokemonSalvaje) {
+    public void iniciarCombate(Entrenador entrenadorJugador, Pokemon pokemonSalvaje) {
 
         // Evitar combates simultáneos
         if (combateActivo) {
@@ -168,19 +184,13 @@ public class GestorPantallas {
         try {
             escenaMapaAnterior = stage.getScene();
 
-            combateViewModel = new CombateViewModel(
-                    entrenadorJugador,
-                    pokemonSalvaje
-            );
+            combateViewModel = new CombateViewModel(entrenadorJugador, pokemonSalvaje);
 
             combateViewModel.setOnTerminarCombateCallback(
                     this::regresarAlMapa
             );
 
-            pantallaCombate = new PantallaCombate(
-                    combateViewModel,
-                    this
-            );
+            pantallaCombate = new PantallaCombate(combateViewModel, this);
 
             Scene escena = new Scene(pantallaCombate, 1000, 800);
 
@@ -200,6 +210,10 @@ public class GestorPantallas {
         if (escenaMapaAnterior != null) {
             stage.setScene(escenaMapaAnterior);
             stage.setFullScreen(true);
+
+            escenaMapaAnterior.setCursor(Cursor.NONE);
+            combateActivo = false;
+
         }
     }
 
