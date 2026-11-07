@@ -1,15 +1,22 @@
+/* ===== Paleta (sacada del fondo del login) =====
+   Tierra oscura : #2a1714   Bosque oscuro : #12201d
+   Verde musgo   : #5fae3f   Verde hoja    : #3f8a35
+   Nube          : #d8ecec   Crema         : #f3ecd0
+   Amarillo      : #ffde00   Azul noche    : #0a1a3a
+*/
+
 .root {
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
 }
 
-/* ---------- Botón retro: sin relleno, solo marco doble ---------- */
+/* ---------- Botón retro: marco doble con relleno oscuro suave ---------- */
 .boton-retro {
-    -fx-background-color: transparent;
+    -fx-background-color: rgba(18, 32, 29, 0.82);
     -fx-background-radius: 0;
 
-    /* Marco doble: borde exterior oscuro + borde interior pasto */
-    -fx-border-color: #0f2a1d, #7fae4f;
+    /* Marco doble: borde exterior oscuro + borde interior musgo */
+    -fx-border-color: #12201d, #5fae3f;
     -fx-border-width: 3, 3;
     -fx-border-insets: 0, 3;
     -fx-border-radius: 0, 0;
@@ -18,28 +25,28 @@
     -fx-alignment: center;
     -fx-cursor: hand;
 
-    -fx-text-fill: #f5f0d0;
+    -fx-text-fill: #f3ecd0;
     -fx-font-family: "Consolas";
     -fx-font-size: 20px;
     -fx-font-weight: bold;
 
-    /* Sombra dura: se aplica al marco y a las letras */
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 0, 0, 3, 3);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.85), 0, 0, 3, 3);
 }
 
 .boton-retro:hover {
-    -fx-border-color: #0f2a1d, #ffde00;
+    -fx-background-color: rgba(42, 23, 20, 0.88);
+    -fx-border-color: #12201d, #ffde00;
     -fx-text-fill: #ffde00;
 }
 
 .boton-retro:focus-visible {
-    -fx-border-color: #0f2a1d, #f5f0d0;
+    -fx-border-color: #12201d, #f3ecd0;
 }
 
 .boton-retro:pressed {
     -fx-translate-x: 2;
     -fx-translate-y: 2;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 0, 0, 1, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.85), 0, 0, 1, 1);
 }
 
 .boton-retro:disabled {
@@ -47,7 +54,7 @@
     -fx-cursor: default;
 }
 
-/* Botón del menú principal: solo texto */
+/* ---------- Botón del menú principal: solo texto (sin cambios) ---------- */
 .boton-menu {
     -fx-background-color: transparent;
     -fx-background-radius: 0;
@@ -78,15 +85,14 @@
     -fx-translate-y: 2;
 }
 
-/*Panel: transparente */
+/* ---------- Panel y textos generales ---------- */
 .panel-retro {
     -fx-background-color: transparent;
     -fx-padding: 36 48 36 48;
 }
 
-/*Textos: halo oscuro para que se lean sobre el paisaje*/
 .texto-retro {
-    -fx-text-fill: #f5f0d0;
+    -fx-text-fill: #f3ecd0;
     -fx-font-family: "Consolas";
     -fx-font-size: 18px;
     -fx-font-weight: bold;
@@ -98,5 +104,58 @@
     -fx-font-family: "Consolas";
     -fx-font-size: 36px;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.95), 5, 0.8, 3, 3);
+}
+
+/* ================= LOGIN ================= */
+
+/* Placa clara (color de las nubes) para que el azul oscuro se lea */
+.texto-login-inicio {
+    -fx-background-color: #12201d, #5fae3f, #d8ecec;
+    -fx-background-insets: 0, 3, 6;
+    -fx-background-radius: 0;
+    -fx-padding: 10 40 10 40;
+
+    -fx-text-fill: linear-gradient(to bottom, #1b3a6b, #050d1f);
+    -fx-font-family: "Consolas";
+    -fx-font-size: 44px;
+    -fx-font-weight: bold;
+
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 0, 0, 5, 5);
+}
+
+.caja-botones {
+    -fx-alignment: center;
+}
+
+.boton-login {
+    -fx-min-width: 200;
+}
+
+/* Formulario de contraseña: panel oscuro con marco doble */
+.formulario-login {
+    -fx-background-color: transparent;
+    -fx-max-width: 420;
+    -fx-max-height: 340;
+}
+
+.campo-retro {
+    -fx-background-color: #12201d, #5fae3f, rgba(10, 20, 18, 0.95);
+    -fx-background-insets: 0, 2, 4;
+    -fx-background-radius: 0;
+    -fx-padding: 8 12 8 12;
+
+    -fx-text-fill: #f3ecd0;
+    -fx-prompt-text-fill: #7f9a8a;
+    -fx-highlight-fill: #5fae3f;
+    -fx-highlight-text-fill: #12201d;
+    -fx-font-family: "Consolas";
+    -fx-font-size: 18px;
+}
+
+.campo-retro:focused {
+    -fx-background-color: #12201d, #ffde00, rgba(10, 20, 18, 0.95);
+}
+
+.mensaje-error {
+    -fx-text-fill: #ff7b6b;
 }
