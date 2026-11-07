@@ -46,10 +46,12 @@ public class PantallaLogin implements IPantalla {
         Button botonAdministrador = new Button("Administrador");
         Button botonUsuario = new Button("Usuario");
         Button botonIngresar = new Button("Ingresar");
+        Button botonVolver = new Button("Volver");
 
         botonUsuario.getStyleClass().addAll("boton-retro", "boton-login");
         botonAdministrador.getStyleClass().addAll("boton-retro", "boton-login");
         botonIngresar.getStyleClass().add("boton-retro");
+        botonVolver.getStyleClass().add("boton-retro");
 
         Label titulo = new Label("Ingrese contraseña");
         titulo.getStyleClass().add("titulo-retro");
@@ -67,6 +69,16 @@ public class PantallaLogin implements IPantalla {
         formulario.setPadding(new Insets(30));
         formulario.getStyleClass().add("formulario-login");
 
+        // Le dices al StackPane que alinee este botón abajo a la izquierda
+        StackPane.setAlignment(botonVolver, Pos.BOTTOM_LEFT);
+
+        // Opcional: Dale un pequeño margen de separación del borde para que no quede pegado
+        StackPane.setMargin(botonVolver, new Insets(15));
+
+        URL url = Objects.requireNonNull(getClass().getResource("/images/pantallaMenu/prueba.jpg"));
+        Image imagen = new Image(url.toExternalForm());
+        ImageView vistaFondo = new ImageView(imagen);
+
         botonUsuario.setOnAction(e -> {
             pantallas.mostrarInicio();
         });
@@ -74,12 +86,16 @@ public class PantallaLogin implements IPantalla {
         botonAdministrador.setOnAction(e -> {
             contraseña.clear();
             mensaje.setText("");
-            root.getChildren().setAll(formulario);
+            root.getChildren().setAll(vistaFondo, formulario, botonVolver);
+
+            // 2. Dentro del evento (Línea 83 aprox.)
+            // Debes repetir la alineación aquí porque al usar setAll() el contenedor se reinicia
+            StackPane.setAlignment(botonVolver, Pos.BOTTOM_LEFT);
+            StackPane.setMargin(botonVolver, new Insets(15));
+            botonVolver.setOnAction(event -> root.getChildren().setAll(vistaFondo, contenedorInicio));
         });
 
-        URL url = Objects.requireNonNull(getClass().getResource("/images/pantallaMenu/prueba.jpg"));
-        Image imagen = new Image(url.toExternalForm());
-        ImageView vistaFondo = new ImageView(imagen);
+
         vistaFondo.setPreserveRatio(false);
         vistaFondo.fitWidthProperty().bind(root.widthProperty());
         vistaFondo.fitHeightProperty().bind(root.heightProperty());
