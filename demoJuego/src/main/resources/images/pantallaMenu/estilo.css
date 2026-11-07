@@ -159,3 +159,82 @@
 .mensaje-error {
     -fx-text-fill: #ff7b6b;
 }
+
+/* ================= PANTALLA EQUIPO / HUD ================= */
+
+/* Fondo general de la pantalla de equipo (usa el bosque oscuro con transparencia o sólido) */
+.pantalla-combate-root {
+    -fx-background-color: #12201d;
+}
+
+/* Tarjeta contenedora de cada Pokémon (marco doble estilo retro) */
+.caja-hud {
+    -fx-background-color: #2a1714; /* Tierra oscura */
+    -fx-border-color: #12201d, #5fae3f; /* Marco doble: oscuro + verde musgo */
+    -fx-border-width: 3, 3;
+    -fx-border-insets: 0, 3;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0, 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 0, 0, 4, 4);
+}
+
+/* Botón específico para la tarjeta de equipo (más compacto que .boton-retro) */
+.boton-equipo {
+    -fx-background-color: rgba(18, 32, 29, 0.9);
+    -fx-background-radius: 0;
+    -fx-border-color: #12201d, #5fae3f;
+    -fx-border-width: 2, 2;
+    -fx-border-insets: 0, 2;
+    -fx-border-radius: 0, 0;
+
+    -fx-padding: 8 20 8 20;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+
+    -fx-text-fill: #f3ecd0;
+    -fx-font-family: "Consolas";
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.boton-equipo:hover {
+    -fx-background-color: rgba(42, 23, 20, 0.95);
+    -fx-border-color: #12201d, #ffde00;
+    -fx-text-fill: #ffde00;
+}
+
+.boton-equipo:pressed {
+    -fx-translate-x: 1;
+    -fx-translate-y: 1;
+}
+
+.boton-equipo:disabled {
+    -fx-opacity: 0.6;
+    -fx-cursor: default;
+    -fx-border-color: #12201d, #7f9a8a;
+    -fx-text-fill: #7f9a8a;
+}
+/* ---------- Barra de HP estilo retro ---------- */
+.barra-hp {
+    -fx-accent: #5fae3f; /* Verde musgo cuando tiene vida */
+}
+
+.barra-hp .track {
+    -fx-background-color: #0a1a3a; /* Azul noche para el fondo vacío */
+    -fx-background-radius: 0;
+    -fx-border-color: #12201d;
+    -fx-border-width: 2;
+}
+
+.barra-hp .bar {
+    -fx-background-color: linear-gradient(to bottom, #5fae3f, #3f8a35);
+    -fx-background-radius: 0;
+    -fx-padding: 3;
+}
+
+/* Efecto hover para la tarjeta del equipo */
+.caja-hud:hover {
+    -fx-background-color: rgba(42, 23, 20, 0.95); /* Tierra oscura un poco más clara */
+    -fx-border-color: #12201d, #ffde00;         /* Cambia el borde verde musgo (#5fae3f) por amarillo (#ffde00) */
+    -fx-cursor: hand;                            /* Opcional: muestra la mano de selección */
+}
