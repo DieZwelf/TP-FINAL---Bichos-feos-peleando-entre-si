@@ -13,6 +13,10 @@ import javafx.geometry.Insets;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import javafx.animation.FadeTransition;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import java.net.URL;
+import java.util.Objects;
 
 public class PantallaLogin implements IPantalla {
 
@@ -73,7 +77,15 @@ public class PantallaLogin implements IPantalla {
             root.getChildren().setAll(formulario);
         });
 
-        root.getChildren().setAll(contenedorInicio);
+        URL url = Objects.requireNonNull(getClass().getResource("/images/pantallaMenu/prueba.jpg"));
+        Image imagen = new Image(url.toExternalForm());
+        ImageView vistaFondo = new ImageView(imagen);
+        vistaFondo.setPreserveRatio(false);
+        vistaFondo.fitWidthProperty().bind(root.widthProperty());
+        vistaFondo.fitHeightProperty().bind(root.heightProperty());
+
+
+        root.getChildren().setAll(vistaFondo,contenedorInicio);
 
         botonIngresar.setDefaultButton(true);
 
