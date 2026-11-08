@@ -2,7 +2,9 @@ package vista;
 
 import controlador.CombateViewModel;
 import javafx.scene.input.KeyCode;
+import model.Jugador;
 import vista.base.PantallaBase;
+import vista.juego.MapaBosque;
 import vista.menu.PantallaLogin;
 import vista.menu.PantallaInicio;
 import vista.menu.PantallaPartidaNueva;
@@ -178,5 +180,11 @@ public class GestorPantallas {
 
     public void alternarPantallaCompleta() {
         stage.setFullScreen(!stage.isFullScreen());
+    }
+
+    public void cambiarMapaBosque (){
+        entrenador = partidaService.crearEntrenadorInicial();
+        var jugador = partidaService.crearJugadorInicial(entrenador);
+        VistaJuego nuevaPantallaMapa = new VistaJuego(jugador, this);
     }
 }

@@ -22,7 +22,7 @@ public class VistaJuego extends PantallaBase {
 
     private final Jugador jugador;
     private final VistaJugador vistaJugador;
-    private final VistaMapa vistaMapa;
+    private VistaMapa vistaMapa;
     private final Pane mundo = new Pane();
     private final Affine transformacionCamara = new Affine();
     private final Rectangle recorte = new Rectangle();
@@ -134,4 +134,37 @@ public class VistaJuego extends PantallaBase {
         });
         escena.addEventFilter(KeyEvent.KEY_RELEASED, controlador::manejarTeclaLiberada);
     }
+
+    public void cambiarMapa(CargadorMapaTiled nuevoMapa,
+                            double nuevaX,
+                            double nuevaY) {
+
+        // 1. Crear la vista del nuevo mapa.
+        VistaMapa nuevaVista = new VistaMapa(nuevoMapa);
+
+        // 2. Actualizar la referencia al mapa.
+        vistaMapa = nuevaVista;
+
+        // 3. Cambiar la posición del jugador.
+        jugador.setX(nuevaX);
+        jugador.setY(nuevaY);
+
+        // 4. Reemplazar el mapa dentro del mundo.
+        mundo.getChildren().setAll(vistaMapa, vistaJugador);
+
+        // 5. Actualizar las dimensiones del mundo.
+        mundo.setPrefSize(
+                vistaMapa.getPrefWidth(),
+                vistaMapa.getPrefHeight()
+        );
+
+        // 6. Actualizar las colisiones del controlador.
+        if (controlador != null) {
+            controlador.setColisiones(vistaMapa.getColisiones());
+        }
+
+        // 7. Actualizar la cámara.
+        actualizarCamara();
+    }
+
 }

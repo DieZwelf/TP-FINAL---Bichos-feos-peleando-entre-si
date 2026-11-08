@@ -23,7 +23,7 @@ public class JuegoController {
     private final Jugador jugador;
     private final VistaJugador vista;
     private final VistaJuego vistaJuego;
-    private final List<Shape> colisiones;
+    private List<Shape> colisiones;
 
     private boolean arriba;
     private boolean abajo;
@@ -186,5 +186,13 @@ public class JuegoController {
             }
         }
         return false;
+    }
+
+    public List<Shape> getColisiones() {
+        return colisiones;
+    }
+
+    public void setColisiones(List<Shape> colisiones) {
+        this.colisiones = colisiones;
     }
 }

@@ -5,7 +5,7 @@ public class MapaBosque extends CargadorMapaTiled {
 
     @Override
     protected String obtenerRutaMapa() {
-        return "/images/mapa/bosque.tmj";
+        return "/images/mapa/samplemap2.tmj";
     }
 
     @Override
