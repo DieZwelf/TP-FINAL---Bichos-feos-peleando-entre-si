@@ -1,0 +1,47 @@
+package servicio;
+
+import model.Entrenador;
+import model.Jugador;
+import model.Pocion;
+import model.Pokemon;
+import model.TipoPokemon;
+
+import java.util.ArrayList;
+import java.util.TreeMap;
+
+/** Construye el estado inicial de una partida sin mezclarlo con la navegación. */
+public class PartidaService {
+
+    public Entrenador crearEntrenadorInicial() {
+        Entrenador entrenador = new Entrenador(
+                "Pepe",
+                new TreeMap<>(),
+                new ArrayList<>(),
+                "20"
+        );
+
+        agregarPokemonInicial(entrenador, "Pikachu", TipoPokemon.ELECTRICO);
+        agregarPokemonInicial(entrenador, "Pepe", TipoPokemon.TIERRA);
+        agregarPokemonInicial(entrenador, "Juan", TipoPokemon.TIERRA);
+        agregarPokemonInicial(entrenador, "Jose", TipoPokemon.TIERRA);
+        agregarPokemonInicial(entrenador, "Roberto", TipoPokemon.TIERRA);
+
+        entrenador.setPokemonActivo(entrenador.getEquipo().get(0));
+        entrenador.getInventario().agregarObjeto(
+                new Pocion("Pocion", "Cura", 2, 2, 2.5)
+        );
+        return entrenador;
+    }
+
+    private void agregarPokemonInicial(Entrenador entrenador, String nombre, TipoPokemon tipo) {
+        Pokemon pokemon = new Pokemon(
+                nombre, 50.0, 50.0, 12.0, 5.0, 10.0,
+                tipo, 1, 0, 12, 5, 10
+        );
+        entrenador.aniadir(pokemon);
+    }
+
+    public Jugador crearJugadorInicial(Entrenador entrenador) {
+        return new Jugador(290, 0, 3, entrenador);
+    }
+}
