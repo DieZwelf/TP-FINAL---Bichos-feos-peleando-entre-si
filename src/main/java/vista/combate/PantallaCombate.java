@@ -1,6 +1,8 @@
 package vista.combate;
 
 import controlador.CombateViewModel;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import vista.GestorPantallas;
 import vista.base.PantallaBase;
 
@@ -32,6 +34,9 @@ public class PantallaCombate extends PantallaBase {
     private Label lblNombreJugador;
     private Label lblNivelJugador;
     private Label lblMensajeActual;
+    private Label lblNombreEnemigo;
+    private Label lblNivelEnemigo;
+
 
     public PantallaCombate(CombateViewModel viewModel, GestorPantallas pantallas) {
         super(pantallas);
@@ -42,8 +47,11 @@ public class PantallaCombate extends PantallaBase {
     protected Parent crearContenido() {
         StackPane root = new StackPane();
         root.getStyleClass().add("pantalla-combate-root");
+
         inicializarComponentes();
+
         root.getChildren().addAll(crearFondo(root), crearHudEnemigo(), crearPanelInferior());
+
         return root;
     }
 
@@ -54,6 +62,8 @@ public class PantallaCombate extends PantallaBase {
         lblNombreJugador = crearLabel("texto-retro");
         lblNivelJugador = crearLabel("texto-retro");
         lblMensajeActual = crearLabel("texto-retro");
+        lblNombreEnemigo = crearLabel("texto-retro");
+        lblNivelEnemigo = crearLabel("texto-retro");
     }
 
     private ProgressBar crearBarraVida() {
@@ -61,6 +71,34 @@ public class PantallaCombate extends PantallaBase {
         barra.setPrefWidth(180);
         barra.getStyleClass().add("barra-hp");
         return barra;
+    }
+
+    public void mostrarResultados() {
+        StackPane root = (StackPane) getEscena().getRoot();
+
+        VBox pantalla = new VBox(20);
+        pantalla.getStyleClass().add("pantalla-resultados");
+        pantalla.setAlignment(Pos.CENTER);
+
+        Label titulo = new Label("RESULTADO DEL COMBATE");
+        titulo.getStyleClass().add("resultados-titulo");
+
+        VBox mensajes = new VBox(12);
+        mensajes.setAlignment(Pos.CENTER);
+
+        for (String resultado : viewModel.getLogsCombate()) {
+            Label mensaje = new Label(resultado);
+            mensaje.getStyleClass().add("resultados-mensaje");
+            mensaje.setWrapText(true);
+            mensajes.getChildren().add(mensaje);
+        }
+
+        Label instruccion = new Label("PULSA ESPACIO PARA CONTINUAR");
+        instruccion.getStyleClass().add("resultados-instruccion");
+
+        pantalla.getChildren().addAll(titulo, mensajes, instruccion);
+
+        root.getChildren().setAll(pantalla);
     }
 
     private Label crearLabel(String estilo) {
@@ -82,10 +120,12 @@ public class PantallaCombate extends PantallaBase {
     }
 
     private VBox crearHudEnemigo() {
-        VBox hud = new VBox(5, new Label("Enemigo"), barraHpEnemigo);
+        VBox hud = new VBox(5, lblNombreEnemigo, lblNivelEnemigo, barraHpEnemigo);
+
         hud.getStyleClass().add("caja-hud");
         StackPane.setAlignment(hud, Pos.TOP_RIGHT);
         StackPane.setMargin(hud, new Insets(40, 50, 0, 0));
+
         return hud;
     }
 
@@ -146,18 +186,18 @@ public class PantallaCombate extends PantallaBase {
         barraHpEnemigo.progressProperty().bind(viewModel.hpEnemigoProperty());
         lblNombreJugador.textProperty().bind(viewModel.nombreJugadorProperty());
         lblNivelJugador.textProperty().bind(viewModel.nivelJugadorProperty());
+        lblNombreEnemigo.textProperty().bind(viewModel.nombreEnemigoProperty());
+        lblNivelEnemigo.textProperty().bind(viewModel.nivelEnemigoProperty());
 
         viewModel.getLogsCombate().addListener(
                 (ListChangeListener<String>) cambio -> {
                     if (!viewModel.getLogsCombate().isEmpty()) {
-                        lblMensajeActual.setText(viewModel.getLogsCombate()
-                                .get(viewModel.getLogsCombate().size() - 1));
+                        lblMensajeActual.setText(viewModel.getLogsCombate().get(viewModel.getLogsCombate().size() - 1));
                     }
                 }
         );
         if (!viewModel.getLogsCombate().isEmpty()) {
-            lblMensajeActual.setText(viewModel.getLogsCombate()
-                    .get(viewModel.getLogsCombate().size() - 1));
+            lblMensajeActual.setText(viewModel.getLogsCombate().get(viewModel.getLogsCombate().size() - 1));
         }
     }
 
@@ -170,5 +210,15 @@ public class PantallaCombate extends PantallaBase {
     protected void configurarEscena(Scene escena) {
         agregarCSS(escena, "/images/estilos/estilo.css");
         aplicarBindings();
+
+        escena.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.SPACE
+                    && viewModel.getLogsCombate().stream().anyMatch(
+                    log -> log.contains("ha vencido a")
+            )) {
+                pantallas.regresarAlMapa();
+                event.consume();
+            }
+        });
     }
 }
