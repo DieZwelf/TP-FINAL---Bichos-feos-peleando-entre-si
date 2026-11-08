@@ -50,7 +50,19 @@ public class Combate {
     */
     private String ejecutarAtaque(Pokemon atacante, Pokemon objetivo)
     {
+        System.out.println("Atacante: " + atacante.getNombre());
+        System.out.println("Nivel: " + atacante.getNivel());
+        System.out.println("Daño: " + atacante.getDanio());
+
+        System.out.println("Objetivo: " + objetivo.getNombre());
+        System.out.println("Nivel: " + objetivo.getNivel());
+        System.out.println("Defensa: " + objetivo.getDefensa());
+        System.out.println("Vida: " + objetivo.getVida());
+
         double danio = atacante.atacar(objetivo);
+
+        System.out.println("Daño causado: " + danio);
+        System.out.println("-------------------------");
 
         return atacante.getNombre() + " le ha hecho " + Math.round(danio)
                 + " de daño a " + objetivo.getNombre();
