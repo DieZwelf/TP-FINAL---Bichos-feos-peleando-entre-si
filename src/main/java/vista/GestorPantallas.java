@@ -2,8 +2,10 @@ package vista;
 
 import controlador.CombateViewModel;
 import javafx.scene.input.KeyCode;
+import model.GeneradorPokemonSalvaje;
 import model.Jugador;
 import vista.base.PantallaBase;
+import vista.combate.PantallaResultados;
 import vista.juego.MapaBosque;
 import vista.menu.PantallaLogin;
 import vista.menu.PantallaInicio;
@@ -21,6 +23,7 @@ import model.Pokemon;
 import servicio.PartidaService;
 
 import java.net.URL;
+import java.util.List;
 
 /** Centraliza la navegación y conserva las pantallas a las que se puede volver. */
 public class GestorPantallas {
@@ -149,16 +152,28 @@ public class GestorPantallas {
         nuevaPantallaMapa.mostrar(stage);
     }
 
-    public void iniciarCombate(Entrenador entrenadorJugador, Pokemon pokemonSalvaje) {
-        if (combateActivo || entrenadorJugador == null || pokemonSalvaje == null) return;
+    public void iniciarCombate(Entrenador entrenadorJugador, Pokemon pokemon) {
+        if (combateActivo || entrenadorJugador == null) return;
+
+        Pokemon activo = entrenadorJugador.getPokemonActivo();
+
+        if (activo == null) return;
+
+        Pokemon pokemonSalvaje =
+                GeneradorPokemonSalvaje.generarPokemonSegunNivel(activo.getNivel());
 
         combateActivo = true;
         pantallaMapaAnterior = pantallaActual;
 
         try {
             CombateViewModel viewModel = new CombateViewModel(entrenadorJugador, pokemonSalvaje);
-            viewModel.setOnTerminarCombateCallback(this::regresarAlMapa);
-            new PantallaCombate(viewModel, this).mostrar(stage);
+
+            PantallaCombate pantallaCombate = new PantallaCombate(viewModel, this);
+
+            viewModel.setOnTerminarCombateCallback(pantallaCombate::mostrarResultados);
+
+            pantallaCombate.mostrar(stage);
+
         } catch (RuntimeException e) {
             combateActivo = false;
             throw e;
