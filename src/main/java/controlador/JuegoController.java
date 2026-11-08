@@ -18,7 +18,7 @@ public class JuegoController {
     private static final long INTERVALO_ANIMACION = 120_000_000L;
     private static final long INTERVALO_IDLE = 500_000_000L;
     private static final long INTERVALO_VERIFICACION = 3_000_000_000L;
-    private static final double PROBABILIDAD_ENCUENTRO = 0.80;
+    private static final double PROBABILIDAD_ENCUENTRO = 0.85;
 
     private final Jugador jugador;
     private final VistaJugador vista;
@@ -171,12 +171,8 @@ public class JuegoController {
         double desplazamientoX = (48 - anchoJugador) / 2;
         double desplazamientoY = 48 - altoJugador;
 
-        Rectangle jugadorProximo = new Rectangle(
-                nuevoX + desplazamientoX,
-                nuevoY + desplazamientoY,
-                anchoJugador,
-                altoJugador
-        );
+        Rectangle jugadorProximo = new Rectangle(nuevoX + desplazamientoX, nuevoY + desplazamientoY,
+                anchoJugador, altoJugador);
 
         for (Shape obstaculo : colisiones) {
             Shape interseccion = Shape.intersect(jugadorProximo, obstaculo);

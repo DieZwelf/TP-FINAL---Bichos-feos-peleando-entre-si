@@ -6,10 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import model.AccionJugador;
-import model.Combate;
-import model.Entrenador;
-import model.Pokemon;
+import model.*;
 
 import java.util.List;
 
@@ -24,6 +21,9 @@ public class CombateViewModel {
     private final StringProperty nombreJugador = new SimpleStringProperty("");
     private final StringProperty nivelJugador = new SimpleStringProperty("");
 
+    private final StringProperty nombreEnemigo = new SimpleStringProperty("");
+    private final StringProperty nivelEnemigo = new SimpleStringProperty("");
+
     private final ObservableList<String> logsCombate = FXCollections.observableArrayList();
     private Runnable onTerminarCombateCallback;
 
@@ -34,13 +34,33 @@ public class CombateViewModel {
         logsCombate.add("¡Un " + pokemonSalvaje.getNombre() + " salvaje apareció!");
     }
 
+    private void repartirExperiencia() {
+        Pokemon salvaje = modeloCombate.getPokemonSalvaje();
+
+        int experienciaGanada = salvaje.getNivel() * 20;
+
+        for (Pokemon pokemon : modeloCombate.getEntrenador().getEquipo()) {
+            int nivelesSubidos = pokemon.ganarExperiencia(experienciaGanada);
+
+            logsCombate.add(pokemon.getNombre() + " recibió " + experienciaGanada + " XP.");
+
+            if (nivelesSubidos > 0) {
+                logsCombate.add(pokemon.getNombre() + " subió " + nivelesSubidos + " nivel(es)!");
+            }
+        }
+    }
+
     public void ejecutarAccion(AccionJugador accion) {
         if (modeloCombate.getEstado() != model.EstadoCombate.ACTIVO) return;
 
-        java.util.List<String> nuevosLogs = modeloCombate.turno(accion);
-        logsCombate.setAll(nuevosLogs);
+        List<String> nuevosLogs = modeloCombate.turno(accion);
+        logsCombate.addAll(nuevosLogs);
 
         sincronizarEstado();
+
+        if (modeloCombate.getEstado() == model.EstadoCombate.VICTORIA) {
+            repartirExperiencia();
+        }
 
         if (modeloCombate.getEstado() != model.EstadoCombate.ACTIVO && onTerminarCombateCallback != null) {
             onTerminarCombateCallback.run();
@@ -65,6 +85,8 @@ public class CombateViewModel {
 
         if (enemigo != null && enemigo.getVidaMaxima() > 0) {
             hpEnemigo.set(enemigo.getVida() / enemigo.getVidaMaxima());
+            nombreEnemigo.set(enemigo.getNombre());
+            nivelEnemigo.set("Nivel: " + enemigo.getNivel());
         }
     }
 
@@ -96,9 +118,37 @@ public class CombateViewModel {
     }
 
     // Getters para los Bindings de la Vista
-    public DoubleProperty hpJugadorProperty() { return hpJugador; }
-    public DoubleProperty hpEnemigoProperty() { return hpEnemigo; }
-    public StringProperty nombreJugadorProperty() { return nombreJugador; }
-    public StringProperty nivelJugadorProperty() { return nivelJugador; }
+    public DoubleProperty hpJugadorProperty() {
+        return hpJugador;
+    }
+
+    public DoubleProperty hpEnemigoProperty() {
+        return hpEnemigo;
+    }
+
+    public StringProperty nombreJugadorProperty() {
+        return nombreJugador;
+    }
+
+    public StringProperty nivelJugadorProperty() {
+        return nivelJugador;
+    }
+
     public ObservableList<String> getLogsCombate() { return logsCombate; }
+
+    public String getNombreEnemigo() {
+        return nombreEnemigo.get();
+    }
+
+    public StringProperty nombreEnemigoProperty() {
+        return nombreEnemigo;
+    }
+
+    public String getNivelEnemigo() {
+        return nivelEnemigo.get();
+    }
+
+    public StringProperty nivelEnemigoProperty() {
+        return nivelEnemigo;
+    }
 }
