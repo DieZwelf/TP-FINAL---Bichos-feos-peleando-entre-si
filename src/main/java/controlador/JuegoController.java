@@ -18,7 +18,7 @@ public class JuegoController {
     private static final long INTERVALO_ANIMACION = 120_000_000L;
     private static final long INTERVALO_IDLE = 500_000_000L;
     private static final long INTERVALO_VERIFICACION = 3_000_000_000L;
-    private static final double PROBABILIDAD_ENCUENTRO = 0.85;
+    private static final double PROBABILIDAD_ENCUENTRO = 0;
 
     private final Jugador jugador;
     private final VistaJugador vista;
@@ -93,6 +93,18 @@ public class JuegoController {
             actualizarAnimacionQuieto(ahora);
             ultimoTiempoEncuentro = 0;
         }
+
+        if (seMovio) {
+            vistaJuego.verificarTransicionMapa();
+        }
+
+        if (seMovio) {
+            System.out.println(
+                    "Jugador X: " + jugador.getX() +
+                            " | Jugador Y: " + jugador.getY()
+            );
+        }
+
     }
 
     private boolean moverJugador() {

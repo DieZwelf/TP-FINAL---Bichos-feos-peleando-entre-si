@@ -259,4 +259,8 @@ public abstract class CargadorMapaTiled {
     public List<Shape> getColisiones() {
         return colisiones;
     }
+
+    public List<TransicionMapa> obtenerTransiciones() {
+        return List.of();
+    }
 }

@@ -15,6 +15,9 @@ import model.GeneradorPokemonSalvaje;
 import model.Jugador;
 import model.Pokemon;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Pantalla de exploración: compone el mapa y al jugador. */
 public class VistaJuego extends PantallaBase {
 
@@ -30,12 +33,18 @@ public class VistaJuego extends PantallaBase {
     private Pane root;
     private Scene escena;
     private JuegoController controlador;
+    private List<TransicionMapa> transiciones = new ArrayList<>();
 
     public VistaJuego(Jugador jugador, GestorPantallas pantallas) {
         super(pantallas);
         this.jugador = jugador;
-        this.vistaMapa = new VistaMapa(new MapaPueblo());
+
+        MapaPueblo mapaInicial = new MapaPueblo();
+
+        this.vistaMapa = new VistaMapa(mapaInicial);
         this.vistaJugador = new VistaJugador(jugador);
+
+        actualizarTransiciones(mapaInicial);
     }
 
     @Override
@@ -136,35 +145,78 @@ public class VistaJuego extends PantallaBase {
     }
 
     public void cambiarMapa(CargadorMapaTiled nuevoMapa,
-                            double nuevaX,
-                            double nuevaY) {
+                            double nuevaX, double nuevaY) {
 
-        // 1. Crear la vista del nuevo mapa.
-        VistaMapa nuevaVista = new VistaMapa(nuevoMapa);
+        VistaMapa nuevoVistaMapa = new VistaMapa(nuevoMapa);
 
-        // 2. Actualizar la referencia al mapa.
-        vistaMapa = nuevaVista;
+        this.vistaMapa = nuevoVistaMapa;
 
-        // 3. Cambiar la posición del jugador.
         jugador.setX(nuevaX);
         jugador.setY(nuevaY);
 
-        // 4. Reemplazar el mapa dentro del mundo.
         mundo.getChildren().setAll(vistaMapa, vistaJugador);
 
-        // 5. Actualizar las dimensiones del mundo.
         mundo.setPrefSize(
                 vistaMapa.getPrefWidth(),
                 vistaMapa.getPrefHeight()
         );
 
-        // 6. Actualizar las colisiones del controlador.
+        actualizarTransiciones(nuevoMapa);
+
         if (controlador != null) {
             controlador.setColisiones(vistaMapa.getColisiones());
         }
 
-        // 7. Actualizar la cámara.
         actualizarCamara();
     }
+
+    private void configurarTransiciones(CargadorMapaTiled mapa) {
+
+        transiciones.clear();
+
+        if (mapa instanceof MapaPueblo) {
+
+            // Salida del pueblo hacia el bosque.
+            transiciones.add(new TransicionMapa(
+                    450, 100,
+                    80, 40,
+                    MapaBosque::new,
+                    100, 500
+            ));
+
+        } else if (mapa instanceof MapaBosque) {
+
+            // Regreso del bosque hacia el pueblo.
+            transiciones.add(new TransicionMapa(
+                    100, 550,
+                    80, 40,
+                    MapaPueblo::new,
+                    450, 150
+            ));
+        }
+    }
+
+    public void verificarTransicionMapa() {
+
+        for (TransicionMapa transicion : transiciones) {
+
+            if (transicion.jugadorEntro(jugador.getX(), jugador.getY())) {
+
+                cambiarMapa(
+                        transicion.getMapaDestino(),
+                        transicion.getSpawnX(),
+                        transicion.getSpawnY()
+                );
+
+                return;
+            }
+        }
+    }
+
+    private void actualizarTransiciones(CargadorMapaTiled mapa) {
+        transiciones = mapa.obtenerTransiciones();
+    }
+
+
 
 }

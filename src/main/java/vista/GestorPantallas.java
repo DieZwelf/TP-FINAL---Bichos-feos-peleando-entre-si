@@ -5,7 +5,7 @@ import javafx.scene.input.KeyCode;
 import model.GeneradorPokemonSalvaje;
 import model.Jugador;
 import vista.base.PantallaBase;
-import vista.combate.PantallaResultados;
+import vista.juego.CargadorMapaTiled;
 import vista.juego.MapaBosque;
 import vista.menu.PantallaLogin;
 import vista.menu.PantallaInicio;
@@ -38,6 +38,7 @@ public class GestorPantallas {
 
     private Entrenador entrenador;
     private boolean combateActivo;
+    private VistaJuego vistaJuego;
 
     public GestorPantallas(Stage stage) {
         this.stage = stage;
@@ -147,11 +148,13 @@ public class GestorPantallas {
 
     public void iniciarPartida() {
         entrenador = partidaService.crearEntrenadorInicial();
-        var jugador = partidaService.crearJugadorInicial(entrenador);
-        VistaJuego nuevaPantallaMapa = new VistaJuego(jugador, this);
-        nuevaPantallaMapa.mostrar(stage);
-    }
 
+        Jugador jugador = partidaService.crearJugadorInicial(entrenador);
+
+        vistaJuego = new VistaJuego(jugador, this);
+
+        vistaJuego.mostrar(stage);
+    }
     public void iniciarCombate(Entrenador entrenadorJugador, Pokemon pokemon) {
         if (combateActivo || entrenadorJugador == null) return;
 
@@ -197,9 +200,9 @@ public class GestorPantallas {
         stage.setFullScreen(!stage.isFullScreen());
     }
 
-    public void cambiarMapaBosque (){
-        entrenador = partidaService.crearEntrenadorInicial();
-        var jugador = partidaService.crearJugadorInicial(entrenador);
-        VistaJuego nuevaPantallaMapa = new VistaJuego(jugador, this);
+    public void cambiarMapa(CargadorMapaTiled mapa, double x, double y) {
+        if (vistaJuego == null) return;
+
+        vistaJuego.cambiarMapa(mapa, x, y);
     }
 }
