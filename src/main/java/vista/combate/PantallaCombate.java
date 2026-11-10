@@ -98,7 +98,17 @@ public class PantallaCombate extends PantallaBase {
 
         pantalla.getChildren().addAll(titulo, mensajes, instruccion);
 
+        pantalla.setFocusTraversable(true);
+        pantalla.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.SPACE) {
+                pantallas.regresarAlMapa();
+                event.consume();
+            }
+        });
+
         root.getChildren().setAll(pantalla);
+
+        javafx.application.Platform.runLater(pantalla::requestFocus);
     }
 
     private Label crearLabel(String estilo) {
@@ -159,7 +169,7 @@ public class PantallaCombate extends PantallaBase {
         Button equipo = crearBoton("POKEMONES");
 
         atacar.setOnAction(e -> viewModel.ejecutarAccion(AccionJugador.ATACAR));
-        mochila.setOnAction(e -> pantallas.mostrarInventario());
+        mochila.setOnAction(e -> pantallas.mostrarInventario(viewModel));
         huir.setOnAction(e -> viewModel.ejecutarAccion(AccionJugador.HUIR));
         equipo.setOnAction(e -> pantallas.mostrarEquipo());
 
@@ -212,10 +222,8 @@ public class PantallaCombate extends PantallaBase {
         aplicarBindings();
 
         escena.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.SPACE
-                    && viewModel.getLogsCombate().stream().anyMatch(
-                    log -> log.contains("ha vencido a")
-            )) {
+            if (event.getCode() == KeyCode.SPACE && viewModel.getLogsCombate().stream().anyMatch(
+                    log -> log.contains("ha vencido a"))) {
                 pantallas.regresarAlMapa();
                 event.consume();
             }

@@ -1,5 +1,6 @@
 package vista.combate;
 
+import controlador.CombateViewModel;
 import controlador.InventarioViewModel;
 import vista.GestorPantallas;
 import vista.base.PantallaBase;
@@ -24,10 +25,13 @@ public class PantallaInventario extends PantallaBase {
     private final InventarioViewModel viewModel;
     private ListView<String> listaVista;
 
-    public PantallaInventario(GestorPantallas pantallas, Entrenador entrenador) {
+    public PantallaInventario(GestorPantallas pantallas, Entrenador entrenador, CombateViewModel combateViewModel) {
         super(pantallas);
         this.entrenador = entrenador;
         this.viewModel = new InventarioViewModel(entrenador.getInventario(), this);
+        if (combateViewModel != null) {
+        this.viewModel.setCallbackUsarPokebola(combateViewModel::intentarUsarPokebola);
+        }
     }
 
     @Override
@@ -56,7 +60,10 @@ public class PantallaInventario extends PantallaBase {
 
         List<String> logs = new ArrayList<>();
         boolean usado = viewModel.usarItem(items.get(indice), entrenador, logs);
-        logs.forEach(System.out::println);
+        for (String s : logs)
+        {
+            System.out.println(s);
+        }
         if (!usado && logs.isEmpty()) {
             System.out.println("No se pudo utilizar el objeto.");
         }
