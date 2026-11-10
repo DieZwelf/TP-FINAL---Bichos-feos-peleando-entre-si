@@ -18,7 +18,7 @@ public class JuegoController {
     private static final long INTERVALO_ANIMACION = 120_000_000L;
     private static final long INTERVALO_IDLE = 500_000_000L;
     private static final long INTERVALO_VERIFICACION = 3_000_000_000L;
-    private static final double PROBABILIDAD_ENCUENTRO = 0.9;
+    private static final double PROBABILIDAD_ENCUENTRO = 0.99;
 
     private final Jugador jugador;
     private final VistaJugador vista;

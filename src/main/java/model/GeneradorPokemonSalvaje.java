@@ -33,6 +33,10 @@ public class GeneradorPokemonSalvaje {
             new DatosEspecie("Bellsprout", 50, 75, 35, 40, TipoPokemon.PLANTA)
     );
 
+    public static List<DatosEspecie> getESPECIES() {
+        return ESPECIES;
+    }
+
     public static Pokemon generarPokemonSegunNivel(int nivelPokemon) {
 
         if (nivelPokemon < 1 || nivelPokemon > TablaProgresion.NIVEL_MAXIMO) {

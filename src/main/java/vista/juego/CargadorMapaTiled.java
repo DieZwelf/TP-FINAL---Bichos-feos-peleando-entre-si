@@ -108,12 +108,7 @@ public abstract class CargadorMapaTiled {
     }
 
     // Recorre todas las capas del archivo Tiled.
-    protected void dibujarCapas(
-            JsonObject mapa,
-            GraphicsContext gc,
-            Image tileset,
-            int anchoMapa
-    ) {
+    protected void dibujarCapas(JsonObject mapa, GraphicsContext gc, Image tileset, int anchoMapa) {
 
         JsonArray capas = mapa.getAsJsonArray("layers");
 

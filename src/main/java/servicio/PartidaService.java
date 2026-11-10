@@ -12,9 +12,8 @@ public class PartidaService {
         Entrenador entrenador = new Entrenador("Pepe", new TreeMap<>(), new ArrayList<>(), "20");
 
         agregarPokemonInicial(entrenador, "Pikachu", TipoPokemon.ELECTRICO);
-        agregarPokemonInicial(entrenador, "Pepe", TipoPokemon.TIERRA);
-        agregarPokemonInicial(entrenador, "Juan", TipoPokemon.TIERRA);
-        agregarPokemonInicial(entrenador, "Jose", TipoPokemon.TIERRA);
+        agregarPokemonInicial(entrenador, "Charmander", TipoPokemon.FUEGO);
+
 
         entrenador.setPokemonActivo(entrenador.getEquipo().get(0));
         entrenador.getInventario().agregarObjeto(new Pocion("Pocion", "Cura", 2, 2, 50));

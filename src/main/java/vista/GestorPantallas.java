@@ -45,6 +45,8 @@ public class GestorPantallas {
         configurarVentana();
     }
 
+
+
     private void configurarVentana() {
         stage.setTitle("Bichos feos");
 
@@ -191,6 +193,7 @@ public class GestorPantallas {
             combateActivo = false;
             throw e;
         }
+
     }
 
     public void regresarAlMapa() {

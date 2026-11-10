@@ -29,6 +29,10 @@ public class CombateViewModel {
     private final ObservableList<String> logsCombate = FXCollections.observableArrayList();
     private Runnable onTerminarCombateCallback;
 
+    public Combate getModeloCombate() {
+        return modeloCombate;
+    }
+
     public CombateViewModel(Entrenador entrenador, Pokemon pokemonSalvaje) {
         this.modeloCombate = new Combate(entrenador, pokemonSalvaje);
         sincronizarEstado();
@@ -91,6 +95,8 @@ public class CombateViewModel {
             nombreEnemigo.set(enemigo.getNombre());
             nivelEnemigo.set("Nivel: " + enemigo.getNivel());
         }
+
+
     }
 
     public boolean cambiarPokemonActivo(int posicion) {

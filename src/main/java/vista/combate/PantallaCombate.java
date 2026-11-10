@@ -3,6 +3,10 @@ package vista.combate;
 import controlador.CombateViewModel;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.*;
+import model.DatosEspecie;
+import model.GeneradorPokemonSalvaje;
+import model.Pokemon;
 import vista.GestorPantallas;
 import vista.base.PantallaBase;
 
@@ -16,14 +20,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import model.AccionJugador;
 
 import java.net.URL;
+import java.util.List;
 
 public class PantallaCombate extends PantallaBase {
 
@@ -36,6 +36,10 @@ public class PantallaCombate extends PantallaBase {
     private Label lblMensajeActual;
     private Label lblNombreEnemigo;
     private Label lblNivelEnemigo;
+    private Image pokemonActivoImagen;
+    private Image pokemonSalvajeImagen;
+    private ImageView imagenPokemonActivo;
+    private ImageView imagenPokemonSalvaje;
 
 
     public PantallaCombate(CombateViewModel viewModel, GestorPantallas pantallas) {
@@ -45,12 +49,33 @@ public class PantallaCombate extends PantallaBase {
 
     @Override
     protected Parent crearContenido() {
-        StackPane root = new StackPane();
+        Pane root = new Pane();
         root.getStyleClass().add("pantalla-combate-root");
 
         inicializarComponentes();
+        imagenPokemonActivo = new ImageView(pokemonActivoImagen);
+        imagenPokemonSalvaje = new ImageView(pokemonSalvajeImagen);
 
-        root.getChildren().addAll(crearFondo(root), crearHudEnemigo(), crearPanelInferior());
+        imagenPokemonActivo.setFitWidth(200);
+        imagenPokemonActivo.setFitHeight(200);
+        imagenPokemonActivo.setPreserveRatio(true);
+
+        imagenPokemonSalvaje.setFitWidth(200);
+        imagenPokemonSalvaje.setFitHeight(200);
+        imagenPokemonSalvaje.setPreserveRatio(true);
+
+        // Posición de los Pokémon
+        imagenPokemonActivo.setLayoutX(200);
+        imagenPokemonActivo.setLayoutY(350);
+
+        imagenPokemonSalvaje.setLayoutX(850);
+        imagenPokemonSalvaje.setLayoutY(150);
+
+        root.getChildren().addAll(
+                crearFondo(root),
+                imagenPokemonActivo,
+                imagenPokemonSalvaje
+        );
 
         return root;
     }
@@ -64,6 +89,7 @@ public class PantallaCombate extends PantallaBase {
         lblMensajeActual = crearLabel("texto-retro");
         lblNombreEnemigo = crearLabel("texto-retro");
         lblNivelEnemigo = crearLabel("texto-retro");
+        cargarImagenPokemon();
     }
 
     private ProgressBar crearBarraVida() {
@@ -117,7 +143,7 @@ public class PantallaCombate extends PantallaBase {
         return label;
     }
 
-    private ImageView crearFondo(StackPane root) {
+    private ImageView crearFondo(Pane root) {
         URL recurso = getClass().getResource("/images/mapa/escenario_prueba.jpg");
         if (recurso == null) {
             throw new IllegalStateException("No se encontró /images/mapa/escenario_prueba.jpg");
@@ -214,6 +240,7 @@ public class PantallaCombate extends PantallaBase {
     @Override
     public void alMostrar() {
         viewModel.refrescarEstado();
+        cargarImagenPokemon();
     }
 
     @Override
@@ -228,5 +255,42 @@ public class PantallaCombate extends PantallaBase {
                 event.consume();
             }
         });
+    }
+
+    public void cargarImagenPokemon (){
+        Pokemon activo = viewModel.getModeloCombate().getEntrenador().getPokemonActivo();
+        Pokemon salvaje = viewModel.getModeloCombate().getPokemonSalvaje();
+
+        List<DatosEspecie> DATOS = GeneradorPokemonSalvaje.getESPECIES();
+        String rutaActivo = "/images/pokemones/espalda/" + activo.getNombre() + ".png";
+
+        String rutaSalvaje = "/images/pokemones/frente/" + salvaje.getNombre() + ".png";
+
+        for (int i = 0; i < DATOS.size(); i++)
+        {
+            if (activo.getNombre().equalsIgnoreCase(DATOS.get(i).getNombre()))
+            {
+                pokemonActivoImagen = new Image(String.valueOf(getClass().getResource(rutaActivo)));
+
+                URL recurso = getClass().getResource(rutaActivo);
+
+                if (recurso != null) {
+                    pokemonActivoImagen = new Image(recurso.toExternalForm());
+
+                    if (imagenPokemonActivo != null) {
+                        imagenPokemonActivo.setImage(pokemonActivoImagen);
+                    }
+                }
+
+            }
+
+            if (salvaje.getNombre().equalsIgnoreCase(DATOS.get(i).getNombre()))
+            {
+                pokemonSalvajeImagen = new Image(String.valueOf(getClass().getResource(rutaSalvaje)));
+
+            }
+        }
+
+
     }
 }
