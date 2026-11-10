@@ -10,6 +10,7 @@ import model.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class CombateViewModel {
 
@@ -61,6 +62,7 @@ public class CombateViewModel {
 
         if (modeloCombate.getEstado() == model.EstadoCombate.VICTORIA) {
             repartirExperiencia();
+            otorgarRecompensa();
         }
 
         if (modeloCombate.getEstado() != model.EstadoCombate.ACTIVO && onTerminarCombateCallback != null) {
@@ -135,6 +137,24 @@ public class CombateViewModel {
         return usado;
     }
 
+    public void otorgarRecompensa()
+    {
+        Random random = new Random();
+        boolean esPocion = random.nextBoolean();
+
+        Item itemObtenido;
+        if (esPocion)
+        {
+            int nivel = random.nextInt(1,4);
+            itemObtenido = new Pocion("Pocion","Pocion de curacion",nivel, (int) random.nextDouble(1,11),(nivel*15));
+        } else
+        {
+            itemObtenido = new Pokebola("Pokebola","Captura pokemones",false);
+        }
+
+        modeloCombate.getEntrenador().getInventario().agregarObjeto(itemObtenido);
+        logsCombate.add("¡Has obtenido " + itemObtenido.getNombre() + "!");
+    }
 
     public List<Pokemon> getEquipoJugador() {
         return modeloCombate.getEntrenador().getEquipo();
