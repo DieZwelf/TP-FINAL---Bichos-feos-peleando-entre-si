@@ -1,6 +1,7 @@
 package vista.juego;
 
 import controlador.JuegoController;
+import model.CalculadoraCaptura;
 import vista.GestorPantallas;
 import vista.base.PantallaBase;
 
@@ -70,9 +71,7 @@ public class VistaJuego extends PantallaBase {
     @Override
     protected void configurarEscena(Scene escena) {
         this.escena = escena;
-        controlador = new JuegoController(
-                jugador, vistaJugador, this, vistaMapa.getColisiones()
-        );
+        controlador = new JuegoController(jugador, vistaJugador, this, vistaMapa.getColisiones());
         controlador.setOnEncuentroGenerado(this::generarEncuentro);
         configurarTeclas(escena);
     }
@@ -96,6 +95,11 @@ public class VistaJuego extends PantallaBase {
     private void generarEncuentro() {
         Pokemon pokemonActivo = jugador.getEntrenador().getPokemonActivo();
         if (pokemonActivo == null) return;
+
+        double probabilidad = CalculadoraCaptura.calcularProbabilidad(pokemonActivo);
+
+        System.out.println("Vida: " + pokemonActivo.getVida() + "/" + pokemonActivo.getVidaMaxima());
+        System.out.println("Probabilidad: " + (probabilidad * 100) + "%");
 
         int nivelJugador = pokemonActivo.getNivel();
         Pokemon salvaje = GeneradorPokemonSalvaje.generarPokemonSegunNivel(nivelJugador);
@@ -144,8 +148,7 @@ public class VistaJuego extends PantallaBase {
         escena.addEventFilter(KeyEvent.KEY_RELEASED, controlador::manejarTeclaLiberada);
     }
 
-    public void cambiarMapa(CargadorMapaTiled nuevoMapa,
-                            double nuevaX, double nuevaY) {
+    public void cambiarMapa(CargadorMapaTiled nuevoMapa, double nuevaX, double nuevaY) {
 
         VistaMapa nuevoVistaMapa = new VistaMapa(nuevoMapa);
 
@@ -156,10 +159,7 @@ public class VistaJuego extends PantallaBase {
 
         mundo.getChildren().setAll(vistaMapa, vistaJugador);
 
-        mundo.setPrefSize(
-                vistaMapa.getPrefWidth(),
-                vistaMapa.getPrefHeight()
-        );
+        mundo.setPrefSize(vistaMapa.getPrefWidth(), vistaMapa.getPrefHeight());
 
         actualizarTransiciones(nuevoMapa);
 
@@ -177,22 +177,12 @@ public class VistaJuego extends PantallaBase {
         if (mapa instanceof MapaPueblo) {
 
             // Salida del pueblo hacia el bosque.
-            transiciones.add(new TransicionMapa(
-                    450, 100,
-                    80, 40,
-                    MapaBosque::new,
-                    100, 500
-            ));
+        transiciones.add(new TransicionMapa(450, 100, 80, 40, MapaBosque::new,100, 500));
 
         } else if (mapa instanceof MapaBosque) {
-
             // Regreso del bosque hacia el pueblo.
-            transiciones.add(new TransicionMapa(
-                    100, 550,
-                    80, 40,
-                    MapaPueblo::new,
-                    450, 150
-            ));
+            transiciones.add(new TransicionMapa(100, 550, 80, 40, MapaPueblo::new,
+                    450, 150));
         }
     }
 
@@ -202,12 +192,7 @@ public class VistaJuego extends PantallaBase {
 
             if (transicion.jugadorEntro(jugador.getX(), jugador.getY())) {
 
-                cambiarMapa(
-                        transicion.getMapaDestino(),
-                        transicion.getSpawnX(),
-                        transicion.getSpawnY()
-                );
-
+                cambiarMapa(transicion.getMapaDestino(), transicion.getSpawnX(), transicion.getSpawnY());
                 return;
             }
         }
