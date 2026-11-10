@@ -10,6 +10,10 @@
     -fx-faint-focus-color: transparent;
 }
 
+.label {
+    -fx-text-background-color: transparent;
+}
+
 /* ---------- Botón retro: marco doble con relleno oscuro suave ---------- */
 .boton-retro {
     -fx-background-color: rgba(18, 32, 29, 0.82);
