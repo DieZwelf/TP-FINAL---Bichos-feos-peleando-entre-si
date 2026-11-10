@@ -8,6 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import model.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CombateViewModel {
@@ -108,6 +109,32 @@ public class CombateViewModel {
 
         return true;
     }
+
+    public boolean intentarUsarPokebola(Item item)
+    {
+        if (!(item instanceof Pokebola)) return false;
+
+        if (modeloCombate.getEstado() != EstadoCombate.ACTIVO) return false;
+
+        Entrenador entrenador = modeloCombate.getEntrenador();
+        int cantidadAntes = entrenador.getInventario().contarCantidad(item);
+
+        List<String> logs = modeloCombate.turno(item,modeloCombate.getPokemonSalvaje());
+
+        logsCombate.addAll(logs);
+        sincronizarEstado();
+
+        int cantidadDespues = entrenador.getInventario().contarCantidad(item);
+        boolean usado = cantidadDespues < cantidadAntes;
+
+        if(modeloCombate.getEstado() != EstadoCombate.ACTIVO && onTerminarCombateCallback != null)
+        {
+            onTerminarCombateCallback.run();
+        }
+
+        return usado;
+    }
+
 
     public List<Pokemon> getEquipoJugador() {
         return modeloCombate.getEntrenador().getEquipo();

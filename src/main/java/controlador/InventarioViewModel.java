@@ -1,24 +1,28 @@
 package controlador;
 
-import model.Entrenador;
-import model.Inventario;
-import model.Item;
-import model.Pokemon;
+import model.*;
 import vista.combate.PantallaInventario;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /** Adapta los datos del inventario para que la pantalla pueda mostrarlos. */
 public class InventarioViewModel {
 
     private final Inventario inventario;
     private final PantallaInventario pantallaInventario;
+    private Predicate<Item> callbackUsarPokebola;
 
     public InventarioViewModel(Inventario inventario, PantallaInventario pantallaInventario) {
         this.inventario = inventario;
         this.pantallaInventario = pantallaInventario;
+    }
+
+    public void setCallbackUsarPokebola(Predicate<Item> callbackUsarPokebola) {
+        this.callbackUsarPokebola = callbackUsarPokebola;
     }
 
     public void actualizarVista() {
@@ -38,14 +42,32 @@ public class InventarioViewModel {
     }
 
     public boolean usarItem(Item item, Entrenador entrenador, List<String> logs) {
-        Pokemon objetivo = entrenador.getPokemonActivo();
-        if (objetivo == null) {
-            logs.add("No hay un Pokémon activo.");
-            return false;
+
+        if (item instanceof Pocion)
+        {
+            Pokemon objetivo = entrenador.getPokemonActivo();
+            if (objetivo == null) {
+                logs.add("No hay un Pokémon activo.");
+                return false;
+            }
+
+            boolean usado = entrenador.usarItem(item, objetivo, logs);
+            if (usado) actualizarVista();
+            return usado;
         }
 
-        boolean usado = entrenador.usarItem(item, objetivo, logs);
+        if (item instanceof Pokebola) {
+
+            if (callbackUsarPokebola == null) {
+                logs.add("No se puede utilizar la Pokébola.");
+                return false;
+            }
+        }
+        boolean usado = callbackUsarPokebola.test(item);
         if (usado) actualizarVista();
+
         return usado;
     }
+
+    
 }
