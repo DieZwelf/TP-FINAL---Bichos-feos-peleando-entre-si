@@ -122,6 +122,12 @@ public class Combate {
             return registros;
         }
 
+        if (item instanceof Pokebola pokebola && pokebola.isOcupada())
+        {
+            estado = EstadoCombate.CAPTURA;
+            return registros;
+        }
+
         registros.add(ejecutarAtaque(pokemonSalvaje, entrenador.getPokemonActivo()));
         verificarFinal(registros);
 

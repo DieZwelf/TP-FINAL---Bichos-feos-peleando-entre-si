@@ -12,6 +12,7 @@ public enum EstadoCombate {
     ACTIVO("El combate está en curso"),
     VICTORIA("¡Has ganado el combate!"),
     DERROTA("Has perdido el combate..."),
+    CAPTURA("Has capturado al Pokemon!"),
     HUIDA("Has escapado del combate");
 
     private final String mensaje;
