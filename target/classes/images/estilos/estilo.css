@@ -78,13 +78,13 @@
     -fx-translate-y: 2;
 }
 
-/*Panel: transparente */
+/* Panel: transparente */
 .panel-retro {
     -fx-background-color: transparent;
     -fx-padding: 36 48 36 48;
 }
 
-/*Textos: halo oscuro para que se lean sobre el paisaje*/
+/* Textos: halo oscuro para que se lean sobre el paisaje */
 .texto-retro {
     -fx-text-fill: #f5f0d0;
     -fx-font-family: "Consolas";
@@ -166,4 +166,28 @@
 
     /* Sombra pesada y dura tirada hacia abajo (offsetX: 4, offsetY: 10) para dar peso físico */
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.95), 0, 0, 4, 10);
+}
+
+/* ==========================================
+   ESTILOS EXCLUSIVOS PARA SPRITES DE POKEMON
+   ================================          */
+
+/* Estilo general para cualquier imagen de Pokémon en combate */
+.imagen-pokemon {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 5);
+}
+
+/* Evita que los píxeles se vean borrosos al escalar los sprites */
+.image-view {
+    -fx-smooth: false;
+}
+
+/* Opcional: Efecto visual cuando el Pokémon salvaje aparece */
+.pokemon-salvaje {
+    -fx-opacity: 1.0;
+}
+
+/* Opcional: Efecto para el Pokémon activo del jugador (espalda) */
+.pokemon-activo {
+    -fx-opacity: 1.0;
 }

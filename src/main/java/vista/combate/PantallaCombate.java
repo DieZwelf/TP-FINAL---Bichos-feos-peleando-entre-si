@@ -1,9 +1,11 @@
 package vista.combate;
 
 import controlador.CombateViewModel;
+import javafx.animation.TranslateTransition;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.util.Duration;
 import model.DatosEspecie;
 import model.GeneradorPokemonSalvaje;
 import model.Pokemon;
@@ -48,33 +50,43 @@ public class PantallaCombate extends PantallaBase {
     }
 
     @Override
-    protected Parent crearContenido() {
-        Pane root = new Pane();
+    protected StackPane crearContenido() {
+        StackPane root = new StackPane();
         root.getStyleClass().add("pantalla-combate-root");
 
         inicializarComponentes();
         imagenPokemonActivo = new ImageView(pokemonActivoImagen);
         imagenPokemonSalvaje = new ImageView(pokemonSalvajeImagen);
 
-        imagenPokemonActivo.setFitWidth(200);
-        imagenPokemonActivo.setFitHeight(200);
+        // Tamaños configurados para guardar proporción retro
+        imagenPokemonActivo.setFitWidth(700);
+        imagenPokemonActivo.setFitHeight(700);
         imagenPokemonActivo.setPreserveRatio(true);
+        imagenPokemonActivo.getStyleClass().add("imagen-pokemon");
 
-        imagenPokemonSalvaje.setFitWidth(200);
-        imagenPokemonSalvaje.setFitHeight(200);
+        imagenPokemonSalvaje.setFitWidth(400);
+        imagenPokemonSalvaje.setFitHeight(400);
         imagenPokemonSalvaje.setPreserveRatio(true);
+        imagenPokemonSalvaje.getStyleClass().add("imagen-pokemon");
 
-        // Posición de los Pokémon
-        imagenPokemonActivo.setLayoutX(200);
-        imagenPokemonActivo.setLayoutY(350);
+        // Contenedor Pane exclusivo para los sprites con clics transparentes para no bloquear botones
+        Pane capaSprites = new Pane();
+        capaSprites.setMouseTransparent(true);
 
-        imagenPokemonSalvaje.setLayoutX(850);
-        imagenPokemonSalvaje.setLayoutY(150);
+        // Posiciones exactas en el escenario
+        imagenPokemonSalvaje.setLayoutX(710);
+        imagenPokemonSalvaje.setLayoutY(160);
+
+        imagenPokemonActivo.setLayoutX(90);
+        imagenPokemonActivo.setLayoutY(120);
+
+        capaSprites.getChildren().addAll(imagenPokemonSalvaje, imagenPokemonActivo);
 
         root.getChildren().addAll(
                 crearFondo(root),
-                imagenPokemonActivo,
-                imagenPokemonSalvaje
+                capaSprites,
+                crearHudEnemigo(),
+                crearPanelInferior()
         );
 
         return root;
@@ -225,6 +237,13 @@ public class PantallaCombate extends PantallaBase {
         lblNombreEnemigo.textProperty().bind(viewModel.nombreEnemigoProperty());
         lblNivelEnemigo.textProperty().bind(viewModel.nivelEnemigoProperty());
 
+        // --- ANIMACIÓN DE GOLPE: SOLO PARA EL ENEMIGO ---
+        viewModel.hpEnemigoProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue.doubleValue() < oldValue.doubleValue()) {
+                reproducirAnimacionGolpe(imagenPokemonSalvaje);
+            }
+        });
+
         viewModel.getLogsCombate().addListener(
                 (ListChangeListener<String>) cambio -> {
                     if (!viewModel.getLogsCombate().isEmpty()) {
@@ -290,7 +309,21 @@ public class PantallaCombate extends PantallaBase {
 
             }
         }
+    }
 
+    public void reproducirAnimacionGolpe(ImageView spriteAfectado) {
+        if (spriteAfectado == null) return;
 
+        TranslateTransition sacudida = new TranslateTransition(Duration.millis(50), spriteAfectado);
+        sacudida.setFromX(0);
+        // Se mueve rápidamente a la izquierda y derecha para simular el impacto
+        sacudida.setByX(10);
+        sacudida.setCycleCount(6); // Cuántas veces se repite el temblor
+        sacudida.setAutoReverse(true); // Vuelve a su posición original
+
+        // Al terminar, nos aseguramos de que quede exactamente en su sitio
+        sacudida.setOnFinished(e -> spriteAfectado.setTranslateX(0));
+
+        sacudida.play();
     }
 }

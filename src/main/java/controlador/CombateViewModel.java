@@ -204,4 +204,6 @@ public class CombateViewModel {
     public StringProperty nivelEnemigoProperty() {
         return nivelEnemigo;
     }
+
+
 }

@@ -1,0 +1,28 @@
+{
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "samplemap1.tmj": {
+            "scale": 1.064,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 400.37593984962405,
+                "y": 400.37593984962405
+            }
+        },
+        "samplemap2.tmj": {
+            "scale": 1.2191666666666667,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 240.32809295967192,
+                "y": 240.3280929596719
+            }
+        }
+    },
+    "openFiles": [
+    ],
+    "project": "mapaCasa.tiled-project",
+    "recentFiles": [
+    ]
+}
