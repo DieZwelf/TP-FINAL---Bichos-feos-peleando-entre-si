@@ -135,10 +135,21 @@ public class GestorPantallas {
         pantallaAnteriorEquipo = null;
     }
 
+    // Inventario desde el mapa
     public void mostrarInventario() {
         if (entrenador == null) return;
+
         pantallaAnteriorInventario = pantallaActual;
-        new PantallaInventario(this, entrenador).mostrar(stage);
+
+        new PantallaInventario(this, entrenador, null).mostrar(stage);
+    }
+
+    public void mostrarInventario(CombateViewModel viewModel) {
+        if (entrenador == null || viewModel == null) return;
+
+        pantallaAnteriorInventario = pantallaActual;
+
+        new PantallaInventario(this, entrenador,viewModel).mostrar(stage);
     }
 
     public void volverDesdeInventario() {
@@ -162,8 +173,7 @@ public class GestorPantallas {
 
         if (activo == null) return;
 
-        Pokemon pokemonSalvaje =
-                GeneradorPokemonSalvaje.generarPokemonSegunNivel(activo.getNivel());
+        Pokemon pokemonSalvaje = GeneradorPokemonSalvaje.generarPokemonSegunNivel(activo.getNivel());
 
         combateActivo = true;
         pantallaMapaAnterior = pantallaActual;
