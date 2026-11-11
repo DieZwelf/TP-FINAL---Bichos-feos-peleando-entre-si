@@ -367,3 +367,68 @@
     -fx-pref-height: 14px;
 }
 
+/* ================= PANEL ADMINISTRADOR ================= */
+
+.panel-admin {
+    -fx-background-color: rgba(18, 32, 29, 0.94);
+    -fx-background-radius: 0;
+
+    /* Marco doble */
+    -fx-border-color: #12201d, #5fae3f;
+    -fx-border-width: 3, 3;
+    -fx-border-insets: 0, 3;
+
+    -fx-padding: 16;
+    -fx-spacing: 12;
+
+    -fx-effect: dropshadow(
+            gaussian, rgba(0, 0, 0, 0.85), 0, 0, 4, 4
+    );
+}
+
+.titulo-admin {
+    -fx-text-fill: #ffde00;
+    -fx-font-family: "Consolas";
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 0 0 8 0;
+}
+
+/* ================= BOTONES ADMINISTRADOR ================= */
+
+.boton-admin {
+    -fx-background-color: rgba(42, 23, 20, 0.95);
+    -fx-background-radius: 0;
+
+    -fx-border-color: #12201d, #5fae3f;
+    -fx-border-width: 2, 2;
+    -fx-border-insets: 0, 2;
+
+    -fx-padding: 9 16 9 16;
+    -fx-min-width: 190;
+
+    -fx-alignment: center;
+    -fx-cursor: hand;
+
+    -fx-text-fill: #f3ecd0;
+    -fx-font-family: "Consolas";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.boton-admin:hover {
+    -fx-background-color: rgba(18, 32, 29, 0.98);
+    -fx-border-color: #12201d, #ffde00;
+    -fx-text-fill: #ffde00;
+}
+
+.boton-admin:pressed {
+    -fx-translate-x: 1;
+    -fx-translate-y: 1;
+}
+
+.boton-admin:disabled {
+    -fx-opacity: 0.5;
+    -fx-cursor: default;
+}
