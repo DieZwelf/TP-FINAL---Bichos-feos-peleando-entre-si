@@ -3,7 +3,7 @@ package model;
 public class Jugador {
     private double x;
     private double y;
-    private final double velocidad;
+    private static double velocidad = 3;
 
     private String direccion; // "ABAJO", "ARRIBA", "IZQUIERDA", "DERECHA"
     private int frameActual;
@@ -11,7 +11,7 @@ public class Jugador {
     private Entrenador entrenador;
     private TipoJugador tipo;
 
-    public Jugador(double xInicial, double yInicial, double velocidad, Entrenador entrenador, TipoJugador tipo) {
+    public Jugador(double xInicial, double yInicial, Entrenador entrenador, TipoJugador tipo) {
         this.x = xInicial;
         this.y = yInicial;
         this.velocidad = velocidad;

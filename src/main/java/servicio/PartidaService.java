@@ -34,6 +34,6 @@ public class PartidaService {
     }
 
     public Jugador crearJugadorInicial(Entrenador entrenador, TipoJugador tipo) {
-        return new Jugador(290, 0, 3, entrenador, tipo);
+        return new Jugador(290, 0, entrenador, tipo);
     }
 }
