@@ -65,6 +65,10 @@ public class PantallaInventario extends PantallaBase {
 
         ScrollPane scrollPane = new ScrollPane(listaItemsContainer);
         scrollPane.setFitToWidth(true);
+        scrollPane.setStyle(
+                "-fx-background: transparent;" +
+                        "-fx-background-color: transparent;"
+        );
         root.setCenter(scrollPane);
 
         // Botón inferior VOLVER
