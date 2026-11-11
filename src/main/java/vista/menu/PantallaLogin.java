@@ -1,5 +1,6 @@
 package vista.menu;
 
+import model.TipoJugador;
 import vista.GestorPantallas;
 
 import javafx.animation.FadeTransition;
@@ -117,6 +118,7 @@ public class PantallaLogin extends PantallaBase {
 
     private void validarContrasena() {
         if (CONTRASENA_ADMIN.equals(campoContrasena.getText())) {
+            pantallas.setTipo(TipoJugador.ADMINISTRADOR);
             pantallas.mostrarInicio();
             return;
         }
