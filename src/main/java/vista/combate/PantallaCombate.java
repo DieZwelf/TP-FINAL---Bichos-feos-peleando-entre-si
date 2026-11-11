@@ -2,6 +2,7 @@ package vista.combate;
 
 import controlador.CombateViewModel;
 import javafx.animation.TranslateTransition;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
@@ -114,27 +115,96 @@ public class PantallaCombate extends PantallaBase {
     public void mostrarResultados() {
         StackPane root = (StackPane) getEscena().getRoot();
 
-        VBox pantalla = new VBox(20);
-        pantalla.getStyleClass().add("pantalla-resultados");
-        pantalla.setAlignment(Pos.CENTER);
+        // Contenedor principal con el fondo retro de combate
+        BorderPane pantalla = new BorderPane();
+        pantalla.getStyleClass().add("pantalla-combate-root");
 
+        // Título superior
         Label titulo = new Label("RESULTADO DEL COMBATE");
-        titulo.getStyleClass().add("resultados-titulo");
+        titulo.getStyleClass().add("titulo-retro");
+        BorderPane.setAlignment(titulo, Pos.CENTER);
+        BorderPane.setMargin(titulo, new Insets(25, 0, 10, 0));
+        pantalla.setTop(titulo);
 
-        VBox mensajes = new VBox(12);
-        mensajes.setAlignment(Pos.CENTER);
+        // Contenedor central dividido en dos secciones (Registro y Recompensas)
+        VBox contenidoCentral = new VBox(20);
+        contenidoCentral.setAlignment(Pos.CENTER);
+        contenidoCentral.setPadding(new Insets(10, 40, 10, 40));
 
+        // --- PARTE 1: REGISTRO DEL COMBATE ---
+        Label lblTituloRegistro = new Label("REGISTRO DEL COMBATE");
+        lblTituloRegistro.getStyleClass().add("texto-retro");
+        lblTituloRegistro.setStyle("-fx-text-fill: #ffde00;");
+
+        VBox boxLogs = new VBox(5);
+        boxLogs.setAlignment(Pos.CENTER_LEFT);
         for (String resultado : viewModel.getLogsCombate()) {
-            Label mensaje = new Label(resultado);
-            mensaje.getStyleClass().add("resultados-mensaje");
-            mensaje.setWrapText(true);
-            mensajes.getChildren().add(mensaje);
+            // Filtramos para mostrar los logs generales de la pelea
+            if (!resultado.contains("XP") && !resultado.contains("nivel") && !resultado.contains("obtenido")) {
+                Label mensaje = new Label("• " + resultado);
+                mensaje.getStyleClass().add("texto-retro");
+                mensaje.setWrapText(true);
+                boxLogs.getChildren().add(mensaje);
+            }
         }
 
-        Label instruccion = new Label("PULSA ESPACIO PARA CONTINUAR");
-        instruccion.getStyleClass().add("resultados-instruccion");
+        ScrollPane scrollLogs = new ScrollPane(boxLogs);
+        scrollLogs.setFitToWidth(true);
+        scrollLogs.setPrefHeight(160);
+        scrollLogs.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
-        pantalla.getChildren().addAll(titulo, mensajes, instruccion);
+        VBox tarjetaRegistro = new VBox(10, lblTituloRegistro, scrollLogs);
+        tarjetaRegistro.getStyleClass().add("caja-hud");
+        tarjetaRegistro.setPadding(new Insets(15));
+        tarjetaRegistro.setMaxWidth(700);
+
+        // --- PARTE 2: RECOMPENSAS OBTENIDAS ---
+        Label lblTituloRecompensas = new Label("RECOMPENSAS Y EXPERIENCIA");
+        lblTituloRecompensas.getStyleClass().add("texto-retro");
+        lblTituloRecompensas.setStyle("-fx-text-fill: #5fae3f;");
+
+        VBox boxRecompensas = new VBox(5);
+        boxRecompensas.setAlignment(Pos.CENTER_LEFT);
+        boolean hayRecompensas = false;
+
+        for (String resultado : viewModel.getLogsCombate()) {
+            // Filtramos los logs que correspondan a experiencia o ítems obtenidos
+            if (resultado.contains("XP") || resultado.contains("nivel") || resultado.contains("obtenido")) {
+                Label mensaje = new Label("★ " + resultado);
+                mensaje.getStyleClass().add("texto-retro");
+                mensaje.setWrapText(true);
+                boxRecompensas.getChildren().add(mensaje);
+                hayRecompensas = true;
+            }
+        }
+
+        if (!hayRecompensas) {
+            Label sinRecompensa = new Label("No se obtuvieron recompensas en este combate.");
+            sinRecompensa.getStyleClass().add("texto-retro");
+            boxRecompensas.getChildren().add(sinRecompensa);
+        }
+
+        VBox tarjetaRecompensas = new VBox(10, lblTituloRecompensas, boxRecompensas);
+        tarjetaRecompensas.getStyleClass().add("caja-hud");
+        tarjetaRecompensas.setPadding(new Insets(15));
+        tarjetaRecompensas.setMaxWidth(700);
+
+        contenidoCentral.getChildren().addAll(tarjetaRegistro, tarjetaRecompensas);
+        pantalla.setCenter(contenidoCentral);
+
+        // --- PARTE INFERIOR: BOTÓN / INSTRUCCIÓN ---
+        Label instruccion = new Label("PULSA [ESPACIO] PARA REGRESAR AL MAPA");
+        instruccion.getStyleClass().add("texto-retro");
+        instruccion.setStyle("-fx-text-fill: #f3ecd0;");
+
+        Button btnContinuar = new Button("CONTINUAR");
+        btnContinuar.getStyleClass().add("boton-retro");
+        btnContinuar.setOnAction(e -> pantallas.regresarAlMapa());
+
+        VBox inferior = new VBox(10, instruccion, btnContinuar);
+        inferior.setAlignment(Pos.CENTER);
+        inferior.setPadding(new Insets(20));
+        pantalla.setBottom(inferior);
 
         pantalla.setFocusTraversable(true);
         pantalla.setOnKeyPressed(event -> {
@@ -144,8 +214,15 @@ public class PantallaCombate extends PantallaBase {
             }
         });
 
-        root.getChildren().setAll(pantalla);
+        URL recurso = getClass().getResource("/images/pantallaMenu/prueba.jpg");
+        Image imagen = new Image(recurso.toExternalForm());
+        ImageView fondo = new ImageView(imagen);
 
+        fondo.setPreserveRatio(false);
+        fondo.fitWidthProperty().bind(root.widthProperty());
+        fondo.fitHeightProperty().bind(root.heightProperty());
+
+        root.getChildren().setAll(fondo, pantalla);
         javafx.application.Platform.runLater(pantalla::requestFocus);
     }
 

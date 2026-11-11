@@ -43,11 +43,16 @@ public class InventarioViewModel {
 
     public boolean usarItem(Item item, Entrenador entrenador, List<String> logs) {
 
-        if (item instanceof Pocion)
-        {
+        if (item instanceof Pocion) {
             Pokemon objetivo = entrenador.getPokemonActivo();
             if (objetivo == null) {
                 logs.add("No hay un Pokémon activo.");
+                return false;
+            }
+
+            // Validar si ya tiene la vida al máximo
+            if (objetivo.getVida() >= objetivo.getVidaMaxima()) {
+                logs.add("¡" + objetivo.getNombre() + " ya tiene la vida al máximo!");
                 return false;
             }
 
@@ -57,17 +62,21 @@ public class InventarioViewModel {
         }
 
         if (item instanceof Pokebola) {
-
+            // Validar si se intenta usar fuera de combate
             if (callbackUsarPokebola == null) {
-                logs.add("No se puede utilizar la Pokébola.");
+                logs.add("¡La Pokébola no se puede usar directamente aquí, solo en combate!");
                 return false;
             }
         }
+
+        if (callbackUsarPokebola == null) {
+            logs.add("No se puede utilizar este objeto.");
+            return false;
+        }
+
         boolean usado = callbackUsarPokebola.test(item);
         if (usado) actualizarVista();
 
         return usado;
     }
-
-    
 }

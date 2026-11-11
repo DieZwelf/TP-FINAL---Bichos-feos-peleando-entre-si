@@ -3,12 +3,15 @@
     "expandedProjectPaths": [
     ],
     "fileStates": {
+        "D:/Perfil de Usuario/Escritorio/maps/mapa hecho/PUNY_WORLD_v1/PUNY_WORLD_v1/Tiled/punyworld-overworld-tiles.tsx": {
+            "scaleInDock": 1
+        },
         "samplemap1.tmj": {
             "scale": 1.064,
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 400.37593984962405,
-                "y": 400.37593984962405
+                "y": 533.8345864661654
             }
         },
         "samplemap2.tmj": {
@@ -16,13 +19,15 @@
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 240.32809295967192,
-                "y": 240.3280929596719
+                "y": 248.5304169514696
             }
         }
     },
+    "last.externalTilesetPath": "D:/Perfil de Usuario/Escritorio/TP FINAL PROGRA/src/main/resources/images/mapa",
     "openFiles": [
     ],
     "project": "mapaCasa.tiled-project",
     "recentFiles": [
+        "samplemap2.tmj"
     ]
 }

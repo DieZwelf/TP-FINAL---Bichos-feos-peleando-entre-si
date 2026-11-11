@@ -1,29 +1,37 @@
-/* ===== Paleta (sacada del fondo del login) =====
-   Tierra oscura : #2a1714   Bosque oscuro : #12201d
-   Verde musgo   : #5fae3f   Verde hoja    : #3f8a35
-   Nube          : #d8ecec   Crema         : #f3ecd0
-   Amarillo      : #ffde00   Azul noche    : #0a1a3a
+
+/* =========================================================
+   POKEMON CRIOLLO - ESTILOS GENERALES
+   JavaFX 21
+   ========================================================= */
+
+/* PALETA
+   Tierra oscura : #2a1714
+   Bosque oscuro : #12201d
+   Verde musgo   : #5fae3f
+   Verde hoja    : #3f8a35
+   Nube          : #d8ecec
+   Crema         : #f3ecd0
+   Amarillo      : #ffde00
+   Azul noche    : #0a1a3a
 */
+
+/* ================= CONFIGURACIÓN GENERAL ================= */
 
 .root {
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
 }
 
-.label {
-    -fx-text-background-color: transparent;
-}
+/* ================= BOTÓN RETRO ================= */
 
-/* ---------- Botón retro: marco doble con relleno oscuro suave ---------- */
 .boton-retro {
     -fx-background-color: rgba(18, 32, 29, 0.82);
     -fx-background-radius: 0;
 
-    /* Marco doble: borde exterior oscuro + borde interior musgo */
+    /* Marco doble */
     -fx-border-color: #12201d, #5fae3f;
     -fx-border-width: 3, 3;
     -fx-border-insets: 0, 3;
-    -fx-border-radius: 0, 0;
 
     -fx-padding: 14 36 14 36;
     -fx-alignment: center;
@@ -34,7 +42,9 @@
     -fx-font-size: 20px;
     -fx-font-weight: bold;
 
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.85), 0, 0, 3, 3);
+    -fx-effect: dropshadow(
+            gaussian, rgba(0, 0, 0, 0.85), 0, 0, 3, 3
+    );
 }
 
 .boton-retro:hover {
@@ -43,26 +53,30 @@
     -fx-text-fill: #ffde00;
 }
 
-.boton-retro:focus-visible {
-    -fx-border-color: #12201d, #f3ecd0;
-}
-
-.boton-retro:pressed {
+/*.boton-retro:pressed {
     -fx-translate-x: 2;
     -fx-translate-y: 2;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.85), 0, 0, 1, 1);
+
+
+    -fx-effect: dropshadow(
+            gaussian, rgba(0, 0, 0, 0.85), 0, 0, 1, 1
+    );
 }
+
+ */
 
 .boton-retro:disabled {
     -fx-opacity: 0.5;
     -fx-cursor: default;
 }
 
-/* ---------- Botón del menú principal: solo texto (sin cambios) ---------- */
+/* ================= BOTÓN MENÚ PRINCIPAL ================= */
+
 .boton-menu {
     -fx-background-color: transparent;
     -fx-background-radius: 0;
     -fx-border-color: transparent;
+
     -fx-padding: 0 0 0 35;
     -fx-alignment: center-left;
     -fx-cursor: hand;
@@ -72,15 +86,12 @@
     -fx-font-size: 34px;
     -fx-font-weight: bold;
 
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.9), 0, 0, 3, 3);
+    -fx-effect: dropshadow(
+            gaussian, rgba(0, 0, 0, 0.9), 0, 0, 3, 3
+    );
 }
 
 .boton-menu:hover {
-    -fx-text-fill: #ffde00;
-    -fx-font-size: 38px;
-}
-
-.boton-menu:focus-visible {
     -fx-text-fill: #ffde00;
 }
 
@@ -89,7 +100,8 @@
     -fx-translate-y: 2;
 }
 
-/* ---------- Panel y textos generales ---------- */
+/* ================= PANELES Y TEXTOS ================= */
+
 .panel-retro {
     -fx-background-color: transparent;
     -fx-padding: 36 48 36 48;
@@ -100,7 +112,10 @@
     -fx-font-family: "Consolas";
     -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.95), 4, 0.8, 0, 0);
+
+    -fx-effect: dropshadow(
+            gaussian, rgba(0, 0, 0, 0.95), 4, 0.8, 0, 0
+    );
 }
 
 .titulo-retro {
@@ -112,19 +127,24 @@
 
 /* ================= LOGIN ================= */
 
-/* Placa clara (color de las nubes) para que el azul oscuro se lea */
 .texto-login-inicio {
     -fx-background-color: #12201d, #5fae3f, #d8ecec;
     -fx-background-insets: 0, 3, 6;
     -fx-background-radius: 0;
+
     -fx-padding: 10 40 10 40;
 
-    -fx-text-fill: linear-gradient(to bottom, #1b3a6b, #050d1f);
+    -fx-text-fill: linear-gradient(
+            to bottom, #1b3a6b, #050d1f
+    );
+
     -fx-font-family: "Consolas";
     -fx-font-size: 44px;
     -fx-font-weight: bold;
 
-    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 0, 0, 5, 5);
+    -fx-effect: dropshadow(
+            three-pass-box, rgba(0, 0, 0, 0.6), 0, 0, 5, 5
+    );
 }
 
 .caja-botones {
@@ -135,7 +155,8 @@
     -fx-min-width: 200;
 }
 
-/* Formulario de contraseña: panel oscuro con marco doble */
+/* ================= FORMULARIO LOGIN ================= */
+
 .formulario-login {
     -fx-background-color: transparent;
     -fx-max-width: 420;
@@ -146,12 +167,15 @@
     -fx-background-color: #12201d, #5fae3f, rgba(10, 20, 18, 0.95);
     -fx-background-insets: 0, 2, 4;
     -fx-background-radius: 0;
+
     -fx-padding: 8 12 8 12;
 
     -fx-text-fill: #f3ecd0;
     -fx-prompt-text-fill: #7f9a8a;
+
     -fx-highlight-fill: #5fae3f;
     -fx-highlight-text-fill: #12201d;
+
     -fx-font-family: "Consolas";
     -fx-font-size: 18px;
 }
@@ -166,30 +190,40 @@
 
 /* ================= PANTALLA EQUIPO / HUD ================= */
 
-/* Fondo general de la pantalla de equipo (usa el bosque oscuro con transparencia o sólido) */
 .pantalla-combate-root {
     -fx-background-color: #12201d;
 }
 
-/* Tarjeta contenedora de cada Pokémon (marco doble estilo retro) */
+/* ================= TARJETAS DE POKEMON ================= */
+
 .caja-hud {
-    -fx-background-color: #2a1714; /* Tierra oscura */
-    -fx-border-color: #12201d, #5fae3f; /* Marco doble: oscuro + verde musgo */
+    -fx-background-color: #2a1714;
+
+    -fx-border-color: #12201d, #5fae3f;
     -fx-border-width: 3, 3;
     -fx-border-insets: 0, 3;
+
     -fx-background-radius: 0;
-    -fx-border-radius: 0, 0;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 0, 0, 4, 4);
+
+    -fx-effect: dropshadow(
+            gaussian, rgba(0, 0, 0, 0.8), 0, 0, 4, 4
+    );
 }
 
-/* Botón específico para la tarjeta de equipo (más compacto que .boton-retro) */
+.caja-hud:hover {
+    -fx-background-color: rgba(42, 23, 20, 0.95);
+    -fx-border-color: #12201d, #ffde00;
+}
+
+/* ================= BOTONES DEL EQUIPO ================= */
+
 .boton-equipo {
     -fx-background-color: rgba(18, 32, 29, 0.9);
     -fx-background-radius: 0;
+
     -fx-border-color: #12201d, #5fae3f;
     -fx-border-width: 2, 2;
     -fx-border-insets: 0, 2;
-    -fx-border-radius: 0, 0;
 
     -fx-padding: 8 20 8 20;
     -fx-alignment: center;
@@ -215,31 +249,32 @@
 .boton-equipo:disabled {
     -fx-opacity: 0.6;
     -fx-cursor: default;
+
     -fx-border-color: #12201d, #7f9a8a;
     -fx-text-fill: #7f9a8a;
 }
-/* ---------- Barra de HP estilo retro ---------- */
+
+/* ================= BARRA DE HP ================= */
+
 .barra-hp {
-    -fx-accent: #5fae3f; /* Verde musgo cuando tiene vida */
+    -fx-accent: #5fae3f;
 }
 
 .barra-hp .track {
-    -fx-background-color: #0a1a3a; /* Azul noche para el fondo vacío */
+    -fx-background-color: #0a1a3a;
     -fx-background-radius: 0;
+
     -fx-border-color: #12201d;
     -fx-border-width: 2;
 }
 
 .barra-hp .bar {
-    -fx-background-color: linear-gradient(to bottom, #5fae3f, #3f8a35);
+    -fx-background-color: linear-gradient(
+            to bottom, #5fae3f, #3f8a35
+    );
+
     -fx-background-radius: 0;
     -fx-padding: 3;
-}
-
-/* Efecto hover para la tarjeta del equipo */
-.caja-hud:hover {
-    -fx-background-color: rgba(42, 23, 20, 0.95);
-    -fx-border-color: #12201d, #ffde00;
 }
 
 /* ================= RESULTADOS DEL COMBATE ================= */
@@ -268,5 +303,67 @@
     -fx-font-family: "Consolas";
     -fx-font-size: 16px;
     -fx-font-weight: bold;
+}
+
+
+/* ==========================================
+   SCROLLBAR RETRO
+   ========================================== */
+
+/* Fondo de la barra */
+.scroll-bar {
+    -fx-background-color: #17251b;
+    -fx-background-radius: 0;
+    -fx-padding: 2;
+}
+
+/* Zona por donde se desplaza */
+.scroll-bar:vertical .track,
+.scroll-bar:horizontal .track {
+    -fx-background-color: #263b2a;
+    -fx-background-radius: 0;
+    -fx-border-color: #0f2a1d;
+    -fx-border-width: 1;
+}
+
+/* Parte que se arrastra */
+.scroll-bar:vertical .thumb,
+.scroll-bar:horizontal .thumb {
+    -fx-background-color: #7fae4f;
+    -fx-background-radius: 0;
+    -fx-border-color: #0f2a1d;
+    -fx-border-width: 1;
+}
+
+.scroll-bar:vertical .thumb:hover,
+.scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #ffde00;
+}
+
+/* Botones de los extremos */
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: #355b35;
+    -fx-background-radius: 0;
+    -fx-border-color: #0f2a1d;
+    -fx-border-width: 1;
+    -fx-padding: 4;
+}
+
+/* Flechas */
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: #f5f0d0;
+}
+
+/* Ocultar botones cuando no se necesitan */
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button {
+    -fx-pref-width: 14px;
+}
+
+.scroll-bar:horizontal .increment-button,
+.scroll-bar:horizontal .decrement-button {
+    -fx-pref-height: 14px;
 }
 
