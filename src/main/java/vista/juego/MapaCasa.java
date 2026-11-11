@@ -3,16 +3,16 @@ package vista.juego;
 
 import java.util.List;
 
-public class MapaBosque extends CargadorMapaTiled {
+public class MapaCasa extends CargadorMapaTiled {
 
     @Override
     protected String obtenerRutaMapa() {
-        return "/images/mapa/samplemap2.tmj";
+        return "/images/mapa/casa.tmj";
     }
 
     @Override
     protected String obtenerRutaTileset() {
-        return "/images/mapa/punyworld-overworld-tileset.png";
+        return "/images/mapa/TiledCasa.tsj";
     }
 
     @Override
@@ -21,7 +21,7 @@ public class MapaBosque extends CargadorMapaTiled {
                 new TransicionMapa(
                         480, 240,
                         48, 48,
-                        MapaBosque::new,
+                        MapaCasa::new,
                         480, 600
                 )
         );

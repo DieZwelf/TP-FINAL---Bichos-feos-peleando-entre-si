@@ -5,7 +5,6 @@ import javafx.scene.input.KeyCode;
 import model.*;
 import vista.base.PantallaBase;
 import vista.juego.CargadorMapaTiled;
-import vista.juego.MapaBosque;
 import vista.menu.PantallaLogin;
 import vista.menu.PantallaInicio;
 import vista.menu.PantallaPartidaNueva;
@@ -20,7 +19,6 @@ import javafx.stage.Stage;
 import servicio.PartidaService;
 
 import java.net.URL;
-import java.util.List;
 
 /** Centraliza la navegación y conserva las pantallas a las que se puede volver. */
 public class GestorPantallas {

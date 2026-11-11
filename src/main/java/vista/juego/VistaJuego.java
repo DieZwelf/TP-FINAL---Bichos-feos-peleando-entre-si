@@ -172,7 +172,7 @@ public class VistaJuego extends PantallaBase {
             switch (mapa) {
                 case "Pueblo" -> cambiarMapa(new MapaPueblo(), 450, 150);
 
-                case "Bosque" -> cambiarMapa(new MapaBosque(), 100, 500);
+                case "Bosque" -> cambiarMapa(new MapaCasa(), 100, 500);
             }
         });
     }
@@ -262,9 +262,9 @@ public class VistaJuego extends PantallaBase {
         if (mapa instanceof MapaPueblo) {
 
             // Salida del pueblo hacia el bosque.
-        transiciones.add(new TransicionMapa(450, 100, 80, 40, MapaBosque::new,100, 500));
+        transiciones.add(new TransicionMapa(450, 100, 80, 40, MapaCasa::new,100, 500));
 
-        } else if (mapa instanceof MapaBosque) {
+        } else if (mapa instanceof MapaCasa) {
             // Regreso del bosque hacia el pueblo.
             transiciones.add(new TransicionMapa(100, 550, 80, 40, MapaPueblo::new,
                     450, 150));

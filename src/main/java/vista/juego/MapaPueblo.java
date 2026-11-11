@@ -22,7 +22,7 @@ public class MapaPueblo extends CargadorMapaTiled {
                 new TransicionMapa(
                         767, 2352,
                         48, 48,
-                        MapaBosque::new,
+                        MapaCasa::new,
                         480, 600
                 )
         );

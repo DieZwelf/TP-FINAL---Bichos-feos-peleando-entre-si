@@ -1,11 +1,619 @@
-{ "columns":0,
+{
+ "columns":0,
+ "grid":
+    {
+     "height":1,
+     "orientation":"orthogonal",
+     "width":1
+    },
  "margin":0,
  "name":"TiledCasa",
  "spacing":0,
- "tilecount":0,
+ "tilecount":96,
  "tiledversion":"1.12.2",
- "tileheight":1,
- "tilewidth":1,
+ "tileheight":64,
+ "tiles":[
+        {
+         "id":0,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/frame/1x/frame-inner-sw.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":1,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/frame/1x/frame-n.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":2,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/frame/1x/frame-ne.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":3,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/frame/1x/frame-nw.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":4,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/frame/1x/frame-s.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":5,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/frame/1x/frame-se.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":6,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/frame/1x/frame-sw.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":7,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/frame/1x/frame-w.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":8,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/frame/1x/frame-e.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":9,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/frame/1x/frame-inner-ne.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":10,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/frame/1x/frame-inner-nw.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":11,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/frame/1x/frame-inner-se.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":12,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/fireplace-strip.png",
+         "imageheight":32,
+         "imagewidth":96
+        },
+        {
+         "height":16,
+         "id":13,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/floor-lamp.png",
+         "imageheight":16,
+         "imagewidth":16,
+         "width":16,
+         "x":0,
+         "y":3
+        },
+        {
+         "height":16,
+         "id":14,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/flour-sack.png",
+         "imageheight":16,
+         "imagewidth":16,
+         "width":16,
+         "x":2,
+         "y":4
+        },
+        {
+         "id":15,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/flower-vase.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":16,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/hanging-herbs.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "height":16,
+         "id":17,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/kitchen-counter.png",
+         "imageheight":16,
+         "imagewidth":32,
+         "width":32,
+         "x":2,
+         "y":0
+        },
+        {
+         "id":18,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/painting.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":19,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/potted-plant.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":20,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/rocking-chair.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":21,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/rug-round.png",
+         "imageheight":16,
+         "imagewidth":32
+        },
+        {
+         "id":22,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/rug-runner.png",
+         "imageheight":16,
+         "imagewidth":32
+        },
+        {
+         "id":23,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/sink.png",
+         "imageheight":16,
+         "imagewidth":32
+        },
+        {
+         "id":24,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/sofa.png",
+         "imageheight":16,
+         "imagewidth":32
+        },
+        {
+         "id":25,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/stool.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":26,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/table.png",
+         "imageheight":16,
+         "imagewidth":32
+        },
+        {
+         "id":27,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/wall-clock.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":28,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/wall-shelf.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":29,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/wardrobe.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":30,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/wood-stove.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":31,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/armchair.png",
+         "imageheight":16,
+         "imagewidth":32
+        },
+        {
+         "id":32,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/bed.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "id":33,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/bookshelf.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":34,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/cat-bed.png",
+         "imageheight":16,
+         "imagewidth":32
+        },
+        {
+         "id":35,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/chair.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":36,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/chest.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":37,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/cooking-pot.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":38,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/cupboard.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":39,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/dresser.png",
+         "imageheight":16,
+         "imagewidth":32
+        },
+        {
+         "id":40,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/fireplace-frame1.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "id":41,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/fireplace-frame2.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "id":42,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/1x/fireplace-frame3.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "id":43,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/tiles/1x/floor-wood-honey.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":44,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/tiles/1x/floor-wood-walnut.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":45,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/tiles/1x/floor-carpet-rose.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":46,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/tiles/1x/floor-kitchen-tiles.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":47,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/tiles/1x/floor-stone.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":48,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/tiles/1x/floor-wood-grey.png",
+         "imageheight":16,
+         "imagewidth":16
+        },
+        {
+         "id":49,
+         "image":"Nueva carpeta (3)/wall-sage-door.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":50,
+         "image":"Nueva carpeta (3)/wall-sage-window.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":51,
+         "image":"Nueva carpeta (3)/wall-blue.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":52,
+         "image":"Nueva carpeta (3)/wall-blue-door.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":53,
+         "image":"Nueva carpeta (3)/wall-blue-window.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":54,
+         "image":"Nueva carpeta (3)/wall-cream.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":55,
+         "image":"Nueva carpeta (3)/wall-cream-door.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":56,
+         "image":"Nueva carpeta (3)/wall-cream-window.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":57,
+         "image":"Nueva carpeta (3)/wall-log.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":58,
+         "image":"Nueva carpeta (3)/wall-log-door.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":59,
+         "image":"Nueva carpeta (3)/wall-log-window.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":60,
+         "image":"Nueva carpeta (3)/wall-rose.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":61,
+         "image":"Nueva carpeta (3)/wall-rose-door.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":62,
+         "image":"Nueva carpeta (3)/wall-rose-window.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":63,
+         "image":"Nueva carpeta (3)/wall-sage.png",
+         "imageheight":32,
+         "imagewidth":16
+        },
+        {
+         "id":95,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/armchair.png",
+         "imageheight":32,
+         "imagewidth":64
+        },
+        {
+         "id":98,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/bed.png",
+         "imageheight":64,
+         "imagewidth":64
+        },
+        {
+         "id":99,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/rug-round.png",
+         "imageheight":32,
+         "imagewidth":64
+        },
+        {
+         "id":100,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/rug-runner.png",
+         "imageheight":32,
+         "imagewidth":64
+        },
+        {
+         "id":101,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/sink.png",
+         "imageheight":32,
+         "imagewidth":64
+        },
+        {
+         "id":102,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/sofa.png",
+         "imageheight":32,
+         "imagewidth":64
+        },
+        {
+         "id":103,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/stool.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "id":104,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/table.png",
+         "imageheight":32,
+         "imagewidth":64
+        },
+        {
+         "id":105,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/wall-clock.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "id":106,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/wall-shelf.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "id":107,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/wardrobe.png",
+         "imageheight":64,
+         "imagewidth":32
+        },
+        {
+         "id":108,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/wood-stove.png",
+         "imageheight":64,
+         "imagewidth":32
+        },
+        {
+         "id":109,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/bookshelf.png",
+         "imageheight":64,
+         "imagewidth":32
+        },
+        {
+         "id":110,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/cat-bed.png",
+         "imageheight":32,
+         "imagewidth":64
+        },
+        {
+         "id":111,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/chair.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "id":112,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/chest.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "id":113,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/cooking-pot.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "id":114,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/cupboard.png",
+         "imageheight":64,
+         "imagewidth":32
+        },
+        {
+         "id":115,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/dresser.png",
+         "imageheight":32,
+         "imagewidth":64
+        },
+        {
+         "id":116,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/fireplace-frame1.png",
+         "imageheight":64,
+         "imagewidth":64
+        },
+        {
+         "id":117,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/fireplace-frame2.png",
+         "imageheight":64,
+         "imagewidth":64
+        },
+        {
+         "id":118,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/fireplace-frame3.png",
+         "imageheight":64,
+         "imagewidth":64
+        },
+        {
+         "id":119,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/fireplace-strip.png",
+         "imageheight":64,
+         "imagewidth":192
+        },
+        {
+         "height":32,
+         "id":120,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/floor-lamp.png",
+         "imageheight":32,
+         "imagewidth":32,
+         "width":32,
+         "x":0,
+         "y":4
+        },
+        {
+         "height":32,
+         "id":121,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/flour-sack.png",
+         "imageheight":32,
+         "imagewidth":32,
+         "width":32,
+         "x":6,
+         "y":0
+        },
+        {
+         "id":122,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/flower-vase.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "id":123,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/hanging-herbs.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "id":124,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/kitchen-counter.png",
+         "imageheight":32,
+         "imagewidth":64
+        },
+        {
+         "id":125,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/painting.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "height":32,
+         "id":126,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/potted-plant.png",
+         "imageheight":32,
+         "imagewidth":32,
+         "width":32,
+         "x":4,
+         "y":0
+        },
+        {
+         "id":127,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/furniture/2x/rocking-chair.png",
+         "imageheight":32,
+         "imagewidth":32
+        },
+        {
+         "id":128,
+         "image":"Nueva carpeta (2).cozy-farm-interiors/cozy-farm-interiors/4x/rug-round.png",
+         "imageheight":64,
+         "imagewidth":128
+        }],
+ "tilewidth":192,
  "type":"tileset",
  "version":"1.10"
 }

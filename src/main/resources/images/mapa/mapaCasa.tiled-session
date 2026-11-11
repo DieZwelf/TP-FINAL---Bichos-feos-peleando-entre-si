@@ -6,6 +6,11 @@
         "D:/Perfil de Usuario/Escritorio/maps/mapa hecho/PUNY_WORLD_v1/PUNY_WORLD_v1/Tiled/punyworld-overworld-tiles.tsx": {
             "scaleInDock": 1
         },
+        "MapaCasa/CasaTiled.tsj": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 5.5
+        },
         "MapaCasaImagenes.tsx": {
             "dynamicWrapping": true,
             "scaleInDock": 1,
@@ -14,6 +19,17 @@
         "TiledCasa.tsj": {
             "dynamicWrapping": true
         },
+        "casa.tmj": {
+            "expandedObjectLayers": [
+                5
+            ],
+            "scale": 4,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 75.75,
+                "y": 97.5
+            }
+        },
         "punyworld-overworld-tiles.tsj": {
             "dynamicWrapping": false
         },
@@ -21,29 +37,32 @@
             "scale": 1.064,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 400.37593984962405,
-                "y": 409.77443609022555
+                "x": 349.6240601503759,
+                "y": 382.5187969924812
             }
         },
         "samplemap2.tmj": {
             "scale": 1.2191666666666667,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 240.32809295967192,
+                "x": 240.3280929596719,
                 "y": 248.5304169514696
             }
         }
     },
-    "last.imagePath": "D:/Perfil de Usuario/Escritorio/Nueva carpeta (3)",
-    "map.height": 15,
-    "map.width": 20,
+    "last.externalTilesetPath": "D:/Perfil de Usuario/Escritorio/TP FINAL PROGRA/src/main/resources/images/mapa",
+    "last.imagePath": "D:/Perfil de Usuario/Escritorio/TP FINAL PROGRA/src/main/resources/images/mapa/MapaCasa",
+    "map.lastUsedFormat": "json",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
     "openFiles": [
     ],
     "project": "mapaCasa.tiled-project",
     "recentFiles": [
+        "MapaCasa/CasaTiled.tsj",
         "samplemap2.tmj",
         "MapaCasaImagenes.tsx"
     ],
     "tileset.lastUsedFormat": "json",
-    "tileset.type": 1
+    "tileset.type": 0
 }
