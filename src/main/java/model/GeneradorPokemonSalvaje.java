@@ -1,11 +1,12 @@
 
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GeneradorPokemonSalvaje {
 
-    private static final List<DatosEspecie> ESPECIES = List.of(
+    private static final List<DatosEspecie> ESPECIES = new ArrayList<>(List.of(
 
             // ================= FUEGO =================
             new DatosEspecie("Charmander", 39, 52, 43, 65, TipoPokemon.FUEGO),
@@ -31,7 +32,7 @@ public class GeneradorPokemonSalvaje {
             new DatosEspecie("Bulbasaur", 45, 49, 49, 45, TipoPokemon.PLANTA),
             new DatosEspecie("Oddish", 45, 50, 55, 30, TipoPokemon.PLANTA),
             new DatosEspecie("Bellsprout", 50, 75, 35, 40, TipoPokemon.PLANTA)
-    );
+    ));
 
     public static List<DatosEspecie> getESPECIES() {
         return ESPECIES;
@@ -64,5 +65,17 @@ public class GeneradorPokemonSalvaje {
         }
 
         return salvaje;
+    }
+
+    public static void agregarEspecie(DatosEspecie especie) {
+        if (especie == null) return;
+
+        boolean existe = ESPECIES.stream().anyMatch(e -> e.getNombre().equalsIgnoreCase(especie.getNombre()));
+
+        if (existe) {
+            throw new IllegalArgumentException("Esa especie ya existe.");
+        }
+
+        ESPECIES.add(especie);
     }
 }

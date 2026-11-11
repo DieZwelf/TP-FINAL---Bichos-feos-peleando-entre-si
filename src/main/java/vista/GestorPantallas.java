@@ -2,8 +2,7 @@ package vista;
 
 import controlador.CombateViewModel;
 import javafx.scene.input.KeyCode;
-import model.GeneradorPokemonSalvaje;
-import model.Jugador;
+import model.*;
 import vista.base.PantallaBase;
 import vista.juego.CargadorMapaTiled;
 import vista.juego.MapaBosque;
@@ -18,8 +17,6 @@ import vista.juego.VistaJuego;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import model.Entrenador;
-import model.Pokemon;
 import servicio.PartidaService;
 
 import java.net.URL;
@@ -39,6 +36,7 @@ public class GestorPantallas {
     private Entrenador entrenador;
     private boolean combateActivo;
     private VistaJuego vistaJuego;
+    private TipoJugador tipo;
 
     public GestorPantallas(Stage stage) {
         this.stage = stage;
@@ -102,6 +100,14 @@ public class GestorPantallas {
         pantalla.alMostrar();
     }
 
+    public TipoJugador getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoJugador tipo) {
+        this.tipo = tipo;
+    }
+
     public Entrenador getEntrenador() {
         return entrenador;
     }
@@ -162,12 +168,13 @@ public class GestorPantallas {
     public void iniciarPartida() {
         entrenador = partidaService.crearEntrenadorInicial();
 
-        Jugador jugador = partidaService.crearJugadorInicial(entrenador);
+        Jugador jugador = partidaService.crearJugadorInicial(entrenador,tipo);
 
         vistaJuego = new VistaJuego(jugador, this);
 
         vistaJuego.mostrar(stage);
     }
+
     public void iniciarCombate(Entrenador entrenadorJugador, Pokemon pokemon) {
         if (combateActivo || entrenadorJugador == null) return;
 

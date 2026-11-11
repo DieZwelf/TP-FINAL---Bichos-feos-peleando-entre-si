@@ -33,7 +33,7 @@ public class PartidaService {
         entrenador.aniadir(pokemon);
     }
 
-    public Jugador crearJugadorInicial(Entrenador entrenador) {
-        return new Jugador(290, 0, 3, entrenador);
+    public Jugador crearJugadorInicial(Entrenador entrenador, TipoJugador tipo) {
+        return new Jugador(290, 0, 3, entrenador, tipo);
     }
 }
