@@ -9,8 +9,9 @@ public class Jugador {
     private int frameActual;
     private boolean enMovimiento;
     private Entrenador entrenador;
+    private TipoJugador tipo;
 
-    public Jugador(double xInicial, double yInicial, double velocidad, Entrenador entrenador) {
+    public Jugador(double xInicial, double yInicial, double velocidad, Entrenador entrenador, TipoJugador tipo) {
         this.x = xInicial;
         this.y = yInicial;
         this.velocidad = velocidad;
@@ -18,6 +19,7 @@ public class Jugador {
         this.direccion = "ABAJO";
         this.frameActual = 0;
         this.enMovimiento = false;
+        this.tipo = tipo;
     }
 
     // Métodos para mover al personaje
@@ -29,6 +31,14 @@ public class Jugador {
     // Getters y Setters
     public double getX() { return x; }
     public double getY() { return y; }
+
+    public TipoJugador getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoJugador tipo) {
+        this.tipo = tipo;
+    }
 
     public void setX(double x) {
         this.x = x;
