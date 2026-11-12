@@ -15,7 +15,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import model.Entrenador;
+import model.Jugador;
 import model.Item;
 
 import java.util.ArrayList;
@@ -23,15 +23,15 @@ import java.util.List;
 
 public class PantallaInventario extends PantallaBase {
 
-    private final Entrenador entrenador;
+    private final Jugador jugador;
     private final InventarioViewModel viewModel;
     private VBox listaItemsContainer;
     private Label lblMensajePantalla; // Etiqueta integrada para mostrar los avisos
 
-    public PantallaInventario(GestorPantallas pantallas, Entrenador entrenador, CombateViewModel combateViewModel) {
+    public PantallaInventario(GestorPantallas pantallas, Jugador jugador, CombateViewModel combateViewModel) {
         super(pantallas);
-        this.entrenador = entrenador;
-        this.viewModel = new InventarioViewModel(entrenador.getInventario(), this);
+        this.jugador = jugador;
+        this.viewModel = new InventarioViewModel(jugador.getInventario(), this);
         if (combateViewModel != null) {
             this.viewModel.setCallbackUsarPokebola(combateViewModel::intentarUsarPokebola);
         }
@@ -130,7 +130,7 @@ public class PantallaInventario extends PantallaBase {
 
     private void usarObjeto(Item item) {
         List<String> logs = new ArrayList<>();
-        boolean usado = viewModel.usarItem(item, entrenador, logs);
+        boolean usado = viewModel.usarItem(item, jugador, logs);
 
         if (!logs.isEmpty()) {
             // Muestra el texto directamente en la etiqueta de la pantalla

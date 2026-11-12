@@ -13,16 +13,16 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import model.Entrenador;
+import model.Jugador;
 import model.Pokemon;
 
 public class PantallaEquipo extends PantallaBase {
 
-    private final Entrenador entrenador;
+    private final Jugador jugador;
 
-    public PantallaEquipo(GestorPantallas pantallas, Entrenador entrenador) {
+    public PantallaEquipo(GestorPantallas pantallas, Jugador jugador) {
         super(pantallas);
-        this.entrenador = entrenador;
+        this.jugador = jugador;
     }
 
     @Override
@@ -39,8 +39,8 @@ public class PantallaEquipo extends PantallaBase {
         VBox listaPokemon = new VBox(15);
         listaPokemon.setPadding(new Insets(25));
         listaPokemon.setAlignment(Pos.CENTER);
-        for (int i = 0; i < entrenador.getEquipo().size(); i++) {
-            listaPokemon.getChildren().add(crearTarjetaPokemon(entrenador.getEquipo().get(i), i));
+        for (int i = 0; i < jugador.getEquipo().size(); i++) {
+            listaPokemon.getChildren().add(crearTarjetaPokemon(jugador.getEquipo().get(i), i));
         }
         root.setCenter(listaPokemon);
 
@@ -70,12 +70,12 @@ public class PantallaEquipo extends PantallaBase {
 
         Button seleccionar = new Button("SELECCIONAR");
         seleccionar.getStyleClass().add("boton-equipo");
-        if (pokemon == entrenador.getPokemonActivo()) {
+        if (pokemon == jugador.getPokemonActivo()) {
             seleccionar.setText("ACTIVO");
             seleccionar.setDisable(true);
         }
         seleccionar.setOnAction(e -> {
-            if (entrenador.elegirPokemonActivo(posicion)) {
+            if (jugador.elegirPokemonActivo(posicion)) {
                 pantallas.volverDesdeEquipo();
             }
         });

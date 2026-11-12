@@ -354,7 +354,7 @@ public class PantallaCombate extends PantallaBase {
     }
 
     public void cargarImagenPokemon (){
-        Pokemon activo = viewModel.getModeloCombate().getEntrenador().getPokemonActivo();
+        Pokemon activo = viewModel.getModeloCombate().getJugador().getPokemonActivo();
         Pokemon salvaje = viewModel.getModeloCombate().getPokemonSalvaje();
 
         List<DatosEspecie> DATOS = GeneradorPokemonSalvaje.getESPECIES();

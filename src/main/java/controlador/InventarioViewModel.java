@@ -41,10 +41,10 @@ public class InventarioViewModel {
         return items;
     }
 
-    public boolean usarItem(Item item, Entrenador entrenador, List<String> logs) {
+    public boolean usarItem(Item item, Jugador jugador, List<String> logs) {
 
         if (item instanceof Pocion) {
-            Pokemon objetivo = entrenador.getPokemonActivo();
+            Pokemon objetivo = jugador.getPokemonActivo();
             if (objetivo == null) {
                 logs.add("No hay un Pokémon activo.");
                 return false;
@@ -56,7 +56,7 @@ public class InventarioViewModel {
                 return false;
             }
 
-            boolean usado = entrenador.usarItem(item, objetivo, logs);
+            boolean usado = jugador.usarItem(item, objetivo, logs);
             if (usado) actualizarVista();
             return usado;
         }

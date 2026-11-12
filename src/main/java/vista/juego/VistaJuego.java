@@ -178,7 +178,7 @@ public class VistaJuego extends PantallaBase {
     }
 
     private void generarEncuentro() {
-        Pokemon pokemonActivo = jugador.getEntrenador().getPokemonActivo();
+        Pokemon pokemonActivo = jugador.getPokemonActivo();
         if (pokemonActivo == null) return;
 
         double probabilidad = CalculadoraCaptura.calcularProbabilidad(pokemonActivo);
@@ -188,7 +188,7 @@ public class VistaJuego extends PantallaBase {
 
         int nivelJugador = pokemonActivo.getNivel();
         Pokemon salvaje = GeneradorPokemonSalvaje.generarPokemonSegunNivel(nivelJugador);
-        pantallas.iniciarCombate(jugador.getEntrenador(), salvaje);
+        pantallas.iniciarCombate(jugador, salvaje);
     }
 
     public void actualizarCamara() {

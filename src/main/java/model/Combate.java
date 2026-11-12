@@ -18,18 +18,18 @@ import java.util.List;
  */
 
 public class Combate {
-    private Entrenador entrenador;
+    private Jugador jugador;
     private Pokemon pokemonSalvaje;
     private EstadoCombate estado;
 
-    public Combate(Entrenador entrenador, Pokemon pokemonSalvaje) {
-        this.entrenador = entrenador;
+    public Combate(Jugador jugador, Pokemon pokemonSalvaje) {
+        this.jugador = jugador;
         this.pokemonSalvaje = pokemonSalvaje;
         this.estado = EstadoCombate.ACTIVO;
     }
 
-    public Entrenador getEntrenador() {
-        return entrenador;
+    public Jugador getJugador() {
+        return jugador;
     }
 
     public Pokemon getPokemonSalvaje() {
@@ -75,7 +75,7 @@ public class Combate {
      */
     private boolean verificarFinal(List<String> registro)
     {
-        Pokemon activo = entrenador.getPokemonActivo();
+        Pokemon activo = jugador.getPokemonActivo();
 
         if (pokemonSalvaje.getVida() <= 0)
         {
@@ -117,7 +117,7 @@ public class Combate {
             return registros;
         }
 
-        if(!entrenador.usarItem(item,objetivo,registros))
+        if(!jugador.usarItem(item,objetivo,registros))
         {
             return registros;
         }
@@ -128,7 +128,7 @@ public class Combate {
             return registros;
         }
 
-        registros.add(ejecutarAtaque(pokemonSalvaje, entrenador.getPokemonActivo()));
+        registros.add(ejecutarAtaque(pokemonSalvaje, jugador.getPokemonActivo()));
         verificarFinal(registros);
 
         return registros;
@@ -142,7 +142,7 @@ public class Combate {
      */
     private boolean participa(Pokemon p)
     {
-        return p != null && (p == pokemonSalvaje || entrenador.getEquipo().contains(p));
+        return p != null && (p == pokemonSalvaje || jugador.getEquipo().contains(p));
     }
 
     /** Clase turno de tipo List<String> para devolver el registro de lo que pasó (turno Combate)
@@ -170,7 +170,7 @@ public class Combate {
         if (accion == AccionJugador.ATACAR)
          {
                 //El pokemon activo es el que va a realizar la accion
-                Pokemon activo = entrenador.getPokemonActivo();
+                Pokemon activo = jugador.getPokemonActivo();
                 if (activo == null) {
                     registrosCombate.add("No hay un Pokémon activo.");
                     return registrosCombate;

@@ -31,7 +31,7 @@ public class GestorPantallas {
     private PantallaBase pantallaAnteriorInventario;
     private PantallaBase pantallaMapaAnterior;
 
-    private Entrenador entrenador;
+    private Jugador jugador;
     private boolean combateActivo;
     private VistaJuego vistaJuego;
     private TipoJugador tipo;
@@ -106,12 +106,12 @@ public class GestorPantallas {
         this.tipo = tipo;
     }
 
-    public Entrenador getEntrenador() {
-        return entrenador;
+    public Jugador getJugador() {
+        return jugador;
     }
 
-    public void setEntrenador(Entrenador entrenador) {
-        this.entrenador = entrenador;
+    public void setEntrenador(Jugador jugador) {
+        this.jugador = jugador;
     }
 
     public void mostrarLogin() {
@@ -131,9 +131,9 @@ public class GestorPantallas {
     }
 
     public void mostrarEquipo() {
-        if (entrenador == null) return;
+        if (jugador == null) return;
         pantallaAnteriorEquipo = pantallaActual;
-        new PantallaEquipo(this, entrenador).mostrar(stage);
+        new PantallaEquipo(this, jugador).mostrar(stage);
     }
 
     public void volverDesdeEquipo() {
@@ -143,19 +143,19 @@ public class GestorPantallas {
 
     // Inventario desde el mapa
     public void mostrarInventario() {
-        if (entrenador == null) return;
+        if (jugador == null) return;
 
         pantallaAnteriorInventario = pantallaActual;
 
-        new PantallaInventario(this, entrenador, null).mostrar(stage);
+        new PantallaInventario(this, jugador, null).mostrar(stage);
     }
 
     public void mostrarInventario(CombateViewModel viewModel) {
-        if (entrenador == null || viewModel == null) return;
+        if (jugador == null || viewModel == null) return;
 
         pantallaAnteriorInventario = pantallaActual;
 
-        new PantallaInventario(this, entrenador,viewModel).mostrar(stage);
+        new PantallaInventario(this, jugador,viewModel).mostrar(stage);
     }
 
     public void volverDesdeInventario() {
@@ -164,16 +164,14 @@ public class GestorPantallas {
     }
 
     public void iniciarPartida() {
-        entrenador = partidaService.crearEntrenadorInicial();
-
-        Jugador jugador = partidaService.crearJugadorInicial(entrenador,tipo);
+        jugador = partidaService.crearJugadorInicial(TipoJugador.USUARIO);
 
         vistaJuego = new VistaJuego(jugador, this);
 
         vistaJuego.mostrar(stage);
     }
 
-    public void iniciarCombate(Entrenador entrenadorJugador, Pokemon pokemon) {
+    public void iniciarCombate(Jugador entrenadorJugador, Pokemon pokemon) {
         if (combateActivo || entrenadorJugador == null) return;
 
         Pokemon activo = entrenadorJugador.getPokemonActivo();

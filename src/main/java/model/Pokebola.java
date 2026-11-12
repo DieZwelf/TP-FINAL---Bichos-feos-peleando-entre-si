@@ -35,19 +35,19 @@ public class Pokebola extends Item{
      * @return
      */
     @Override
-    public boolean usar(Entrenador entrenador, Pokemon objetivo, List<String> registro) {
+    public boolean usar(Jugador jugador, Pokemon objetivo, List<String> registro) {
         if (ocupada)
         {
             registro.add("Esa Pokebola ya está ocupada!");
             return false;
         }
 
-        if (objetivo == null || entrenador == null)
+        if (objetivo == null || jugador == null)
         {
             registro.add("No se puede realizar la captura");
         }
 
-        if (entrenador.getEquipo().size() >= 5)
+        if (jugador.getEquipo().size() >= 5)
         {
             registro.add("Tu equipo esta lleno");
             return false;
@@ -58,7 +58,7 @@ public class Pokebola extends Item{
         if (Math.random() < probabilidad)
         {
             ocupada = true;
-            entrenador.aniadir(objetivo);
+            jugador.aniadir(objetivo);
 
             registro.add("¡Se ha capturado con exito a: " + objetivo.getNombre() + "!");
 

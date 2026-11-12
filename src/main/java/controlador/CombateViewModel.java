@@ -33,8 +33,8 @@ public class CombateViewModel {
         return modeloCombate;
     }
 
-    public CombateViewModel(Entrenador entrenador, Pokemon pokemonSalvaje) {
-        this.modeloCombate = new Combate(entrenador, pokemonSalvaje);
+    public CombateViewModel(Jugador jugador, Pokemon pokemonSalvaje) {
+        this.modeloCombate = new Combate(jugador, pokemonSalvaje);
         sincronizarEstado();
 
         logsCombate.add("¡Un " + pokemonSalvaje.getNombre() + " salvaje apareció!");
@@ -45,7 +45,7 @@ public class CombateViewModel {
 
         int experienciaGanada = salvaje.getNivel() * 20;
 
-        for (Pokemon pokemon : modeloCombate.getEntrenador().getEquipo()) {
+        for (Pokemon pokemon : modeloCombate.getJugador().getEquipo()) {
             int nivelesSubidos = pokemon.ganarExperiencia(experienciaGanada);
 
             logsCombate.add(pokemon.getNombre() + " recibió " + experienciaGanada + " XP.");
@@ -79,7 +79,7 @@ public class CombateViewModel {
     }
 
     private void sincronizarEstado() {
-        Pokemon jugadorActivo = modeloCombate.getEntrenador().getPokemonActivo();
+        Pokemon jugadorActivo = modeloCombate.getJugador().getPokemonActivo();
         Pokemon enemigo = modeloCombate.getPokemonSalvaje();
 
         if (jugadorActivo != null) {
@@ -101,7 +101,7 @@ public class CombateViewModel {
 
     public boolean cambiarPokemonActivo(int posicion) {
 
-        boolean cambiado = modeloCombate.getEntrenador().elegirPokemonActivo(posicion);
+        boolean cambiado = modeloCombate.getJugador().elegirPokemonActivo(posicion);
 
         if (!cambiado) {
             logsCombate.add("No puedes seleccionar ese Pokémon.");
@@ -111,7 +111,7 @@ public class CombateViewModel {
         // Actualizar nombre, nivel y vida del HUD.
         sincronizarEstado();
 
-        Pokemon nuevoActivo = modeloCombate.getEntrenador().getPokemonActivo();
+        Pokemon nuevoActivo = modeloCombate.getJugador().getPokemonActivo();
 
         logsCombate.add("¡Adelante, " + nuevoActivo.getNombre() + "!");
 
@@ -124,15 +124,15 @@ public class CombateViewModel {
 
         if (modeloCombate.getEstado() != EstadoCombate.ACTIVO) return false;
 
-        Entrenador entrenador = modeloCombate.getEntrenador();
-        int cantidadAntes = entrenador.getInventario().contarCantidad(item);
+        Jugador jugador = modeloCombate.getJugador();
+        int cantidadAntes = jugador.getInventario().contarCantidad(item);
 
         List<String> logs = modeloCombate.turno(item,modeloCombate.getPokemonSalvaje());
 
         logsCombate.addAll(logs);
         sincronizarEstado();
 
-        int cantidadDespues = entrenador.getInventario().contarCantidad(item);
+        int cantidadDespues = jugador.getInventario().contarCantidad(item);
         boolean usado = cantidadDespues < cantidadAntes;
 
         if(modeloCombate.getEstado() != EstadoCombate.ACTIVO && onTerminarCombateCallback != null)
@@ -158,12 +158,12 @@ public class CombateViewModel {
             itemObtenido = new Pokebola("Pokebola","Captura pokemones",false);
         }
 
-        modeloCombate.getEntrenador().getInventario().agregarObjeto(itemObtenido);
+        modeloCombate.getJugador().getInventario().agregarObjeto(itemObtenido);
         logsCombate.add("¡Has obtenido " + itemObtenido.getNombre() + "!");
     }
 
     public List<Pokemon> getEquipoJugador() {
-        return modeloCombate.getEntrenador().getEquipo();
+        return modeloCombate.getJugador().getEquipo();
     }
 
     public void setOnTerminarCombateCallback(Runnable callback) {

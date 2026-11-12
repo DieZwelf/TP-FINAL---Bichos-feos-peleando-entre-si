@@ -43,13 +43,13 @@ public class Pocion extends Item{
      * Usar la poción, verifica que la vida no sea menor o igual a 0, lo cura y si ésta cura es menor
      * o igual a 0 entonces no pierde el turno y añade que ya está al máximo.
      * Si no pasa lo anterior, entonces si se añade el registro correctamente.
-     * @param entrenador El que dirige la acción.
+     * @param jugador El que dirige la acción.
      * @param objetivo El que recibe la poción.
      * @param registro Lo que se registra.
      * @return verdadero o falso.
      */
     @Override
-    public boolean usar(Entrenador entrenador, Pokemon objetivo, List<String> registro) {
+    public boolean usar(Jugador jugador, Pokemon objetivo, List<String> registro) {
         if (objetivo == null || objetivo.getVida() <= 0) {
             registro.add("El objetivo está debilitado o no existe.");
             return false;

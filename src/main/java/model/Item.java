@@ -62,5 +62,5 @@ public abstract class Item {
                 '}';
     }
 
-    public abstract boolean usar(Entrenador entrenador, Pokemon objetivo, List<String> registro);
+    public abstract boolean usar(Jugador entrenador, Pokemon objetivo, List<String> registro);
 }
