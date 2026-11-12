@@ -3,7 +3,7 @@ package vista.juego;
 
 import java.util.List;
 
-public class MapaPueblo extends CargadorMapaTiled {
+public class MapaPueblo extends CargadorMapaPlanilla {
 
     @Override
     protected String obtenerRutaMapa() {
@@ -15,15 +15,14 @@ public class MapaPueblo extends CargadorMapaTiled {
         return "/images/mapa/punyworld-overworld-tileset.png";
     }
 
-
     @Override
     public List<TransicionMapa> obtenerTransiciones() {
         return List.of(
                 new TransicionMapa(
-                        767, 2352,
-                        48, 48,
+                        767, 2400,
+                        16, 16,
                         MapaCasa::new,
-                        480, 600
+                        47, 70
                 )
         );
     }

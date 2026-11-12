@@ -11,8 +11,11 @@ public class VistaMapa extends Pane {
 
     private final Canvas canvas;
     private final List<Shape> colisiones;
+    private final CargadorMapaTiled cargador;
 
     public VistaMapa(CargadorMapaTiled cargador) {
+
+        this.cargador = cargador;
 
         try {
             canvas = cargador.cargarMapa();
@@ -34,5 +37,9 @@ public class VistaMapa extends Pane {
 
     public List<Shape> getColisiones() {
         return colisiones;
+    }
+
+    public CargadorMapaTiled getCargador() {
+        return cargador;
     }
 }

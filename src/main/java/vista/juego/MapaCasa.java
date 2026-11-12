@@ -3,7 +3,7 @@ package vista.juego;
 
 import java.util.List;
 
-public class MapaCasa extends CargadorMapaTiled {
+public class MapaCasa extends CargadorMapaIndividual {
 
     @Override
     protected String obtenerRutaMapa() {
@@ -19,10 +19,10 @@ public class MapaCasa extends CargadorMapaTiled {
     public List<TransicionMapa> obtenerTransiciones() {
         return List.of(
                 new TransicionMapa(
-                        480, 240,
+                        47, 48,
                         48, 48,
-                        MapaCasa::new,
-                        480, 600
+                        MapaPueblo::new,
+                        767, 2352
                 )
         );
     }

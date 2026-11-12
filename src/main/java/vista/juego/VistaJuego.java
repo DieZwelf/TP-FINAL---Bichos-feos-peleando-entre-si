@@ -41,7 +41,10 @@ public class VistaJuego extends PantallaBase {
         super(pantallas);
         this.jugador = jugador;
 
-        MapaPueblo mapaInicial = new MapaPueblo();
+        MapaCasa mapaInicial = new MapaCasa();
+
+        jugador.setX(254);
+        jugador.setY(177);
 
         this.vistaMapa = new VistaMapa(mapaInicial);
         this.vistaJugador = new VistaJugador(jugador);
@@ -52,7 +55,12 @@ public class VistaJuego extends PantallaBase {
     @Override
     protected Parent crearContenido() {
         root = new StackPane();
+
+        // Fondo negro fijo en toda la pantalla.
+        root.setStyle("-fx-background-color: #514638");
+
         StackPane.setAlignment(mundo, Pos.TOP_LEFT);
+
         mundo.getChildren().setAll(vistaMapa, vistaJugador);
         mundo.setPrefSize(vistaMapa.getPrefWidth(), vistaMapa.getPrefHeight());
         mundo.getTransforms().setAll(transformacionCamara);
@@ -72,10 +80,12 @@ public class VistaJuego extends PantallaBase {
             recorte.setWidth(ahora.doubleValue());
             actualizarCamara();
         });
+
         root.heightProperty().addListener((obs, antes, ahora) -> {
             recorte.setHeight(ahora.doubleValue());
             actualizarCamara();
         });
+
         return root;
     }
 
@@ -178,17 +188,16 @@ public class VistaJuego extends PantallaBase {
     }
 
     private void generarEncuentro() {
+
+        // No generar encuentros dentro de la casa.
+        if (vistaMapa.getCargador() instanceof MapaCasa) {
+            return;
+        }
+
         Pokemon pokemonActivo = jugador.getPokemonActivo();
         if (pokemonActivo == null) return;
 
-        double probabilidad = CalculadoraCaptura.calcularProbabilidad(pokemonActivo);
-
-        System.out.println("Vida: " + pokemonActivo.getVida() + "/" + pokemonActivo.getVidaMaxima());
-        System.out.println("Probabilidad: " + (probabilidad * 100) + "%");
-
-        int nivelJugador = pokemonActivo.getNivel();
-        Pokemon salvaje = GeneradorPokemonSalvaje.generarPokemonSegunNivel(nivelJugador);
-        pantallas.iniciarCombate(jugador, salvaje);
+        // Resto del código...
     }
 
     public void actualizarCamara() {
