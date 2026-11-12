@@ -189,7 +189,7 @@ public class VistaJuego extends PantallaBase {
 
     private void generarEncuentro() {
 
-        // No generar encuentros dentro de la casa.
+        // Evitar encuentros dentro de la casa.
         if (vistaMapa.getCargador() instanceof MapaCasa) {
             return;
         }
@@ -197,9 +197,16 @@ public class VistaJuego extends PantallaBase {
         Pokemon pokemonActivo = jugador.getPokemonActivo();
         if (pokemonActivo == null) return;
 
-        // Resto del código...
-    }
+        double probabilidad = CalculadoraCaptura.calcularProbabilidad(pokemonActivo);
 
+        System.out.println("Vida: " + pokemonActivo.getVida() + "/" + pokemonActivo.getVidaMaxima());
+        System.out.println("Probabilidad: " + (probabilidad * 100) + "%");
+
+        int nivelJugador = pokemonActivo.getNivel();
+        Pokemon salvaje = GeneradorPokemonSalvaje.generarPokemonSegunNivel(nivelJugador);
+
+        pantallas.iniciarCombate(jugador, salvaje);
+    }
     public void actualizarCamara() {
         if (escena == null || root == null) return;
 
