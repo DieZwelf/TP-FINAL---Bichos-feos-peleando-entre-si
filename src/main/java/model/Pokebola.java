@@ -29,7 +29,7 @@ public class Pokebola extends Item{
 
     /**
      * En desarrollo...
-     * @param entrenador
+     * @param jugador
      * @param objetivo
      * @param registro
      * @return

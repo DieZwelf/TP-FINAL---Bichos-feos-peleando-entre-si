@@ -43,7 +43,6 @@ public class Pokemon {
     }
 
     public Pokemon(String nombre, double vidaMaxima, double vida, double danio,double defensa, TipoPokemon tipo, int nivel, int experiencia,int danioBase, int defensaBase) {
-        id = contador++;
         this.nombre = nombre;
         this.vidaMaxima = vidaMaxima;
         this.vida = vida;
@@ -60,6 +59,10 @@ public class Pokemon {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getNombre() {
