@@ -2,6 +2,7 @@ module demojuego {
     requires javafx.controls;
     requires javafx.media;
     requires com.google.gson;
+requires java.sql;
 
     exports application to javafx.graphics;
     opens application to javafx.fxml;
@@ -14,4 +15,5 @@ module demojuego {
     exports vista.menu;
     exports vista.juego;
     exports vista.combate;
+
 }

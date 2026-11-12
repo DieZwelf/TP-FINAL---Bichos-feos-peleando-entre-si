@@ -1,6 +1,7 @@
 package DAO;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import model.Entrenador;
@@ -20,13 +21,29 @@ public class guardarPartidaDAO {
         String sqlLimpiarPokemones = "DELETE FROM pokemones WHERE id_entrenador = ?";
         String sqlPokemon = "INSERT INTO pokemones (id, id_entrenador, nombre, nivel, en_equipo) VALUES (?, ?, ?, ?, ?)";
 
-        try(Connection con = Conexion.crearConexion()){
+        try(Connection con = Conexion.crearConexion()) {
             con.setAutoCommit(false);
+            try {
+                // 2. Guardar o actualizar el Entrenador (usando su atributo id ya generado)
+                try (PreparedStatement psEnt = con.prepareStatement(sqlEntrenador)) {
+                    psEnt.setInt(1, entrenador.getId());
+                    psEnt.setString(2, entrenador.getNombre());
+                    psEnt.setString(3, entrenador.getRango());
 
-
-        } catch(SQLException e){
-            System.out.println(e.getMessage());
+                    // Validamos por si aún no tiene un pokémon activo seleccionado
+                    if (entrenador.getPokemonActivo() != null) {
+                        psEnt.setInt(4, entrenador.getPokemonActivo().getId());
+                    } else {
+                        psEnt.setNull(4, java.sql.Types.INTEGER);
+                    }
+                    psEnt.executeUpdate();
+                }
+            }   catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
         }
-
     }
-}
+
