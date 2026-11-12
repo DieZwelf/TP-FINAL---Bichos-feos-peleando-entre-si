@@ -164,7 +164,7 @@ public class GestorPantallas {
     }
 
     public void iniciarPartida() {
-        jugador = partidaService.crearJugadorInicial(TipoJugador.USUARIO);
+        jugador = partidaService.crearJugadorInicial(this.tipo);
 
         vistaJuego = new VistaJuego(jugador, this);
 

@@ -1,5 +1,6 @@
 package vista.menu;
 
+import model.TipoJugador;
 import vista.GestorPantallas;
 import vista.base.PantallaMenuBase;
 
