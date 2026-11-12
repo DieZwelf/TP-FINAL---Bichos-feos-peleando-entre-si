@@ -21,7 +21,13 @@ public class Pocion extends Item{
     }
 
 
+    public double getCuracion() {
+        return curacion;
+    }
 
+    public void setCuracion(double curacion) {
+        this.curacion = curacion;
+    }
 
     /**
      * Usar la poción, verifica que la vida no sea menor o igual a 0, lo cura y si ésta cura es menor

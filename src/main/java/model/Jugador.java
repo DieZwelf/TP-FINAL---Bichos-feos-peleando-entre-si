@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.LinkedHashSet;
 
 /**
  * La clase JUGADOR tiene como atributos un id autoincremental, un nombre, una 'Pokedex', un equipo
@@ -31,7 +32,7 @@ public class Jugador {
     private boolean enMovimiento;
     private TipoJugador tipo;
 
-    private TreeMap<Integer,Pokemon> pokemonesCapturados;
+    private LinkedHashSet<String> pokemonesCapturados;
     private List<Pokemon> equipo;
     private String rango;
     private Pokemon pokemonActivo;
@@ -47,20 +48,20 @@ public class Jugador {
         this.frameActual = 0;
         this.enMovimiento = false;
         this.tipo = tipo;
-        this.pokemonesCapturados = new TreeMap<>();
+        this.pokemonesCapturados = new LinkedHashSet<>();
         this.equipo = new ArrayList<>(5);
         this.inventario = new Inventario(new HashMap<>());
     }
 
     //Jugador existente
-    public Jugador(int id, double x, double y, TipoJugador tipo, TreeMap<Integer, Pokemon> pokemonesCapturados, List<Pokemon> equipo,
+    public Jugador(int id, double x, double y, TipoJugador tipo, LinkedHashSet<String> pokemonesCapturados, List<Pokemon> equipo,
                    String rango, Pokemon pokemonActivo, Inventario inventario) {
         this.id=id;
         this.x = x;
         this.y = y;
         this.tipo = tipo;
 
-        this.pokemonesCapturados = pokemonesCapturados != null ? pokemonesCapturados : new TreeMap<>();
+        this.pokemonesCapturados = pokemonesCapturados != null ? pokemonesCapturados : new LinkedHashSet<>();
         this.equipo = equipo != null ? new ArrayList<>(equipo) : new ArrayList<>(5);
         this.rango = rango;
         this.inventario = new Inventario(new HashMap<>());
@@ -87,7 +88,7 @@ public class Jugador {
     public String getDireccion() { return direccion; }
     public int getFrameActual() { return frameActual; }
     public boolean isEnMovimiento() { return enMovimiento; }
-    public TreeMap<Integer, Pokemon> getPokemonesCapturados() {
+    public LinkedHashSet<String> getPokemonesCapturados() {
         return pokemonesCapturados;
     }
     public List<Pokemon> getEquipo() {
@@ -96,6 +97,7 @@ public class Jugador {
     public String getRango() {
         return rango;
     }
+
     /**
      * Fundamental para el metodo atacar de combate, llamara al menos 2 veces por combate
      * @return Pokemon (el activo)
@@ -119,8 +121,8 @@ public class Jugador {
     }
     public void setFrameActual(int frameActual) { this.frameActual = frameActual; }
     public void setEnMovimiento(boolean enMovimiento) { this.enMovimiento = enMovimiento; }
-    public void setPokemonesCapturados(TreeMap<Integer, Pokemon> pokemonesCapturados) {
-        this.pokemonesCapturados = pokemonesCapturados != null ? pokemonesCapturados : new TreeMap<>();
+    public void setPokemonesCapturados(LinkedHashSet<String> pokemonesCapturados) {
+        this.pokemonesCapturados = pokemonesCapturados != null ? pokemonesCapturados : new LinkedHashSet<>();
     }
     public void setEquipo(List<Pokemon> equipo) {
         this.equipo = equipo != null ? new ArrayList<>(equipo) : new ArrayList<>(5);
@@ -138,8 +140,9 @@ public class Jugador {
         this.pokemonActivo = pokemonActivo;
     }
 
-
-
+    public void setId(int id) {
+        this.id = id;
+    }
 
     /**
      * Elige el pokemon activo pasado en la posición que le pasan por parámetro
@@ -179,7 +182,7 @@ public class Jugador {
         }
 
         equipo.add(p);
-        pokemonesCapturados.put(p.getId(), p);
+        pokemonesCapturados.add(p.getNombre());
 
         if (pokemonActivo == null)
         {
