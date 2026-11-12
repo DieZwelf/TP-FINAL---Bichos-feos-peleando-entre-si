@@ -20,25 +20,23 @@ public final class TablaProgresion {
     private final int experienciaAcumulada;
     private final int vida;
     private final int danio;
-    private final int velocidad;
     private final int defensa;
 
-    public TablaProgresion(int nivel, int experienciaAcumulada, int vida, int danio, int velocidad, int defensa) {
+    public TablaProgresion(int nivel, int experienciaAcumulada, int vida, int danio, int defensa) {
         this.nivel = nivel;
         this.experienciaAcumulada = experienciaAcumulada;
         this.vida = vida;
         this.danio = danio;
-        this.velocidad = velocidad;
         this.defensa = defensa;
     }
 
     //Aca inicializo, osea los porcentajes de subida siempre son iguales para todos los bichos
     private static final TablaProgresion[] FILAS =
             {
-                    new TablaProgresion(2,     90,       15,   10,    0,   0),
-                    new TablaProgresion(3,     198,      15,    10,     8,  10),
-                    new TablaProgresion(4,     328,      27,   20,    8,   10),
-                    new TablaProgresion(5,     484,      27,    20,     16,  20)
+                    new TablaProgresion(2,     90,       15,   10,    0),
+                    new TablaProgresion(3,     198,      15,    10,     8),
+                    new TablaProgresion(4,     328,      27,   20,    8 ),
+                    new TablaProgresion(5,     484,      27,    20,     16)
             };
 
 
@@ -69,7 +67,6 @@ public final class TablaProgresion {
     {
         VIDA,
         DANIO,
-        VELOCIDAD,
         DEFENSA;
     }
 
@@ -87,7 +84,6 @@ public final class TablaProgresion {
                 return switch (e){
                     case VIDA -> t.vida;
                     case DANIO -> t.danio;
-                    case VELOCIDAD -> t.velocidad;
                     case DEFENSA -> t.defensa;
                 };
             }

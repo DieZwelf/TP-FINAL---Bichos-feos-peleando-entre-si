@@ -178,16 +178,10 @@ public class Combate {
                 Pokemon primero;
                 Pokemon segundo;
 
-                //Compara velocidades para determinar quien ataca primero
-                if(activo.getVelocidad() >= pokemonSalvaje.getVelocidad())
-                {
+
                  primero = activo;
                  segundo = pokemonSalvaje;
-                } else
-                {
-                primero = pokemonSalvaje;
-                segundo = activo;
-                }
+
 
             registrosCombate.add(ejecutarAtaque(primero,segundo));
            //Verificacion si el Pokemon esta caido  o no para permitirle o no pasar a su ataque

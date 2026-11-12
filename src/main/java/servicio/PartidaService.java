@@ -28,8 +28,8 @@ public class PartidaService {
     }
 
     private void agregarPokemonInicial(Jugador jugador, String nombre, TipoPokemon tipo) {
-        Pokemon pokemon = new Pokemon(nombre, 50.0, 50.0, 12.0, 5.0, 10.0,
-                tipo, 1, 0, 12, 5, 10);
+        Pokemon pokemon = new Pokemon(nombre, 50.0, 50.0, 12.0, 5.0,
+                tipo, 1, 0, 12, 5);
         jugador.aniadir(pokemon);
     }
 

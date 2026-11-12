@@ -52,11 +52,10 @@ public class GeneradorPokemonSalvaje {
         double vida = 20 + d.getVida() * 0.55;
         int danio = (int) Math.round(d.getDanio() * 0.17);
         int defensa = (int) Math.round(d.getDefensa() * 0.10);
-        int velocidad = (int) Math.round(d.getVelocidad() * 0.12);
 
 // Construcción del Pokémon en nivel 1
-        Pokemon salvaje = new Pokemon(d.getNombre(), vida, vida, danio, defensa, velocidad, d.getTipo(), 1, 0,
-                danio, defensa, velocidad);
+        Pokemon salvaje = new Pokemon(d.getNombre(), vida, vida, danio, defensa, d.getTipo(), 1, 0,
+                danio, defensa);
 
         // Escalado según el nivel del jugador
         if (nivelPokemon > 1) {

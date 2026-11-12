@@ -29,7 +29,6 @@ public class Pokemon {
     private double vida;
     private double danio;
     private double defensa;
-    private double velocidad;
     private TipoPokemon tipo;
     private final String rutaImagen;
     private int nivel = 1;
@@ -37,21 +36,19 @@ public class Pokemon {
     private double vidaBase;
     private double danioBase;
     private double defensaBase;
-    private double velocidadBase;
 
     public Pokemon() {
         id = contador++;
         this.rutaImagen = "/images/items/" + nombre.toLowerCase() + ".png";
     }
 
-    public Pokemon(String nombre, double vidaMaxima, double vida, double danio,double defensa, double velocidad, TipoPokemon tipo, int nivel, int experiencia,int danioBase, int defensaBase, int velocidadBase) {
+    public Pokemon(String nombre, double vidaMaxima, double vida, double danio,double defensa, TipoPokemon tipo, int nivel, int experiencia,int danioBase, int defensaBase) {
         id = contador++;
         this.nombre = nombre;
         this.vidaMaxima = vidaMaxima;
         this.vida = vida;
         this.danio = danio;
         this.defensa = defensa;
-        this.velocidad = velocidad;
         this.tipo = tipo;
         this.rutaImagen = "/images/items/" + nombre.toLowerCase() + ".png";
         this.nivel = nivel;
@@ -59,7 +56,6 @@ public class Pokemon {
         this.vidaBase = vida;
         this.danioBase = danioBase;
         this.defensaBase = defensaBase;
-        this.velocidadBase = velocidadBase;
     }
 
     public int getId() {
@@ -102,14 +98,6 @@ public class Pokemon {
         this.defensa = defensa;
     }
 
-    public double getVelocidad() {
-        return velocidad;
-    }
-
-    public void setVelocidad(double velocidad) {
-        this.velocidad = velocidad;
-    }
-
     public TipoPokemon getTipo() {
         return tipo;
     }
@@ -133,7 +121,6 @@ public class Pokemon {
                 ", vida=" + vida +
                 ", danio=" + danio +
                 ", defensa=" + defensa +
-                ", velocidad=" + velocidad +
                 ", tipo=" + tipo +
                 '}';
     }
@@ -258,7 +245,6 @@ public class Pokemon {
         vidaMaxima = aplicarMejora(vidaBase, TablaProgresion.Estadistica.VIDA);
         danio = aplicarMejora(danioBase, TablaProgresion.Estadistica.DANIO);
         defensa = aplicarMejora(defensaBase, TablaProgresion.Estadistica.DEFENSA);
-        velocidad = aplicarMejora(velocidadBase, TablaProgresion.Estadistica.VELOCIDAD);
 
         // subir nivel no te cura el bicho
         vida += vidaMaxima - vidaMaximaAnterior;
