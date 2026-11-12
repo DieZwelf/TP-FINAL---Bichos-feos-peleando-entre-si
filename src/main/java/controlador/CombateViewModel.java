@@ -152,7 +152,7 @@ public class CombateViewModel {
         if (esPocion)
         {
             int nivel = random.nextInt(1,4);
-            itemObtenido = new Pocion("Pocion","Pocion de curacion",nivel, (int) random.nextDouble(1,11),(nivel*15));
+            itemObtenido = new Pocion((nivel*15));
         } else
         {
             itemObtenido = new Pokebola("Pokebola","Captura pokemones",false);

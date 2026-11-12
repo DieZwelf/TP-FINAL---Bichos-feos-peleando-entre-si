@@ -17,10 +17,10 @@ public class PartidaService {
 
 
         jugador.setPokemonActivo(jugador.getEquipo().get(0));
-        jugador.getInventario().agregarObjeto(new Pocion("Pocion", "Cura", 2, 2, 50));
-        jugador.getInventario().agregarObjeto(new Pocion("Pocion", "Cura", 2, 2, 50));
-        jugador.getInventario().agregarObjeto(new Pocion("Pocion", "Cura", 2, 2, 50));
-        jugador.getInventario().agregarObjeto(new Pocion("Pocion", "Cura", 2, 2, 50));
+        jugador.getInventario().agregarObjeto(new Pocion(50));
+        jugador.getInventario().agregarObjeto(new Pocion(50));
+        jugador.getInventario().agregarObjeto(new Pocion(50));
+        jugador.getInventario().agregarObjeto(new Pocion(50));
 
         jugador.getInventario().agregarObjeto(new Pokebola("Pokebola", "Captura pokemones", false));
 

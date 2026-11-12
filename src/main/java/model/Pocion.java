@@ -12,32 +12,16 @@ import java.util.List;
  * @version 1.0
  */
 public class Pocion extends Item{
-    private int nivel;
-    private int duracion;
-    private double curar;
 
-    public Pocion(String nombre, String descripcion, int nivel, int duracion, double curar) {
-        super(nombre, descripcion);
-        this.nivel = nivel;
-        this.duracion = duracion;
-        this.curar = curar;
+    private double curacion;
+
+    public Pocion(double curacion) {
+        super("Pocion", "Cura a tu bicho");
+        this.curacion = curacion;
     }
 
-    public int getNivel() {
-        return nivel;
-    }
 
-    public void setNivel(int nivel) {
-        this.nivel = nivel;
-    }
 
-    public int getDuracion() {
-        return duracion;
-    }
-
-    public void setDuracion(int duracion) {
-        this.duracion = duracion;
-    }
 
     /**
      * Usar la poción, verifica que la vida no sea menor o igual a 0, lo cura y si ésta cura es menor
@@ -55,7 +39,7 @@ public class Pocion extends Item{
             return false;
         }
 
-        double curado = objetivo.curar(curar);
+        double curado = objetivo.curar(curacion);
 
         if (curado <= 0)
         {
