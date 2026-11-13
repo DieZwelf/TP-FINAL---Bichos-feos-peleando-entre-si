@@ -1,6 +1,6 @@
 package vista.menu;
 
-import vista.GestorPantallas;
+import vista.gestor.GestorPantallas;
 import vista.base.PantallaMenuBase;
 
 import javafx.scene.control.Button;

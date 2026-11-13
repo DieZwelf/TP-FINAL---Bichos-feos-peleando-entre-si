@@ -4,7 +4,7 @@ import controlador.CombateViewModel;
 import controlador.InventarioViewModel;
 import excepciones.PokebolaFueraDeCombateException;
 import model.Pokebola;
-import vista.GestorPantallas;
+import vista.gestor.GestorPantallas;
 import vista.base.PantallaBase;
 
 import javafx.geometry.Insets;

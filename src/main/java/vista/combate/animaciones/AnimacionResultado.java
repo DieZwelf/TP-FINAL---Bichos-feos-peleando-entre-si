@@ -11,10 +11,54 @@ import javafx.util.Duration;
 
 public class AnimacionResultado {
 
+    // Animación utilizada durante el combate.
     public void reproducir(
             Scene escena,
             boolean victoria,
             Runnable alTerminar
+    ) {
+        Label titulo = new Label(
+                victoria ? "¡VICTORIA!" : "¡DERROTA!"
+        );
+
+        titulo.setStyle(
+                "-fx-font-size: 58px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: " +
+                        (victoria ? "#FFD700" : "#FF5555") + ";"
+        );
+
+        reproducirAnimacion(
+                escena,
+                titulo,
+                victoria,
+                alTerminar,
+                true
+        );
+    }
+
+    // Animación del título que ya existe en PantallaResultados.
+    public void reproducir(
+            Scene escena,
+            Label titulo,
+            boolean victoria,
+            Runnable alTerminar
+    ) {
+        reproducirAnimacion(
+                escena,
+                titulo,
+                victoria,
+                alTerminar,
+                false
+        );
+    }
+
+    private void reproducirAnimacion(
+            Scene escena,
+            Label titulo,
+            boolean victoria,
+            Runnable alTerminar,
+            boolean agregarTituloAlOverlay
     ) {
         StackPane root = (StackPane) escena.getRoot();
 
@@ -28,28 +72,12 @@ public class AnimacionResultado {
                 ? "rgba(25, 20, 5, 0.94)"
                 : "rgba(25, 5, 10, 0.95)";
 
-        String colorTexto = victoria
-                ? "#FFD700"
-                : "#FF5555";
-
         String colorBrillo = victoria
                 ? "#FFF2A6"
                 : "#FF9999";
 
         overlay.setStyle(
                 "-fx-background-color: " + colorFondo + ";"
-        );
-
-        Label titulo = new Label(
-                victoria ? "¡VICTORIA!" : "¡DERROTA!"
-        );
-
-        titulo.setStyle(
-                "-fx-font-size: 58px;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-text-fill: " + colorTexto + ";" +
-                        "-fx-effect: dropshadow(gaussian, " +
-                        colorBrillo + ", 24, 0.8, 0, 0);"
         );
 
         Label subtitulo = new Label(
@@ -65,8 +93,26 @@ public class AnimacionResultado {
                         "-fx-opacity: 0.85;"
         );
 
-        VBox contenido = new VBox(18, titulo, subtitulo);
+        titulo.setStyle(
+                titulo.getStyle() +
+                        "-fx-effect: dropshadow(gaussian, " +
+                        colorBrillo + ", 24, 0.8, 0, 0);"
+        );
+
+        VBox contenido = new VBox(18);
         contenido.setAlignment(Pos.CENTER);
+
+        if (agregarTituloAlOverlay) {
+            contenido.getChildren().add(titulo);
+        } else {
+            // El título ya está en la pantalla de resultados.
+            // No lo agregamos a otro contenedor.
+            contenido.getChildren().add(subtitulo);
+        }
+
+        if (agregarTituloAlOverlay) {
+            contenido.getChildren().add(subtitulo);
+        }
 
         overlay.getChildren().add(contenido);
         overlay.setOpacity(0);
@@ -97,8 +143,8 @@ public class AnimacionResultado {
                 Duration.millis(180),
                 titulo
         );
-        ajuste.setToX(1.0);
-        ajuste.setToY(1.0);
+        ajuste.setToX(1);
+        ajuste.setToY(1);
         ajuste.setInterpolator(Interpolator.EASE_OUT);
 
         PauseTransition pausa = new PauseTransition(
@@ -121,6 +167,8 @@ public class AnimacionResultado {
 
         secuencia.setOnFinished(evento -> {
             root.getChildren().remove(overlay);
+            titulo.setScaleX(1);
+            titulo.setScaleY(1);
 
             if (alTerminar != null) {
                 alTerminar.run();

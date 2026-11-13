@@ -1,31 +1,33 @@
+
 package vista.base;
 
 import javafx.animation.FadeTransition;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
-import javafx.scene.Scene;
 import javafx.util.Duration;
-import vista.GestorPantallas;
-
-import java.net.URL;
+import vista.gestor.GestorPantallas;
 
 /**
- * Base para los menús que comparten video de fondo, título y botones.
- * Sus atributos son de instancia: no se comparte estado estático entre pantallas.
+ * Clase base para las pantallas de menú del juego.
+ *
+ * Administra el fondo animado, el encabezado, el contenedor
+ * de botones y las animaciones de entrada.
  */
 public abstract class PantallaMenuBase extends PantallaBase {
 
     private StackPane root;
     private VBox botonesBox;
-    private MediaPlayer reproductor;
+    private VBox encabezado;
+    private StackPane capaBotones;
 
     protected PantallaMenuBase(GestorPantallas pantallas) {
         super(pantallas);
@@ -33,65 +35,91 @@ public abstract class PantallaMenuBase extends PantallaBase {
 
     @Override
     protected final Parent crearContenido() {
+
         root = new StackPane();
+
         crearFondoAnimado();
         crearEncabezadoYContenedor();
         configurarBotones();
         animarEntrada();
+
         return root;
     }
 
+    /**
+     * Coloca el video de fondo compartido por los menús.
+     */
     private void crearFondoAnimado() {
-        URL archivoVideo = getClass().getResource("/videos/fondo.mp4");
-        if (archivoVideo == null) {
-            throw new IllegalStateException("No se encontró /videos/fondo.mp4");
-        }
 
-        Media media = new Media(archivoVideo.toExternalForm());
-        reproductor = new MediaPlayer(media);
-        reproductor.setCycleCount(MediaPlayer.INDEFINITE);
+        MediaPlayer reproductor = pantallas.obtenerReproductorMenu();
 
         MediaView vistaVideo = new MediaView(reproductor);
+
         vistaVideo.setPreserveRatio(false);
+        vistaVideo.setSmooth(true);
+
         vistaVideo.fitWidthProperty().bind(root.widthProperty());
         vistaVideo.fitHeightProperty().bind(root.heightProperty());
-        reproductor.setOnReady(() -> {
-            reproductor.play();
-        });
+
         root.getChildren().add(vistaVideo);
     }
 
+    /**
+     * Construye el encabezado visual y el contenedor de botones.
+     */
     private void crearEncabezadoYContenedor() {
         AnchorPane contenido = new AnchorPane();
-        VBox titulo = new VBox(0);
-        titulo.setAlignment(Pos.TOP_LEFT);
+
+        encabezado = new VBox(0);
+        encabezado.setAlignment(Pos.TOP_LEFT);
+        encabezado.getStyleClass().add("logo-juego");
 
         Label linea1 = new Label("POKEMON");
+        linea1.getStyleClass().add("titulo-pokemon");
+
         Label linea2 = new Label("ARGENTINO");
-        String estiloTitulo = "-fx-text-fill: #ffde00;" +
-                "-fx-font-family: 'Monospaced';" +
-                "-fx-font-size: 100px;" +
-                "-fx-font-weight: bold;";
-        linea1.setStyle(estiloTitulo);
-        linea2.setStyle(estiloTitulo);
-        titulo.getChildren().addAll(linea1, linea2);
+        linea2.getStyleClass().add("titulo-argentino");
 
-        AnchorPane.setTopAnchor(titulo, 35.0);
-        AnchorPane.setLeftAnchor(titulo, 45.0);
+        Region separador = new Region();
+        separador.getStyleClass().add("titulo-separador");
 
-        botonesBox = new VBox(37);
-        botonesBox.setAlignment(Pos.TOP_LEFT);
+        encabezado.getChildren().addAll(linea1, linea2, separador);
+
+        AnchorPane.setTopAnchor(encabezado, 45.0);
+        AnchorPane.setLeftAnchor(encabezado, 55.0);
+
+        capaBotones = new StackPane();
+        capaBotones.setAlignment(Pos.TOP_LEFT);
+
+        AnchorPane.setTopAnchor(capaBotones, 0.0);
+        AnchorPane.setBottomAnchor(capaBotones, 0.0);
+        AnchorPane.setLeftAnchor(capaBotones, 0.0);
+        AnchorPane.setRightAnchor(capaBotones, 0.0);
+
+        botonesBox = new VBox(25);
+        botonesBox.setAlignment(Pos.CENTER_LEFT);
         botonesBox.setPrefWidth(600);
-        botonesBox.setTranslateX(920);
-        botonesBox.setTranslateY(120);
+        botonesBox.setMaxWidth(600);
 
-        contenido.getChildren().addAll(titulo, botonesBox);
+        botonesBox.setTranslateX(920);
+        botonesBox.setTranslateY(-40);
+
+        capaBotones.getChildren().add(botonesBox);
+
+        contenido.getChildren().addAll(capaBotones, encabezado);
         root.getChildren().add(contenido);
     }
 
+    /**
+     * Aplica una transición de aparición a los botones.
+     */
     private void animarEntrada() {
+
         botonesBox.setOpacity(0);
-        FadeTransition entrada = new FadeTransition(Duration.millis(250), botonesBox);
+
+        FadeTransition entrada =
+                new FadeTransition(Duration.millis(300), botonesBox);
+
         entrada.setFromValue(0);
         entrada.setToValue(1);
         entrada.play();
@@ -101,11 +129,22 @@ public abstract class PantallaMenuBase extends PantallaBase {
         return botonesBox;
     }
 
+    /**
+     * Crea un botón con el estilo general del menú.
+     */
     protected final Button crearBotonEstilizado(String texto) {
+
         Button boton = new Button(texto);
         boton.getStyleClass().add("boton-menu");
-        boton.setOnMouseEntered(evento -> boton.setText("▶ " + texto));
-        boton.setOnMouseExited(evento -> boton.setText(texto));
+
+        boton.setOnMouseEntered(evento ->
+                boton.setText("▶ " + texto)
+        );
+
+        boton.setOnMouseExited(evento ->
+                boton.setText(texto)
+        );
+
         return boton;
     }
 
@@ -118,14 +157,21 @@ public abstract class PantallaMenuBase extends PantallaBase {
 
     @Override
     public void alOcultar() {
-        liberarReproductor();
+        // No detener ni destruir el reproductor compartido.
     }
 
-    private void liberarReproductor() {
-        if (reproductor != null) {
-            reproductor.stop();
-            reproductor.dispose();
-            reproductor = null;
-        }
+    /**
+     * Oculta el encabezado y centra los botones.
+     * Se utiliza en pantallas que no necesitan mostrar el título.
+     */
+    protected final void ocultarEncabezado() {
+
+        encabezado.setVisible(false);
+        encabezado.setManaged(false);
+
+        botonesBox.setTranslateX(0);
+        botonesBox.setTranslateY(0);
+
+        capaBotones.setAlignment(Pos.CENTER);
     }
 }

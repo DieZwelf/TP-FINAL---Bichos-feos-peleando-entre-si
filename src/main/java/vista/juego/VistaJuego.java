@@ -1,47 +1,40 @@
-
 package vista.juego;
 
-import controlador.AdministradorController;
 import controlador.JuegoController;
-import excepciones.PokemonInexistenteException;
-import javafx.animation.*;
+import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 import javafx.util.Duration;
 import model.*;
-import vista.GestorPantallas;
+import vista.gestor.GestorPantallas;
 import vista.base.PantallaBase;
-
-import java.util.ArrayList;
-import java.util.List;
+import vista.juego.animaciones.AnimacionEncuentro;
+import vista.juego.mapa.CargadorMapaTiled;
+import vista.juego.mapa.GestorCambioMapa;
+import vista.juego.mapa.MapaCasa;
+import vista.juego.mapa.VistaMapa;
 
 /**
- * Pantalla de exploración: compone el mapa y al jugador.
+ * Pantalla principal de exploración.
+ *
+ * Coordina el mapa, el jugador, la cámara, los controles y los
+ * componentes auxiliares de pausa, administración y cambios de mapa.
  */
 public class VistaJuego extends PantallaBase {
 
-    // --------------------------------------------------
-    // CONSTANTES
-    // --------------------------------------------------
-
     private static final double ZOOM = 1.4;
-
-    // --------------------------------------------------
-    // ATRIBUTOS
-    // --------------------------------------------------
 
     private final Jugador jugador;
     private final VistaJugador vistaJugador;
@@ -57,18 +50,20 @@ public class VistaJuego extends PantallaBase {
 
     private JuegoController controlador;
 
-    private List<TransicionMapa> transiciones = new ArrayList<>();
+    private MenuPausa menuPausa;
+    private PanelAdministrador panelAdministrador;
+    private GestorCambioMapa gestorCambioMapa;
 
-    private final AdministradorController adminController =
-            new AdministradorController();
+    private boolean encuentroEnCurso;
 
-    private boolean cambiandoMapa = false;
-    private boolean encuentroEnCurso = false;
+    private Rectangle transicionInicial;
 
-    // --------------------------------------------------
-    // CONSTRUCTOR
-    // --------------------------------------------------
-
+    /**
+     * Construye la pantalla de exploración.
+     *
+     * @param jugador jugador de la partida
+     * @param pantallas gestor de navegación entre pantallas
+     */
     public VistaJuego(Jugador jugador, GestorPantallas pantallas) {
         super(pantallas);
 
@@ -76,27 +71,26 @@ public class VistaJuego extends PantallaBase {
 
         MapaCasa mapaInicial = new MapaCasa();
 
-        jugador.setX(254);
-        jugador.setY(177);
-
         this.vistaMapa = new VistaMapa(mapaInicial);
         this.vistaJugador = new VistaJugador(jugador);
-
-        actualizarTransiciones(mapaInicial);
     }
 
-    // --------------------------------------------------
-    // CREACIÓN DE PANTALLA
-    // --------------------------------------------------
-
+    /**
+     * Construye los componentes visuales de la pantalla.
+     *
+     * @return contenedor principal
+     */
     @Override
     protected Parent crearContenido() {
+
         root = new StackPane();
-        root.setStyle("-fx-background-color: #514638;");
+        root.getStyleClass().add("fondo-juego");
+        root.setFocusTraversable(true);
 
         StackPane.setAlignment(mundo, Pos.TOP_LEFT);
 
         mundo.getChildren().setAll(vistaMapa, vistaJugador);
+
         mundo.setPrefSize(
                 vistaMapa.getPrefWidth(),
                 vistaMapa.getPrefHeight()
@@ -104,10 +98,10 @@ public class VistaJuego extends PantallaBase {
 
         mundo.getTransforms().setAll(transformacionCamara);
 
-        root.getChildren().setAll(mundo);
+        root.getChildren().add(mundo);
         root.setClip(recorte);
 
-        // PANEL DEL JUGADOR
+        // Panel de acceso al menú de pausa.
         VBox panelJugador = crearPanelJugador();
 
         root.getChildren().add(panelJugador);
@@ -115,16 +109,39 @@ public class VistaJuego extends PantallaBase {
         StackPane.setAlignment(panelJugador, Pos.TOP_LEFT);
         StackPane.setMargin(panelJugador, new Insets(18));
 
-        // PANEL DEL ADMINISTRADOR
-        if (jugador.getTipo() == TipoJugador.ADMINISTRADOR) {
-            VBox panelAdmin = crearPanelAdministrador();
+        // Panel de herramientas del administrador.
+        if (pantallas.isModoAdministrador()) {
 
-            root.getChildren().add(panelAdmin);
+            panelAdministrador = new PanelAdministrador(
+                    jugador,
+                    this::generarEncuentro,
+                    this::cambiarMapa
+            );
 
-            StackPane.setAlignment(panelAdmin, Pos.TOP_RIGHT);
-            StackPane.setMargin(panelAdmin, new Insets(18));
+            root.getChildren().add(panelAdministrador.getVista());
+
+            StackPane.setAlignment(
+                    panelAdministrador.getVista(),
+                    Pos.TOP_RIGHT
+            );
+
+            StackPane.setMargin(
+                    panelAdministrador.getVista(),
+                    new Insets(18)
+            );
         }
 
+        // Menú de pausa.
+        menuPausa = new MenuPausa(
+                jugador,
+                pantallas,
+                this::detenerGameLoop,
+                this::reanudarGameLoop
+        );
+
+        root.getChildren().add(menuPausa.getVista());
+
+        // Actualización del recorte y la cámara al cambiar el tamaño.
         root.widthProperty().addListener((obs, antes, ahora) -> {
             recorte.setWidth(ahora.doubleValue());
             actualizarCamara();
@@ -135,11 +152,19 @@ public class VistaJuego extends PantallaBase {
             actualizarCamara();
         });
 
+        crearTransicionInicial();
+
         return root;
     }
 
+    /**
+     * Configura el controlador del juego y los eventos de teclado.
+     *
+     * @param escena escena JavaFX
+     */
     @Override
     protected void configurarEscena(Scene escena) {
+
         agregarCSS(escena, "/images/pantallaMenu/estilo.css");
 
         this.escena = escena;
@@ -153,168 +178,140 @@ public class VistaJuego extends PantallaBase {
 
         controlador.setOnEncuentroGenerado(this::generarEncuentro);
 
+        // Gestor encargado de las transiciones entre mapas.
+        gestorCambioMapa = new GestorCambioMapa(
+                root,
+                mundo,
+                jugador,
+                vistaJugador,
+                vistaMapa,
+                this::actualizarCamara,
+                nuevaVista -> {
+                    vistaMapa = nuevaVista;
+                    controlador.setColisiones(nuevaVista.getColisiones());
+                }
+        );
+
         configurarTeclas(escena);
     }
 
+    /**
+     * Crea la capa negra inicial que se desvanece al entrar al juego.
+     */
+    private void crearTransicionInicial() {
+
+        transicionInicial = new Rectangle();
+
+        transicionInicial.setFill(Color.BLACK);
+        transicionInicial.setMouseTransparent(true);
+        transicionInicial.setOpacity(1);
+
+        transicionInicial.widthProperty().bind(root.widthProperty());
+        transicionInicial.heightProperty().bind(root.heightProperty());
+
+        root.getChildren().add(transicionInicial);
+    }
+
+    /**
+     * Acciones que se ejecutan cuando se muestra esta pantalla.
+     */
     @Override
     public void alMostrar() {
-        if (controlador != null) {
-            controlador.reanudarGameLoop();
+
+        if (menuPausa == null || !menuPausa.estaAbierto()) {
+            reanudarGameLoop();
         }
 
         actualizarCamara();
         root.requestFocus();
+
+        if (transicionInicial != null) {
+
+            FadeTransition aparecer = new FadeTransition(
+                    Duration.millis(700),
+                    transicionInicial
+            );
+
+            aparecer.setFromValue(1);
+            aparecer.setToValue(0);
+
+            aparecer.setOnFinished(evento -> {
+
+                root.getChildren().remove(transicionInicial);
+
+                transicionInicial.widthProperty().unbind();
+                transicionInicial.heightProperty().unbind();
+
+                transicionInicial = null;
+                root.requestFocus();
+            });
+
+            aparecer.play();
+        }
     }
 
+    /**
+     * Detiene el juego cuando se abandona esta pantalla.
+     */
     @Override
     public void alOcultar() {
+        detenerGameLoop();
+    }
+
+    /**
+     * Crea el botón que permite abrir el menú de pausa.
+     *
+     * @return panel del jugador
+     */
+    private VBox crearPanelJugador() {
+
+        VBox panel = new VBox(10);
+        panel.setAlignment(Pos.TOP_LEFT);
+
+        Button menu = new Button("MENÚ");
+        menu.getStyleClass().add("boton-retro");
+
+        menu.setOnAction(e -> menuPausa.alternar());
+
+        panel.getChildren().add(menu);
+
+        panel.setMaxSize(
+                Region.USE_PREF_SIZE,
+                Region.USE_PREF_SIZE
+        );
+
+        return panel;
+    }
+
+    /**
+     * Detiene el ciclo de actualización del juego.
+     */
+    private void detenerGameLoop() {
+
         if (controlador != null) {
             controlador.detenerGameLoop();
         }
     }
 
-    // --------------------------------------------------
-    // PANEL DEL JUGADOR
-    // --------------------------------------------------
+    /**
+     * Reanuda el ciclo de actualización del juego.
+     */
+    private void reanudarGameLoop() {
 
-    private VBox crearPanelJugador() {
-        VBox panel = new VBox(10);
-        panel.setAlignment(Pos.TOP_LEFT);
-
-        Button guardar = new Button("GUARDAR PARTIDA");
-        guardar.getStyleClass().add("boton-retro");
-
-        guardar.setOnAction(e -> {
-            pantallas.guardarPartida(jugador);
-
-            Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-            alerta.setTitle("Partida guardada");
-            alerta.setHeaderText(null);
-            alerta.setContentText(
-                    "¡Tu partida se guardó correctamente!"
-            );
-
-            alerta.showAndWait();
-        });
-
-        panel.getChildren().add(guardar);
-
-        panel.setMaxSize(
-                Region.USE_PREF_SIZE,
-                Region.USE_PREF_SIZE
-        );
-
-        return panel;
-    }
-
-
-    // --------------------------------------------------
-    // PANEL DE CONTROLES
-    // --------------------------------------------------
-
-
-
-
-    // --------------------------------------------------
-    // PANEL DE ADMINISTRADOR
-    // --------------------------------------------------
-
-    private VBox crearPanelAdministrador() {
-        VBox panel = new VBox(10);
-        panel.getStyleClass().add("panel-admin");
-
-        Label titulo = new Label("MODO DESARROLLADOR");
-        titulo.getStyleClass().add("titulo-admin");
-
-        Button encuentro = new Button("Forzar encuentro");
-        encuentro.getStyleClass().add("boton-admin");
-        encuentro.setOnAction(e -> generarEncuentro());
-
-        Button agregarPokemon = new Button("Agregar Pokémon");
-        agregarPokemon.getStyleClass().add("boton-admin");
-        agregarPokemon.setOnAction(e -> mostrarFormularioPokemon());
-
-        Button verPokemon = new Button("Ver Pokémon disponibles");
-        verPokemon.getStyleClass().add("boton-admin");
-        verPokemon.setOnAction(e -> mostrarPokemonesDisponibles());
-
-        Button cambiarMapa = new Button("Cambiar mapa");
-        cambiarMapa.getStyleClass().add("boton-admin");
-        cambiarMapa.setOnAction(e -> mostrarSelectorMapa());
-
-        panel.getChildren().addAll(
-                titulo,
-                encuentro,
-                agregarPokemon,
-                verPokemon,
-                cambiarMapa
-        );
-
-        panel.setMaxSize(
-                Region.USE_PREF_SIZE,
-                Region.USE_PREF_SIZE
-        );
-
-        return panel;
-    }
-
-    private void mostrarPokemonesDisponibles() {
-        List<DatosEspecie> especies =
-                adminController.obtenerEspeciesDisponibles();
-
-        StringBuilder contenido = new StringBuilder();
-
-        for (DatosEspecie especie : especies) {
-            contenido.append(especie.getNombre())
-                    .append(" | Tipo: ").append(especie.getTipo())
-                    .append(" | Vida: ").append(especie.getVida())
-                    .append(" | Daño: ").append(especie.getDanio())
-                    .append(" | Defensa: ").append(especie.getDefensa())
-                    .append(" | Velocidad: ").append(especie.getVelocidad())
-                    .append("\n");
+        if (controlador != null) {
+            controlador.reanudarGameLoop();
         }
-
-        TextArea texto = new TextArea(contenido.toString());
-        texto.setEditable(false);
-        texto.setWrapText(true);
-        texto.setPrefSize(450, 350);
-
-        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-        alerta.setTitle("Administrador");
-        alerta.setHeaderText(
-                "Pokémon disponibles (" + especies.size() + ")"
-        );
-        alerta.getDialogPane().setContent(texto);
-        alerta.showAndWait();
     }
 
-    private void mostrarSelectorMapa() {
-        ChoiceDialog<String> dialog =
-                new ChoiceDialog<>("Pueblo", "Pueblo", "Bosque");
-
-        dialog.setTitle("Administrador");
-        dialog.setHeaderText("Cambiar mapa");
-        dialog.setContentText("Seleccioná el destino:");
-
-        dialog.showAndWait().ifPresent(mapa -> {
-            switch (mapa) {
-                case "Pueblo" ->
-                        cambiarMapa(new MapaPueblo(), 450, 150);
-
-                case "Bosque" ->
-                        cambiarMapa(new MapaCasa(), 100, 500);
-            }
-        });
-    }
-
-    // --------------------------------------------------
-    // ENCUENTROS
-    // --------------------------------------------------
-
+    /**
+     * Genera un encuentro con un Pokémon salvaje.
+     */
     private void generarEncuentro() {
 
-        // Evitar encuentros dentro de la casa.
         if (vistaMapa.getCargador() instanceof MapaCasa) {
+            mostrarErrorAdmin(
+                    "No se pueden generar encuentros en este mapa."
+            );
             return;
         }
 
@@ -325,6 +322,7 @@ public class VistaJuego extends PantallaBase {
         Pokemon pokemonActivo = jugador.getPokemonActivo();
 
         if (pokemonActivo == null) {
+            mostrarErrorAdmin("Necesitás un Pokémon activo.");
             return;
         }
 
@@ -340,157 +338,50 @@ public class VistaJuego extends PantallaBase {
                 "Probabilidad: " + (probabilidad * 100) + "%"
         );
 
-        int nivelJugador = pokemonActivo.getNivel();
-
         Pokemon salvaje =
                 GeneradorPokemonSalvaje.generarPokemonSegunNivel(
-                        nivelJugador
+                        pokemonActivo.getNivel()
                 );
 
         encuentroEnCurso = true;
 
-        // El GestorPantallas se encarga de ejecutar la animación.
         pantallas.iniciarCombate(jugador, salvaje);
     }
 
     /**
-     * Transición de encuentro:
-     * parpadeo blanco y aparición del mensaje retro.
+     * Ejecuta la animación visual previa a un encuentro.
+     *
+     * @param alTerminar acción que se ejecuta al finalizar
      */
     public void animarEncuentro(Runnable alTerminar) {
-        if (controlador != null) {
-            controlador.detenerGameLoop();
-        }
 
-        double ancho = root.getWidth();
-        double alto = root.getHeight();
-
-        Pane capaTransicion = new Pane();
-        capaTransicion.setPrefSize(ancho, alto);
-        capaTransicion.setMouseTransparent(true);
-
-        root.getChildren().add(capaTransicion);
-
-        // Parpadeo blanco inicial.
-        Rectangle flash = new Rectangle(
-                ancho,
-                alto,
-                Color.WHITE
+        AnimacionEncuentro.reproducir(
+                root,
+                this::detenerGameLoop,
+                alTerminar
         );
-
-        flash.setOpacity(0);
-        capaTransicion.getChildren().add(flash);
-
-        Timeline parpadeo = new Timeline(
-                new KeyFrame(
-                        Duration.ZERO,
-                        new KeyValue(flash.opacityProperty(), 0)
-                ),
-                new KeyFrame(
-                        Duration.millis(50),
-                        new KeyValue(flash.opacityProperty(), 0.95)
-                ),
-                new KeyFrame(
-                        Duration.millis(110),
-                        new KeyValue(flash.opacityProperty(), 0)
-                ),
-                new KeyFrame(
-                        Duration.millis(160),
-                        new KeyValue(flash.opacityProperty(), 0.9)
-                ),
-                new KeyFrame(
-                        Duration.millis(230),
-                        new KeyValue(flash.opacityProperty(), 0)
-                )
-        );
-
-        parpadeo.setOnFinished(evento -> {
-            capaTransicion.getChildren().remove(flash);
-
-            mostrarMensajeEncuentro(
-                    capaTransicion,
-                    ancho,
-                    alto,
-                    alTerminar
-            );
-        });
-
-        parpadeo.play();
     }
 
     /**
-     * Muestra el mensaje sobre el mapa, sin fondo negro.
+     * Muestra un error en el panel de administración.
+     *
+     * @param texto mensaje de error
      */
-    private void mostrarMensajeEncuentro(
-            Pane capaTransicion,
-            double ancho,
-            double alto,
-            Runnable alTerminar
-    ) {
-        StackPane cartel = new StackPane();
-        cartel.setMaxSize(580, 110);
+    private void mostrarErrorAdmin(String texto) {
 
-        cartel.setStyle(
-                "-fx-background-color: #F8F8F8;" +
-                        "-fx-border-color: #202020;" +
-                        "-fx-border-width: 5;" +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 10, 0, 0, 4);"
-        );
-
-        Label mensaje = new Label(
-                "¡Un Pokémon salvaje apareció!"
-        );
-
-        mensaje.setFont(
-                Font.font("Monospaced", FontWeight.BOLD, 22)
-        );
-
-        mensaje.setTextFill(Color.web("#202020"));
-
-        cartel.getChildren().add(mensaje);
-
-        StackPane contenedor = new StackPane(cartel);
-        contenedor.setPrefSize(ancho, alto);
-
-        StackPane.setAlignment(cartel, Pos.BOTTOM_CENTER);
-
-        StackPane.setMargin(
-                cartel,
-                new Insets(0, 0, 50, 0)
-        );
-
-        capaTransicion.getChildren().setAll(contenedor);
-
-        FadeTransition aparecer = new FadeTransition(
-                Duration.millis(250),
-                cartel
-        );
-
-        aparecer.setFromValue(0);
-        aparecer.setToValue(1);
-
-        aparecer.setOnFinished(evento -> {
-            PauseTransition pausa = new PauseTransition(
-                    Duration.millis(1200)
-            );
-
-            pausa.setOnFinished(fin -> {
-                root.getChildren().remove(capaTransicion);
-                alTerminar.run();
-            });
-
-            pausa.play();
-        });
-
-        aparecer.play();
+        if (panelAdministrador != null) {
+            panelAdministrador.mostrarErrorDesdeJuego(texto);
+        } else {
+            System.out.println(texto);
+        }
     }
 
-    // --------------------------------------------------
-    // CÁMARA
-    // --------------------------------------------------
-
+    /**
+     * Actualiza la cámara para mantener al jugador centrado.
+     */
     public void actualizarCamara() {
-        if (escena == null || root == null) {
+
+        if (escena == null || root == null || vistaMapa == null) {
             return;
         }
 
@@ -519,12 +410,23 @@ public class VistaJuego extends PantallaBase {
         );
     }
 
+    /**
+     * Limita el desplazamiento de la cámara para evitar mostrar
+     * el exterior del mapa.
+     *
+     * @param posicion posición calculada de la cámara
+     * @param tamanoMapa tamaño escalado del mapa
+     * @param tamanoVentana tamaño de la ventana
+     * @return posición limitada
+     */
     private double limitarCamara(
             double posicion,
             double tamanoMapa,
             double tamanoVentana
     ) {
+
         if (tamanoMapa >= tamanoVentana) {
+
             return Math.max(
                     tamanoVentana - tamanoMapa,
                     Math.min(0, posicion)
@@ -534,270 +436,92 @@ public class VistaJuego extends PantallaBase {
         return (tamanoVentana - tamanoMapa) / 2;
     }
 
-    // --------------------------------------------------
-    // CONTROLES
-    // --------------------------------------------------
-
+    /**
+     * Configura los controles de teclado.
+     *
+     * @param escena escena donde se registran los eventos
+     */
     private void configurarTeclas(Scene escena) {
+
         escena.addEventFilter(KeyEvent.KEY_PRESSED, evento -> {
+
+            if (evento.getCode() == KeyCode.ESCAPE) {
+                menuPausa.alternar();
+                evento.consume();
+                return;
+            }
+
+            if (menuPausa.estaAbierto()) {
+                evento.consume();
+                return;
+            }
+
             controlador.manejarTeclaPresionada(evento);
 
             if (evento.getCode() == KeyCode.TAB) {
+
                 pantallas.mostrarEquipo();
                 evento.consume();
 
             } else if (evento.getCode() == KeyCode.E) {
+
                 pantallas.mostrarInventario();
+                evento.consume();
+
+            } else if (evento.getCode() == KeyCode.C) {
+
+                pantallas.mostrarPokemonesCapturados();
                 evento.consume();
             }
         });
 
         escena.addEventFilter(
                 KeyEvent.KEY_RELEASED,
-                controlador::manejarTeclaLiberada
+                evento -> {
+
+                    if (!menuPausa.estaAbierto()) {
+                        controlador.manejarTeclaLiberada(evento);
+                    }
+                }
         );
     }
 
-    // --------------------------------------------------
-    // CAMBIO DE MAPA
-    // --------------------------------------------------
-
+    /**
+     * Solicita un cambio de mapa al gestor correspondiente.
+     *
+     * @param nuevoMapa mapa de destino
+     * @param nuevaX posición horizontal de aparición
+     * @param nuevaY posición vertical de aparición
+     */
     public void cambiarMapa(
             CargadorMapaTiled nuevoMapa,
             double nuevaX,
             double nuevaY
     ) {
-        if (cambiandoMapa) {
+
+        if (gestorCambioMapa == null ||
+                gestorCambioMapa.estaCambiando()) {
             return;
         }
 
-        cambiandoMapa = true;
+        detenerGameLoop();
 
-        if (controlador != null) {
-            controlador.detenerGameLoop();
-        }
-
-        Rectangle pantallaNegra = new Rectangle();
-
-        pantallaNegra.setFill(Color.BLACK);
-        pantallaNegra.setMouseTransparent(true);
-        pantallaNegra.setOpacity(0);
-
-        pantallaNegra.widthProperty().bind(root.widthProperty());
-        pantallaNegra.heightProperty().bind(root.heightProperty());
-
-        root.getChildren().add(pantallaNegra);
-
-        FadeTransition oscurecer = new FadeTransition(
-                Duration.millis(250),
-                pantallaNegra
+        gestorCambioMapa.cambiarMapa(
+                nuevoMapa,
+                nuevaX,
+                nuevaY,
+                this::reanudarGameLoop
         );
-
-        oscurecer.setFromValue(0);
-        oscurecer.setToValue(1);
-
-        oscurecer.setOnFinished(evento -> {
-            aplicarCambioMapa(nuevoMapa, nuevaX, nuevaY);
-
-            FadeTransition aparecer = new FadeTransition(
-                    Duration.millis(250),
-                    pantallaNegra
-            );
-
-            aparecer.setFromValue(1);
-            aparecer.setToValue(0);
-
-            aparecer.setOnFinished(fin -> {
-                root.getChildren().remove(pantallaNegra);
-
-                pantallaNegra.widthProperty().unbind();
-                pantallaNegra.heightProperty().unbind();
-
-                cambiandoMapa = false;
-
-                if (controlador != null) {
-                    controlador.reanudarGameLoop();
-                }
-
-                root.requestFocus();
-            });
-
-            aparecer.play();
-        });
-
-        oscurecer.play();
     }
 
-    private void aplicarCambioMapa(
-            CargadorMapaTiled nuevoMapa,
-            double nuevaX,
-            double nuevaY
-    ) {
-        VistaMapa nuevoVistaMapa = new VistaMapa(nuevoMapa);
-
-        this.vistaMapa = nuevoVistaMapa;
-
-        jugador.setX(nuevaX);
-        jugador.setY(nuevaY);
-
-        mundo.getChildren().setAll(vistaMapa, vistaJugador);
-
-        mundo.setPrefSize(
-                vistaMapa.getPrefWidth(),
-                vistaMapa.getPrefHeight()
-        );
-
-        actualizarTransiciones(nuevoMapa);
-
-        if (controlador != null) {
-            controlador.setColisiones(vistaMapa.getColisiones());
-        }
-
-        actualizarCamara();
-    }
-
-    private void actualizarTransiciones(CargadorMapaTiled mapa) {
-        transiciones = mapa.obtenerTransiciones();
-    }
-
+    /**
+     * Comprueba si el jugador ingresó en una zona de transición.
+     * Lo invoca el controlador durante la exploración.
+     */
     public void verificarTransicionMapa() {
-        for (TransicionMapa transicion : transiciones) {
-            if (transicion.jugadorEntro(
-                    jugador.getX(),
-                    jugador.getY()
-            )) {
-                cambiarMapa(
-                        transicion.getMapaDestino(),
-                        transicion.getSpawnX(),
-                        transicion.getSpawnY()
-                );
 
-                return;
-            }
+        if (gestorCambioMapa != null) {
+            gestorCambioMapa.verificarTransicionMapa();
         }
-    }
-
-    // --------------------------------------------------
-    // ADMINISTRADOR: REGISTRAR POKÉMON
-    // --------------------------------------------------
-
-    private void mostrarFormularioPokemon() {
-        Dialog<ButtonType> dialog = new Dialog<>();
-
-        dialog.setTitle("Administrador");
-        dialog.setHeaderText("Registrar nueva especie");
-
-        ButtonType crear = new ButtonType(
-                "Registrar",
-                ButtonBar.ButtonData.OK_DONE
-        );
-
-        dialog.getDialogPane().getButtonTypes().addAll(
-                crear,
-                ButtonType.CANCEL
-        );
-
-        TextField nombre = new TextField();
-        nombre.setPromptText("Nombre");
-
-        ComboBox<TipoPokemon> tipo = new ComboBox<>();
-        tipo.getItems().setAll(TipoPokemon.values());
-        tipo.getSelectionModel().selectFirst();
-
-        TextField vida = new TextField("50");
-        TextField danio = new TextField("12");
-        TextField defensa = new TextField("5");
-        TextField velocidad = new TextField("10");
-
-        GridPane formulario = new GridPane();
-
-        formulario.setHgap(10);
-        formulario.setVgap(10);
-        formulario.setPadding(new Insets(15));
-
-        formulario.addRow(0, new Label("Nombre:"), nombre);
-        formulario.addRow(1, new Label("Tipo:"), tipo);
-        formulario.addRow(2, new Label("Vida:"), vida);
-        formulario.addRow(3, new Label("Daño:"), danio);
-        formulario.addRow(4, new Label("Defensa:"), defensa);
-        formulario.addRow(5, new Label("Velocidad:"), velocidad);
-
-        dialog.getDialogPane().setContent(formulario);
-
-        dialog.showAndWait().ifPresent(resultado -> {
-            if (resultado != crear) {
-                return;
-            }
-
-            try {
-                if (nombre.getText().isBlank()) {
-                    throw new IllegalArgumentException(
-                            "Ingresá un nombre."
-                    );
-                }
-
-                boolean existe = GeneradorPokemonSalvaje
-                        .getESPECIES()
-                        .stream()
-                        .anyMatch(p ->
-                                p.getNombre().equalsIgnoreCase(
-                                        nombre.getText().trim()
-                                )
-                        );
-
-                if (!existe) {
-                    throw new PokemonInexistenteException(
-                            "El nombre no se encuentra en el sistema."
-                    );
-                }
-
-                adminController.registrarEspecie(
-                        nombre.getText().trim(),
-                        tipo.getValue(),
-                        Double.parseDouble(vida.getText()),
-                        Double.parseDouble(danio.getText()),
-                        Double.parseDouble(defensa.getText()),
-                        Double.parseDouble(velocidad.getText())
-                );
-
-                Alert confirmacion = new Alert(
-                        Alert.AlertType.INFORMATION
-                );
-
-                confirmacion.setTitle("Administrador");
-                confirmacion.setHeaderText(null);
-                confirmacion.setContentText(
-                        "¡Especie registrada correctamente!"
-                );
-
-                confirmacion.showAndWait();
-
-            } catch (PokemonInexistenteException ex) {
-                System.err.println(
-                        "Ha ocurrido un error: " + ex.getMessage()
-                );
-                ex.printStackTrace();
-
-            } catch (NumberFormatException ex) {
-                mostrarErrorAdmin(
-                        "Las estadísticas deben ser números válidos."
-                );
-
-            } catch (IllegalArgumentException ex) {
-                mostrarErrorAdmin(ex.getMessage());
-            }
-        });
-    }
-
-    private void mostrarErrorAdmin(String mensaje) {
-        Alert alerta = new Alert(Alert.AlertType.ERROR);
-
-        alerta.setTitle("Error");
-        alerta.setHeaderText(
-                "No se pudo registrar la especie"
-        );
-        alerta.setContentText(mensaje);
-
-        alerta.showAndWait();
     }
 }

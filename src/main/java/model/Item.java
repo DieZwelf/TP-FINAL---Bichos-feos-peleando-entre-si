@@ -13,7 +13,7 @@ import java.util.Objects;
  *  @since 2026
  *  @version 1.0
  */
-public abstract class Item {
+public abstract class Item implements UsableEnCombate {
     private final String nombre;
     private String descripcion;
     private int id;
@@ -40,10 +40,6 @@ public abstract class Item {
         this.id = id;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
 
     @Override
     public boolean equals(Object o) {
@@ -65,5 +61,6 @@ public abstract class Item {
                 '}';
     }
 
+    @Override
     public abstract boolean usar(Jugador entrenador, Pokemon objetivo, List<String> registro);
 }

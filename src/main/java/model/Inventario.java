@@ -118,6 +118,19 @@ public class Inventario {
         }
         return true;
     }
+    public boolean agregarObjeto(Item item, int cantidad) {
+        if (item == null || cantidad <= 0) {
+            return false;
+        }
 
+        Integer cantidadActual = inventario.get(item);
+
+        if (cantidadActual == null && inventario.size() >= capacidad) {
+            return false;
+        }
+
+        inventario.put(item, (cantidadActual == null ? 0 : cantidadActual) + cantidad);
+        return true;
+    }
 
 }
