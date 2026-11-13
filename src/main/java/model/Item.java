@@ -16,6 +16,7 @@ import java.util.Objects;
 public abstract class Item {
     private final String nombre;
     private String descripcion;
+    private int id;
 
 
     public Item(String nombre, String descripcion) {
@@ -29,6 +30,14 @@ public abstract class Item {
 
     public String getDescripcion() {
         return descripcion;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setDescripcion(String descripcion) {

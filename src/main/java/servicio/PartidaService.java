@@ -1,7 +1,7 @@
 package servicio;
 
 import model.*;
-
+import DAO.guardarPartidaDAO;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
@@ -23,7 +23,8 @@ public class PartidaService {
         jugador.getInventario().agregarObjeto(new Pocion(50));
 
         jugador.getInventario().agregarObjeto(new Pokebola("Pokebola", "Captura pokemones", false));
-
+        guardarPartidaDAO g = new guardarPartidaDAO();
+        g.guardarJugador(jugador);
         return jugador;
     }
 

@@ -17,6 +17,7 @@ import java.util.*;
 public class Inventario {
     private int capacidad = 50;
     private HashMap<Item, Integer> inventario;
+    private int id;
 
     public Inventario(HashMap<Item, Integer> inventario) {
         this.inventario = inventario;
@@ -26,6 +27,21 @@ public class Inventario {
         return capacidad;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public HashMap<Item, Integer> getItems() {
+        return inventario;
+    }
+
+    public void setItems(HashMap<Item, Integer> inventario) {
+        this.inventario = inventario;
+    }
 
     /**
      * Este metodo verifica si está o no el item, para poder sumar a la cantidad existente el que se
@@ -102,4 +118,6 @@ public class Inventario {
         }
         return true;
     }
+
+
 }

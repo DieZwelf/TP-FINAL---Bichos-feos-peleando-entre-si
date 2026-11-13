@@ -117,6 +117,22 @@ public class Pokemon {
         this.nivel = nivel;
     }
 
+    public double getDanioBase() {
+        return danioBase;
+    }
+
+    public void setDanioBase(double danioBase) {
+        this.danioBase = danioBase;
+    }
+
+    public double getDefensaBase() {
+        return defensaBase;
+    }
+
+    public void setDefensaBase(double defensaBase) {
+        this.defensaBase = defensaBase;
+    }
+
     @Override
     public String toString() {
         return "Pokemon{" +
