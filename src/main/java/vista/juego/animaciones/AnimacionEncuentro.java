@@ -24,7 +24,7 @@ import javafx.util.Duration;
 public class AnimacionEncuentro {
 
     private AnimacionEncuentro() {
-        // Clase de utilidad: no necesita instancias.
+        // Clase de utilidad: no necesita instancias
     }
 
     /**

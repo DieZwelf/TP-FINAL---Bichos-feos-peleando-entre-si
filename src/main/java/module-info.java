@@ -1,3 +1,10 @@
+/**
+ * Define la configuración modular del proyecto
+ *
+ * Declara los módulos externos necesarios, como JavaFX, Gson y SQL,
+ * y especifica qué paquetes del proyecto se exportan para que puedan
+ * ser utilizados por otros módulos y cuáles se habilitan para reflexión.
+ */
 module demojuego {
     requires javafx.controls;
     requires javafx.media;

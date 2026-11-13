@@ -40,10 +40,10 @@ public class MenuPausa {
     /**
      * Construye el menú de pausa y configura sus acciones.
      *
-     * @param jugador jugador cuya partida se administra
-     * @param pantallas gestor de navegación
-     * @param detenerJuego acción para detener el ciclo del juego
-     * @param reanudarJuego acción para reanudar el ciclo del juego
+     *  jugador jugador cuya partida se administra
+     *  pantallas gestor de navegación
+     *  detenerJuego acción para detener el ciclo del juego
+     *  reanudarJuego acción para reanudar el ciclo del juego
      */
     public MenuPausa(
             Jugador jugador,
