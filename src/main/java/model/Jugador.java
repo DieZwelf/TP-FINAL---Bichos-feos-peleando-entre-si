@@ -1,15 +1,17 @@
+/**
+ * Representa al jugador dentro del juego.
+ *
+ * Administra su movimiento, equipo Pokémon, inventario,
+ * Pokémon activo y datos correspondientes a su perfil.
+ */
 
 package model;
 
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+
 
 public class Jugador {
 
@@ -27,16 +29,12 @@ public class Jugador {
     private TipoJugador tipo = TipoJugador.USUARIO;
 
     private LinkedHashSet<String> pokemonesCapturados;
-    private List<Pokemon> equipo;
+    private Coleccion<Pokemon> equipo;
 
     private String rango = "Inicial";
     private Pokemon pokemonActivo;
     private Inventario inventario;
-    // PANEL DE ADMINISTRADOR
-    private VBox panelAdmin;
-    private VBox contenidoAdmin;
-    private Label mensajeAdmin;
-    private Label tituloContenidoAdmin;
+
 
     public Jugador(double xInicial, double yInicial, TipoJugador tipo) {
 
@@ -48,7 +46,7 @@ public class Jugador {
         this.tipo = tipo;
 
         this.pokemonesCapturados = new LinkedHashSet<>();
-        this.equipo = new ArrayList<>(5);
+        this.equipo = new Coleccion<>();
 
         this.inventario = new Inventario(new HashMap<>());
     }
@@ -74,9 +72,8 @@ public class Jugador {
                 ? pokemonesCapturados
                 : new LinkedHashSet<>();
 
-        this.equipo = equipo != null
-                ? new ArrayList<>(equipo)
-                : new ArrayList<>(5);
+        this.equipo = new Coleccion<>();
+        this.equipo.agregarTodos(equipo);
 
         this.rango = rango;
 
@@ -86,7 +83,7 @@ public class Jugador {
 
         if (pokemonActivo != null
                 && pokemonActivo.isEnEquipo()
-                && this.equipo.contains(pokemonActivo)) {
+                && this.equipo.contiene(pokemonActivo)) {
 
             this.pokemonActivo = pokemonActivo;
 
@@ -152,7 +149,9 @@ public class Jugador {
         return pokemonesCapturados;
     }
 
-    // Devuelve únicamente los Pokémon activos.
+    /**
+     * Devuelve únicamente los Pokémon que están en el equipo.
+     */
     public List<Pokemon> getEquipo() {
 
         return equipo.stream()
@@ -160,9 +159,12 @@ public class Jugador {
                 .collect(Collectors.toList());
     }
 
-    // Devuelve todos los Pokémon para persistirlos.
+    /**
+     * Devuelve todos los Pokémon almacenados,
+     * incluidos aquellos que están fuera del equipo.
+     */
     public List<Pokemon> getEquipoCompleto() {
-        return equipo;
+        return equipo.obtenerTodos();
     }
 
     public String getRango() {
@@ -208,13 +210,12 @@ public class Jugador {
 
     public void setEquipo(List<Pokemon> equipo) {
 
-        this.equipo = equipo != null
-                ? new ArrayList<>(equipo)
-                : new ArrayList<>(5);
+        this.equipo = new Coleccion<>();
+        this.equipo.agregarTodos(equipo);
 
         if (pokemonActivo == null
                 || !pokemonActivo.isEnEquipo()
-                || !this.equipo.contains(pokemonActivo)) {
+                || !this.equipo.contiene(pokemonActivo)) {
 
             pokemonActivo = obtenerPrimerPokemonActivo();
         }
@@ -228,7 +229,7 @@ public class Jugador {
 
         if (pokemonActivo != null
                 && pokemonActivo.isEnEquipo()
-                && equipo.contains(pokemonActivo)
+                && equipo.contiene(pokemonActivo)
                 && pokemonActivo.getVida() > 0) {
 
             this.pokemonActivo = pokemonActivo;
@@ -273,7 +274,7 @@ public class Jugador {
         }
 
         // Si ya estaba guardado, simplemente vuelve al equipo.
-        if (equipo.contains(p)) {
+        if (equipo.contiene(p)) {
 
             if (p.isEnEquipo()) {
                 return false;
@@ -284,7 +285,7 @@ public class Jugador {
         } else {
 
             p.setEnEquipo(true);
-            equipo.add(p);
+            equipo.agregar(p);
         }
 
         pokemonesCapturados.add(p.getNombre());
@@ -296,14 +297,17 @@ public class Jugador {
         return true;
     }
 
-    // Baja lógica: no elimina el objeto de la lista.
+    /**
+     * Baja lógica: el Pokémon permanece almacenado,
+     * pero deja de formar parte del equipo activo.
+     */
     public boolean eliminarPokemon(Pokemon pokemon) {
 
         if (pokemon == null) {
             return false;
         }
 
-        if (!equipo.contains(pokemon) || !pokemon.isEnEquipo()) {
+        if (!equipo.contiene(pokemon) || !pokemon.isEnEquipo()) {
             return false;
         }
 

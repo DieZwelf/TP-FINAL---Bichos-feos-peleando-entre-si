@@ -10,9 +10,9 @@ import java.util.*;
  */
 public class EquipoDAO {
 
-    private final PokemonDAO pokemonDAO;
+    private final IPokemonDAO pokemonDAO;
 
-    public EquipoDAO(PokemonDAO pokemonDAO) {
+    public EquipoDAO(IPokemonDAO pokemonDAO) {
         this.pokemonDAO = pokemonDAO;
     }
 

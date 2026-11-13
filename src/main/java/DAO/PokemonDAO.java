@@ -8,11 +8,12 @@ import java.util.Map;
 /**
  * Gestiona la persistencia de los Pokémon de cada jugador.
  */
-public class PokemonDAO {
+public class PokemonDAO implements IPokemonDAO  {
 
     /**
      * Guarda un Pokémon nuevo o actualiza uno existente.
      */
+    @Override
     public void guardarPokemon(
             Pokemon p,
             int jugadorId,
@@ -99,6 +100,7 @@ public class PokemonDAO {
     /**
      * Recupera un Pokémon. Si ya fue recuperado, reutiliza el objeto.
      */
+    @Override
     public Pokemon recuperarPokemon(
             int pokemonId,
             int jugadorId,
