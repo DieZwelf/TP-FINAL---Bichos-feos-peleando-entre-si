@@ -1,17 +1,19 @@
+
 package model;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
- * La clase POKEBOLA, hija de ITEM tiene como atributos si está ocupada y la ruta de su imagen.
- * Tiene un constructor con todos los atributos propios y los que hereda de Item.
- * Métodos: getters y setters.
- * Otros métodos: usar(): Implementación del metodo heredado de ITEM.
+ * Representa una Pokebola del inventario.
+ * Permite capturar Pokémon y registra si está ocupada.
+ *
  * @author Uriel
  * @since 2026
  * @version 1.0
  */
-public class Pokebola extends Item{
+public class Pokebola extends Item {
+
     private boolean ocupada;
 
     public Pokebola(String nombre, String descripcion, boolean ocupada) {
@@ -28,45 +30,61 @@ public class Pokebola extends Item{
     }
 
     /**
-     * En desarrollo...
-     * @param jugador
-     * @param objetivo
-     * @param registro
-     * @return
+     * Intenta utilizar la Pokebola para capturar un Pokémon.
      */
     @Override
     public boolean usar(Jugador jugador, Pokemon objetivo, List<String> registro) {
-        if (ocupada)
-        {
-            registro.add("Esa Pokebola ya está ocupada!");
+
+        if (ocupada) {
+            registro.add("¡Esa Pokebola ya está ocupada!");
             return false;
         }
 
-        if (objetivo == null || jugador == null)
-        {
+        if (objetivo == null || jugador == null) {
             registro.add("No se puede realizar la captura");
+            return false;
         }
 
-        if (jugador.getEquipo().size() >= 5)
-        {
-            registro.add("Tu equipo esta lleno");
+        if (jugador.getEquipo().size() >= 5) {
+            registro.add("Tu equipo está lleno");
             return false;
         }
 
         double probabilidad = CalculadoraCaptura.calcularProbabilidad(objetivo);
 
-        if (Math.random() < probabilidad)
-        {
+        if (Math.random() < probabilidad) {
             ocupada = true;
             jugador.aniadir(objetivo);
 
-            registro.add("¡Se ha capturado con exito a: " + objetivo.getNombre() + "!");
-
-        } else
-        {
-            registro.add(objetivo.getNombre() + " escapo de la pokebola!");
-
+            registro.add(
+                    "¡Se ha capturado con éxito a: "
+                            + objetivo.getNombre() + "!"
+            );
+        } else {
+            registro.add(objetivo.getNombre() + " escapó de la Pokebola!");
         }
-            return true;
+
+        return true;
+    }
+
+    /**
+     * Compara dos Pokebolas según sus datos.
+     */
+    @Override
+    public boolean equals(Object objeto) {
+        if (this == objeto) return true;
+        if (!(objeto instanceof Pokebola otra)) return false;
+
+        return ocupada == otra.ocupada
+                && Objects.equals(getNombre(), otra.getNombre())
+                && Objects.equals(getDescripcion(), otra.getDescripcion());
+    }
+
+    /**
+     * Genera el código hash según los mismos atributos usados en equals.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(getNombre(), getDescripcion(), ocupada);
     }
 }
