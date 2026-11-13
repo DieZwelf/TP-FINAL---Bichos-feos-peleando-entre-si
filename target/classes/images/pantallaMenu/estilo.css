@@ -787,3 +787,141 @@
     -fx-font-size: 22px;
     -fx-text-fill: #202020;
 }
+
+/* =========================================================
+   LOGO PRINCIPAL - POKEMON CRIOLLO
+   ========================================================= */
+
+.titulo-pokemon {
+    -fx-font-family: "Consolas";
+    -fx-font-size: 66px;
+    -fx-font-weight: bold;
+
+    -fx-text-fill: linear-gradient(
+            to bottom,
+            #ffffff,
+            #d8ecec,
+            #a9c7bd
+    );
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0, 0, 0, 0.95),
+            3,
+            0.8,
+            4,
+            5
+    );
+}
+
+.titulo-criollo {
+    -fx-font-family: "Consolas";
+    -fx-font-size: 104px;
+    -fx-font-weight: bold;
+
+    -fx-text-fill: linear-gradient(
+            to bottom,
+            #fff4a3,
+            #ffde00,
+            #d69c18
+    );
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0, 0, 0, 0.95),
+            4,
+            0.8,
+            5,
+            6
+    );
+}
+
+.titulo-separador {
+    -fx-pref-width: 410px;
+    -fx-min-width: 410px;
+    -fx-max-width: 410px;
+
+    -fx-pref-height: 5px;
+    -fx-min-height: 5px;
+    -fx-max-height: 5px;
+
+    -fx-background-color: linear-gradient(
+            to right,
+            #5fae3f,
+            #ffde00,
+            transparent
+    );
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0, 0, 0, 0.7),
+            3,
+            0.5,
+            1,
+            2
+    );
+}
+
+.subtitulo-juego {
+    -fx-font-family: "Consolas";
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+
+    -fx-text-fill: #f3ecd0;
+
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0, 0, 0, 0.95),
+            4,
+            0.8,
+            2,
+            2
+    );
+}
+
+/* LOGO RETRO - POKEMON ARGENTINO */
+
+.logo-juego {
+    -fx-padding: 10px;
+}
+
+.titulo-pokemon {
+    -fx-font-family: "Consolas";
+    -fx-font-size: 76px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f3ecd0;
+    -fx-effect: dropshadow(
+            gaussian,
+            #12201d,
+            0,
+            1,
+            5,
+            5
+    );
+}
+
+.titulo-argentino {
+    -fx-font-family: "Consolas";
+    -fx-font-size: 96px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffde00;
+    -fx-effect: dropshadow(
+            gaussian,
+            #12201d,
+            0,
+            1,
+            5,
+            5
+    );
+}
+
+.titulo-separador {
+    -fx-pref-width: 490px;
+    -fx-min-width: 490px;
+    -fx-max-width: 490px;
+    -fx-pref-height: 6px;
+    -fx-min-height: 6px;
+    -fx-max-height: 6px;
+    -fx-background-color: #5fae3f;
+    -fx-translate-y: 8px;
+}

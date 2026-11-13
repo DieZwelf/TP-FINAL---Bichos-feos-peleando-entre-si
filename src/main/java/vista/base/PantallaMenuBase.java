@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
@@ -15,6 +16,12 @@ import javafx.scene.media.MediaView;
 import javafx.util.Duration;
 import vista.gestor.GestorPantallas;
 
+/**
+ * Clase base para las pantallas de menú del juego.
+ *
+ * Administra el fondo animado, el encabezado, el contenedor
+ * de botones y las animaciones de entrada.
+ */
 public abstract class PantallaMenuBase extends PantallaBase {
 
     private StackPane root;
@@ -39,9 +46,11 @@ public abstract class PantallaMenuBase extends PantallaBase {
         return root;
     }
 
+    /**
+     * Coloca el video de fondo compartido por los menús.
+     */
     private void crearFondoAnimado() {
 
-        // Reutilizar el reproductor compartido de GestorPantallas.
         MediaPlayer reproductor = pantallas.obtenerReproductorMenu();
 
         MediaView vistaVideo = new MediaView(reproductor);
@@ -55,33 +64,30 @@ public abstract class PantallaMenuBase extends PantallaBase {
         root.getChildren().add(vistaVideo);
     }
 
+    /**
+     * Construye el encabezado visual y el contenedor de botones.
+     */
     private void crearEncabezadoYContenedor() {
-
         AnchorPane contenido = new AnchorPane();
 
-        // Título.
         encabezado = new VBox(0);
         encabezado.setAlignment(Pos.TOP_LEFT);
+        encabezado.getStyleClass().add("logo-juego");
 
         Label linea1 = new Label("POKEMON");
+        linea1.getStyleClass().add("titulo-pokemon");
+
         Label linea2 = new Label("ARGENTINO");
+        linea2.getStyleClass().add("titulo-argentino");
 
-        String estiloTitulo =
-                "-fx-text-fill: #ffde00;" +
-                        "-fx-font-family: 'Monospaced';" +
-                        "-fx-font-size: 100px;" +
-                        "-fx-font-weight: bold;" +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 12, 0.4, 3, 4);";
+        Region separador = new Region();
+        separador.getStyleClass().add("titulo-separador");
 
-        linea1.setStyle(estiloTitulo);
-        linea2.setStyle(estiloTitulo);
+        encabezado.getChildren().addAll(linea1, linea2, separador);
 
-        encabezado.getChildren().addAll(linea1, linea2);
+        AnchorPane.setTopAnchor(encabezado, 45.0);
+        AnchorPane.setLeftAnchor(encabezado, 55.0);
 
-        AnchorPane.setTopAnchor(encabezado, 35.0);
-        AnchorPane.setLeftAnchor(encabezado, 45.0);
-
-        // Capa de botones ocupando toda la pantalla.
         capaBotones = new StackPane();
         capaBotones.setAlignment(Pos.TOP_LEFT);
 
@@ -95,20 +101,18 @@ public abstract class PantallaMenuBase extends PantallaBase {
         botonesBox.setPrefWidth(600);
         botonesBox.setMaxWidth(600);
 
-        // Posición de los menús principales.
         botonesBox.setTranslateX(920);
         botonesBox.setTranslateY(-40);
 
         capaBotones.getChildren().add(botonesBox);
 
-        contenido.getChildren().addAll(
-                capaBotones,
-                encabezado
-        );
-
+        contenido.getChildren().addAll(capaBotones, encabezado);
         root.getChildren().add(contenido);
     }
 
+    /**
+     * Aplica una transición de aparición a los botones.
+     */
     private void animarEntrada() {
 
         botonesBox.setOpacity(0);
@@ -125,6 +129,9 @@ public abstract class PantallaMenuBase extends PantallaBase {
         return botonesBox;
     }
 
+    /**
+     * Crea un botón con el estilo general del menú.
+     */
     protected final Button crearBotonEstilizado(String texto) {
 
         Button boton = new Button(texto);
@@ -153,13 +160,15 @@ public abstract class PantallaMenuBase extends PantallaBase {
         // No detener ni destruir el reproductor compartido.
     }
 
+    /**
+     * Oculta el encabezado y centra los botones.
+     * Se utiliza en pantallas que no necesitan mostrar el título.
+     */
     protected final void ocultarEncabezado() {
 
-        // Ocultar solamente el título.
         encabezado.setVisible(false);
         encabezado.setManaged(false);
 
-        // Centrar los slots de Cargar Partida.
         botonesBox.setTranslateX(0);
         botonesBox.setTranslateY(0);
 
