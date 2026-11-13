@@ -2,6 +2,8 @@ package vista.combate;
 
 import controlador.CombateViewModel;
 import controlador.InventarioViewModel;
+import excepciones.PokebolaFueraDeCombateException;
+import model.Pokebola;
 import vista.GestorPantallas;
 import vista.base.PantallaBase;
 
@@ -26,7 +28,8 @@ public class PantallaInventario extends PantallaBase {
     private final Jugador jugador;
     private final InventarioViewModel viewModel;
     private VBox listaItemsContainer;
-    private Label lblMensajePantalla; // Etiqueta integrada para mostrar los avisos
+    private Label lblMensajePantalla;
+    private CombateViewModel combateViewModel;
 
     public PantallaInventario(GestorPantallas pantallas, Jugador jugador, CombateViewModel combateViewModel) {
         super(pantallas);
@@ -35,6 +38,7 @@ public class PantallaInventario extends PantallaBase {
         if (combateViewModel != null) {
             this.viewModel.setCallbackUsarPokebola(combateViewModel::intentarUsarPokebola);
         }
+        this.combateViewModel = combateViewModel;
     }
 
     @Override
@@ -65,10 +69,7 @@ public class PantallaInventario extends PantallaBase {
 
         ScrollPane scrollPane = new ScrollPane(listaItemsContainer);
         scrollPane.setFitToWidth(true);
-        scrollPane.setStyle(
-                "-fx-background: transparent;" +
-                        "-fx-background-color: transparent;"
-        );
+        scrollPane.setStyle("-fx-background: transparent;" + "-fx-background-color: transparent;");
         root.setCenter(scrollPane);
 
         // Botón inferior VOLVER
@@ -129,17 +130,25 @@ public class PantallaInventario extends PantallaBase {
     }
 
     private void usarObjeto(Item item) {
-        List<String> logs = new ArrayList<>();
-        boolean usado = viewModel.usarItem(item, jugador, logs);
+        try {
+            if (item instanceof Pokebola && combateViewModel == null) {
+                throw new PokebolaFueraDeCombateException("¡No podés utilizar una Pokébola fuera de combate!");
+            }
 
-        if (!logs.isEmpty()) {
-            // Muestra el texto directamente en la etiqueta de la pantalla
-            lblMensajePantalla.setText(logs.get(logs.size() - 1));
-        } else {
-            lblMensajePantalla.setText("");
+            List<String> logs = new ArrayList<>();
+            viewModel.usarItem(item, jugador, logs);
+
+            if (!logs.isEmpty()) {
+                lblMensajePantalla.setText(logs.get(logs.size() - 1));
+            } else {
+                lblMensajePantalla.setText("");
+            }
+
+            viewModel.actualizarVista();
+
+        } catch (PokebolaFueraDeCombateException ex) {
+            lblMensajePantalla.setText(ex.getMessage());
         }
-
-        viewModel.actualizarVista();
     }
 
     @Override
