@@ -1,4 +1,4 @@
-package vista.combate;
+package vista.equipo;
 
 import vista.GestorPantallas;
 import vista.base.PantallaBase;

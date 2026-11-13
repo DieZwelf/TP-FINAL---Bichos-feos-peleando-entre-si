@@ -14,14 +14,15 @@ import vista.menu.PantallaLogin;
 import vista.menu.PantallaInicio;
 import vista.menu.PantallaPartidaNueva;
 import vista.menu.PantallaCargarPartida;
-import vista.combate.PantallaEquipo;
-import vista.combate.PantallaInventario;
+import vista.equipo.PantallaEquipo;
+import vista.inventario.PantallaInventario;
 import vista.combate.PantallaCombate;
 import vista.juego.VistaJuego;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import servicio.PartidaService;
+import vista.combate.PantallaResultados;
 
 import java.net.URL;
 
@@ -40,6 +41,7 @@ public class GestorPantallas {
     private boolean combateActivo;
     private VistaJuego vistaJuego;
     private TipoJugador tipo = TipoJugador.USUARIO;
+
 
 
     public GestorPantallas(Stage stage) {
@@ -306,5 +308,8 @@ public class GestorPantallas {
         if (vistaJuego == null) return;
 
         vistaJuego.cambiarMapa(mapa, x, y);
+    }
+    public void mostrarResultados(CombateViewModel viewModel) {
+        new PantallaResultados(viewModel, this).mostrar(stage);
     }
 }

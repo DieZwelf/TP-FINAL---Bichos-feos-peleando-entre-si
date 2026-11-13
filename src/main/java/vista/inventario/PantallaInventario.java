@@ -1,4 +1,4 @@
-package vista.combate;
+package vista.inventario;
 
 import controlador.CombateViewModel;
 import controlador.InventarioViewModel;
