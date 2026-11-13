@@ -24,7 +24,7 @@ public class PartidaService {
 
         jugador.getInventario().agregarObjeto(new Pokebola("Pokebola", "Captura pokemones", false));
         guardarPartidaDAO g = new guardarPartidaDAO();
-        //g.guardarJugador(jugador);
+        g.guardarJugador(jugador);
         return jugador;
     }
 

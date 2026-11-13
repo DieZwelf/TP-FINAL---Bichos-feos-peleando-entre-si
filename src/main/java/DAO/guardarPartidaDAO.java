@@ -14,6 +14,7 @@ public class guardarPartidaDAO {
 
 
             try(Connection conn = Conexion.crearConexion()) {
+
                 // 1. Insertar Inventario y obtener su ID
                 int inventarioId = insertarInventario(jugador.getInventario(), conn);
                 if (jugador.getInventario() != null) {

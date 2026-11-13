@@ -30,11 +30,11 @@ public class Jugador {
     private String direccion; // "ABAJO", "ARRIBA", "IZQUIERDA", "DERECHA"
     private int frameActual;
     private boolean enMovimiento;
-    private TipoJugador tipo;
+    private TipoJugador tipo = TipoJugador.USUARIO;
 
     private LinkedHashSet<String> pokemonesCapturados;
     private List<Pokemon> equipo;
-    private String rango;
+    private String rango = "Inicial";
     private Pokemon pokemonActivo;
     private Inventario inventario;
 

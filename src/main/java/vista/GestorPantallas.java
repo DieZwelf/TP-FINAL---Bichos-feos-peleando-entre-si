@@ -34,7 +34,7 @@ public class GestorPantallas {
     private Jugador jugador;
     private boolean combateActivo;
     private VistaJuego vistaJuego;
-    private TipoJugador tipo;
+    private TipoJugador tipo = TipoJugador.USUARIO;
 
     public GestorPantallas(Stage stage) {
         this.stage = stage;
