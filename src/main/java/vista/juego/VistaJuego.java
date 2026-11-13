@@ -217,6 +217,7 @@ public class VistaJuego extends PantallaBase {
      */
     @Override
     public void alMostrar() {
+        encuentroEnCurso = false;
 
         if (menuPausa == null || !menuPausa.estaAbierto()) {
             reanudarGameLoop();
