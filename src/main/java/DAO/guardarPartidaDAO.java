@@ -8,17 +8,12 @@ import conexion.Conexion;
 
 public class guardarPartidaDAO {
 
-    public static void guardarPartida(Jugador jugador) {
-
-    }
 
 
-        public void guardarJugador(Jugador jugador, Connection conn) throws SQLException {
-            // Desactivamos autoCommit para que todo se guarde como una unidad atómica
-            boolean autoCommitOriginal = conn.getAutoCommit();
-            conn.setAutoCommit(false);
+        public void guardarJugador(Jugador jugador) {
 
-            try {
+
+            try(Connection conn = Conexion.crearConexion()) {
                 // 1. Insertar Inventario y obtener su ID
                 int inventarioId = insertarInventario(jugador.getInventario(), conn);
                 if (jugador.getInventario() != null) {
@@ -95,15 +90,10 @@ public class guardarPartidaDAO {
                     }
                 }
 
-                // Confirmamos toda la transacción
-                conn.commit();
 
             } catch (SQLException e) {
                 // Si algo falla, deshacemos todos los cambios en la BD
-                conn.rollback();
-                throw e;
-            } finally {
-                conn.setAutoCommit(autoCommitOriginal);
+                System.out.println("Error de SQL: " + e.getMessage());
             }
         }
 
@@ -181,6 +171,8 @@ public class guardarPartidaDAO {
                 }
             }
         }
+
+
 
 }
 
