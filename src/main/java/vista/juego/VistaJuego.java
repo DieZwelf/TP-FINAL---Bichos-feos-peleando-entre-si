@@ -3,15 +3,12 @@ package vista.juego;
 
 import controlador.AdministradorController;
 import controlador.JuegoController;
-import excepciones.PokemonInexistenteException;
 import javafx.animation.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
@@ -33,15 +30,7 @@ import java.util.List;
  */
 public class VistaJuego extends PantallaBase {
 
-    // --------------------------------------------------
-    // CONSTANTES
-    // --------------------------------------------------
-
     private static final double ZOOM = 1.4;
-
-    // --------------------------------------------------
-    // ATRIBUTOS
-    // --------------------------------------------------
 
     private final Jugador jugador;
     private final VistaJugador vistaJugador;
@@ -79,6 +68,11 @@ public class VistaJuego extends PantallaBase {
     private Timeline temporizadorMensaje;
     private FadeTransition animacionMensaje;
 
+    // PANEL DE ADMINISTRADOR
+    private VBox panelAdmin;
+    private VBox contenidoAdmin;
+    private Label mensajeAdmin;
+
     // --------------------------------------------------
     // CONSTRUCTOR
     // --------------------------------------------------
@@ -89,9 +83,6 @@ public class VistaJuego extends PantallaBase {
         this.jugador = jugador;
 
         MapaCasa mapaInicial = new MapaCasa();
-
-        jugador.setX(254);
-        jugador.setY(177);
 
         this.vistaMapa = new VistaMapa(mapaInicial);
         this.vistaJugador = new VistaJugador(jugador);
@@ -105,6 +96,7 @@ public class VistaJuego extends PantallaBase {
 
     @Override
     protected Parent crearContenido() {
+
         root = new StackPane();
         root.setStyle("-fx-background-color: #514638;");
         root.setFocusTraversable(true);
@@ -112,6 +104,7 @@ public class VistaJuego extends PantallaBase {
         StackPane.setAlignment(mundo, Pos.TOP_LEFT);
 
         mundo.getChildren().setAll(vistaMapa, vistaJugador);
+
         mundo.setPrefSize(
                 vistaMapa.getPrefWidth(),
                 vistaMapa.getPrefHeight()
@@ -131,13 +124,14 @@ public class VistaJuego extends PantallaBase {
         StackPane.setMargin(panelJugador, new Insets(18));
 
         // PANEL DEL ADMINISTRADOR
-        if (jugador.getTipo() == TipoJugador.ADMINISTRADOR) {
-            VBox panelAdmin = crearPanelAdministrador();
+        if (pantallas.isModoAdministrador()) {
 
-            root.getChildren().add(panelAdmin);
+            VBox panel = crearPanelAdministrador();
 
-            StackPane.setAlignment(panelAdmin, Pos.TOP_RIGHT);
-            StackPane.setMargin(panelAdmin, new Insets(18));
+            root.getChildren().add(panel);
+
+            StackPane.setAlignment(panel, Pos.TOP_RIGHT);
+            StackPane.setMargin(panel, new Insets(18));
         }
 
         // MENÚ DE PAUSA
@@ -171,6 +165,7 @@ public class VistaJuego extends PantallaBase {
 
     @Override
     protected void configurarEscena(Scene escena) {
+
         agregarCSS(escena, "/images/pantallaMenu/estilo.css");
 
         this.escena = escena;
@@ -224,6 +219,7 @@ public class VistaJuego extends PantallaBase {
 
     @Override
     public void alOcultar() {
+
         if (controlador != null) {
             controlador.detenerGameLoop();
         }
@@ -234,6 +230,7 @@ public class VistaJuego extends PantallaBase {
     // --------------------------------------------------
 
     private VBox crearPanelJugador() {
+
         VBox panel = new VBox(10);
         panel.setAlignment(Pos.TOP_LEFT);
 
@@ -252,19 +249,12 @@ public class VistaJuego extends PantallaBase {
         return panel;
     }
 
-
-    // --------------------------------------------------
-    // PANEL DE CONTROLES
-    // --------------------------------------------------
-
-
-
-
     // --------------------------------------------------
     // MENÚ DE PAUSA
     // --------------------------------------------------
 
     private StackPane crearMenuPausa() {
+
         StackPane overlay = new StackPane();
 
         overlay.setStyle(
@@ -287,6 +277,7 @@ public class VistaJuego extends PantallaBase {
 
         Label titulo = new Label("MENÚ DE PAUSA");
         titulo.getStyleClass().add("texto-retro");
+
         titulo.setStyle(
                 "-fx-font-size: 25px;" +
                         "-fx-text-fill: #a8d957;"
@@ -301,6 +292,7 @@ public class VistaJuego extends PantallaBase {
         mensajeMenu.setMaxWidth(350);
         mensajeMenu.setMinHeight(35);
         mensajeMenu.setAlignment(Pos.CENTER);
+
         mensajeMenu.setStyle(
                 "-fx-font-size: 13px;" +
                         "-fx-text-fill: #a8d957;" +
@@ -322,23 +314,19 @@ public class VistaJuego extends PantallaBase {
             boton.setMaxWidth(Double.MAX_VALUE);
         }
 
-        // BOTÓN PARA CONTINUAR
         continuar.setOnAction(e -> cerrarMenuPausa());
 
-        // BOTÓN PARA GUARDAR
         guardar.setOnAction(e -> guardarPartida());
 
-        // BOTÓN PARA VOLVER AL MENÚ
         volverMenu.setOnAction(e -> confirmarVolverAlMenu());
 
-        // CONFIRMAR SALIDA
         botonConfirmarSalida.setOnAction(e -> {
             detenerAnimacionesMensaje();
             pantallas.mostrarInicio();
         });
 
-        // CANCELAR SALIDA
         botonCancelarSalida.setOnAction(e -> {
+
             detenerAnimacionesMensaje();
 
             mensajeMenu.setText("");
@@ -353,7 +341,6 @@ public class VistaJuego extends PantallaBase {
             root.requestFocus();
         });
 
-        // OCULTAR BOTONES DE CONFIRMACIÓN INICIALMENTE
         botonConfirmarSalida.setVisible(false);
         botonConfirmarSalida.setManaged(false);
 
@@ -379,6 +366,7 @@ public class VistaJuego extends PantallaBase {
     }
 
     private void alternarMenuPausa() {
+
         if (menuAbierto) {
             cerrarMenuPausa();
         } else {
@@ -502,6 +490,7 @@ public class VistaJuego extends PantallaBase {
         detenerAnimacionesMensaje();
 
         try {
+
             pantallas.guardarPartida(jugador);
 
             mostrarMensaje(
@@ -557,91 +546,489 @@ public class VistaJuego extends PantallaBase {
     // --------------------------------------------------
 
     private VBox crearPanelAdministrador() {
-        VBox panel = new VBox(10);
-        panel.getStyleClass().add("panel-admin");
 
-        Label titulo = new Label("MODO DESARROLLADOR");
-        titulo.getStyleClass().add("titulo-admin");
+        panelAdmin = new VBox(12);
 
-        Button encuentro = new Button("Forzar encuentro");
-        encuentro.getStyleClass().add("boton-admin");
-        encuentro.setOnAction(e -> generarEncuentro());
+        panelAdmin.setPrefWidth(230);
+        panelAdmin.setMinWidth(230);
+        panelAdmin.setMaxWidth(230);
+        panelAdmin.setPadding(new Insets(12));
+        panelAdmin.setSpacing(8);
 
-        Button agregarPokemon = new Button("Agregar Pokémon");
-        agregarPokemon.getStyleClass().add("boton-admin");
-        agregarPokemon.setOnAction(e -> mostrarFormularioPokemon());
-
-        Button verPokemon = new Button("Ver Pokémon disponibles");
-        verPokemon.getStyleClass().add("boton-admin");
-        verPokemon.setOnAction(e -> mostrarPokemonesDisponibles());
-
-        Button cambiarMapa = new Button("Cambiar mapa");
-        cambiarMapa.getStyleClass().add("boton-admin");
-        cambiarMapa.setOnAction(e -> mostrarSelectorMapa());
-
-        panel.getChildren().addAll(
-                titulo,
-                encuentro,
-                agregarPokemon,
-                verPokemon,
-                cambiarMapa
+        panelAdmin.setStyle(
+                "-fx-background-color: rgba(24, 35, 41, 0.96);" +
+                        "-fx-border-color: #8fbc45;" +
+                        "-fx-border-width: 3;"
         );
 
-        panel.setMaxSize(
+        Label titulo = new Label("MODO DESARROLLADOR");
+
+        titulo.setStyle(
+                "-fx-text-fill: #a8d957;" +
+                        "-fx-font-family: Monospaced;" +
+                        "-fx-font-size: 15px;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        Button encuentro = crearBotonAdmin("FORZAR ENCUENTRO");
+        encuentro.setOnAction(e -> generarEncuentro());
+
+        Button agregarPokemon = crearBotonAdmin("AGREGAR POKÉMON");
+        agregarPokemon.setOnAction(e -> mostrarFormularioPokemon());
+
+        Button agregarObjeto = crearBotonAdmin("AGREGAR OBJETO");
+        agregarObjeto.setOnAction(e -> mostrarFormularioObjeto());
+
+        Button verPokemon = crearBotonAdmin("VER POKÉMON DISPONIBLES");
+        verPokemon.setOnAction(e -> mostrarPokemonesDisponibles());
+
+        Button cambiarMapa = crearBotonAdmin("CAMBIAR MAPA");
+        cambiarMapa.setOnAction(e -> mostrarSelectorMapa());
+
+        contenidoAdmin = new VBox(10);
+        contenidoAdmin.setFillWidth(true);
+
+        ScrollPane scroll = new ScrollPane(contenidoAdmin);
+        scroll.setFitToWidth(true);
+        scroll.setPrefHeight(260);
+        scroll.setMaxHeight(260);
+        scroll.setStyle(
+                "-fx-background: transparent;" +
+                        "-fx-background-color: transparent;" +
+                        "-fx-border-color: transparent;"
+        );
+
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        mensajeAdmin = new Label("");
+        mensajeAdmin.setWrapText(true);
+        mensajeAdmin.setMinHeight(40);
+        mensajeAdmin.setMaxWidth(Double.MAX_VALUE);
+
+        mensajeAdmin.setStyle(
+                "-fx-font-family: Monospaced;" +
+                        "-fx-font-size: 12px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: #a8d957;"
+        );
+
+        panelAdmin.getChildren().addAll(
+                titulo,
+                new Separator(),
+                encuentro,
+                agregarPokemon,
+                agregarObjeto,
+                verPokemon,
+                cambiarMapa,
+                new Separator(),
+                scroll,
+                mensajeAdmin
+        );
+
+        panelAdmin.setMaxSize(
                 Region.USE_PREF_SIZE,
                 Region.USE_PREF_SIZE
         );
 
-        return panel;
+        return panelAdmin;
     }
 
-    private void mostrarPokemonesDisponibles() {
+
+    private Button crearBotonAdmin(String texto) {
+
+        Button boton = new Button(texto);
+        boton.getStyleClass().add("boton-admin");
+        boton.setFocusTraversable(false);
+
+        return boton;
+    }
+
+
+    // --------------------------------------------------
+    // ADMINISTRADOR: AGREGAR POKÉMON AL EQUIPO
+    // --------------------------------------------------
+
+    private void mostrarFormularioPokemon() {
+
+        contenidoAdmin.getChildren().clear();
+
+        Label titulo = crearTituloAdmin("AGREGAR POKÉMON");
+
         List<DatosEspecie> especies =
                 adminController.obtenerEspeciesDisponibles();
 
-        StringBuilder contenido = new StringBuilder();
-
-        for (DatosEspecie especie : especies) {
-            contenido.append(especie.getNombre())
-                    .append(" | Tipo: ").append(especie.getTipo())
-                    .append(" | Vida: ").append(especie.getVida())
-                    .append(" | Daño: ").append(especie.getDanio())
-                    .append(" | Defensa: ").append(especie.getDefensa())
-                    .append(" | Velocidad: ").append(especie.getVelocidad())
-                    .append("\n");
+        if (especies == null || especies.isEmpty()) {
+            mostrarErrorAdmin("No hay especies disponibles.");
+            return;
         }
 
-        TextArea texto = new TextArea(contenido.toString());
-        texto.setEditable(false);
-        texto.setWrapText(true);
-        texto.setPrefSize(450, 350);
+        ComboBox<DatosEspecie> selector = new ComboBox<>();
 
-        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-        alerta.setTitle("Administrador");
-        alerta.setHeaderText(
-                "Pokémon disponibles (" + especies.size() + ")"
-        );
-        alerta.getDialogPane().setContent(texto);
-        alerta.showAndWait();
-    }
+        selector.getItems().addAll(especies);
+        selector.setMaxWidth(Double.MAX_VALUE);
 
-    private void mostrarSelectorMapa() {
-        ChoiceDialog<String> dialog =
-                new ChoiceDialog<>("Pueblo", "Pueblo", "Bosque");
+        selector.setCellFactory(lista -> new ListCell<>() {
+            @Override
+            protected void updateItem(DatosEspecie especie, boolean vacio) {
+                super.updateItem(especie, vacio);
 
-        dialog.setTitle("Administrador");
-        dialog.setHeaderText("Cambiar mapa");
-        dialog.setContentText("Seleccioná el destino:");
-
-        dialog.showAndWait().ifPresent(mapa -> {
-            switch (mapa) {
-                case "Pueblo" ->
-                        cambiarMapa(new MapaPueblo(), 450, 150);
-
-                case "Bosque" ->
-                        cambiarMapa(new MapaCasa(), 100, 500);
+                setText(vacio || especie == null
+                        ? null
+                        : especie.getNombre());
             }
         });
+
+        selector.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(DatosEspecie especie, boolean vacio) {
+                super.updateItem(especie, vacio);
+
+                setText(vacio || especie == null
+                        ? "Seleccionar Pokémon"
+                        : especie.getNombre());
+            }
+        });
+
+        selector.getSelectionModel().selectFirst();
+
+        Label informacion = new Label(
+                "El Pokémon se incorporará directamente a tu equipo."
+        );
+
+        informacion.setWrapText(true);
+        informacion.setStyle(estiloTextoAdmin());
+
+        Button agregar = crearBotonAdmin("INCORPORAR AL EQUIPO");
+
+        agregar.setOnAction(e -> {
+
+            DatosEspecie especie = selector.getValue();
+
+            if (especie == null) {
+                mostrarErrorAdmin("Seleccioná una especie.");
+                return;
+            }
+
+            List<Pokemon> equipoCompleto = jugador.getEquipoCompleto();
+
+            if (jugador.getEquipo().size() >= 5) {
+                mostrarErrorAdmin("El equipo ya tiene cinco Pokémon.");
+                return;
+            }
+
+            boolean duplicado = equipoCompleto.stream()
+                    .anyMatch(p ->
+                            p != null &&
+                                    p.getNombre().equalsIgnoreCase(especie.getNombre())
+                    );
+
+            if (duplicado) {
+                mostrarErrorAdmin(
+                        "Ese Pokémon ya existe en tu equipo."
+                );
+                return;
+            }
+
+            try {
+
+                Pokemon nuevo = new Pokemon(
+                        especie.getNombre(),
+                        especie.getVida(),
+                        especie.getVida(),
+                        especie.getDanio(),
+                        especie.getDefensa(),
+                        especie.getTipo(),
+                        1,
+                        0,
+                        (int) especie.getDanio(),
+                        (int) especie.getDefensa()
+                );
+
+                nuevo.setEnEquipo(true);
+
+                // No se utiliza jugador.aniadir(),
+                // porque ese método también registra capturados.
+                equipoCompleto.add(nuevo);
+
+                if (jugador.getPokemonActivo() == null) {
+                    jugador.setPokemonActivo(nuevo);
+                }
+
+                mostrarConfirmacionAdmin(
+                        nuevo.getNombre() + " se agregó al equipo."
+                );
+
+            } catch (Exception ex) {
+
+                mostrarErrorAdmin("No se pudo agregar el Pokémon.");
+                ex.printStackTrace();
+            }
+        });
+
+        contenidoAdmin.getChildren().addAll(
+                titulo,
+                selector,
+                informacion,
+                agregar
+        );
+    }
+
+    // --------------------------------------------------
+    // ADMINISTRADOR: AGREGAR OBJETOS
+    // --------------------------------------------------
+
+    private void mostrarFormularioObjeto() {
+
+        contenidoAdmin.getChildren().clear();
+
+        Label titulo = crearTituloAdmin("AGREGAR OBJETOS");
+
+        ComboBox<String> selector = new ComboBox<>();
+
+        selector.getItems().addAll("Poción", "Pokébola");
+        selector.getSelectionModel().selectFirst();
+        selector.setMaxWidth(Double.MAX_VALUE);
+
+        Spinner<Integer> cantidad = new Spinner<>(1, 99, 1);
+        cantidad.setEditable(true);
+        cantidad.setMaxWidth(Double.MAX_VALUE);
+
+        Button agregar = crearBotonAdmin("AGREGAR AL INVENTARIO");
+
+        agregar.setOnAction(e -> {
+
+            Inventario inventario = jugador.getInventario();
+
+            if (inventario == null) {
+                mostrarErrorAdmin("Inventario no disponible.");
+                return;
+            }
+
+            int agregados = 0;
+
+            for (int i = 0; i < cantidad.getValue(); i++) {
+
+                boolean resultado;
+
+                if ("Poción".equals(selector.getValue())) {
+
+                    resultado = inventario.agregarObjeto(
+                            new Pocion(30)
+                    );
+
+                } else {
+
+                    resultado = inventario.agregarObjeto(
+                            new Pokebola(
+                                    "Pokebola",
+                                    "Permite capturar Pokémon salvajes.",
+                                    false
+                            )
+                    );
+                }
+
+                if (!resultado) {
+                    break;
+                }
+
+                agregados++;
+            }
+
+            if (agregados == 0) {
+
+                mostrarErrorAdmin(
+                        "No se pudieron agregar objetos. Inventario lleno."
+                );
+
+            } else {
+
+                mostrarConfirmacionAdmin(
+                        "Se agregaron " + agregados + " objetos."
+                );
+            }
+        });
+
+        Label tipo = crearTextoAdmin("TIPO DE OBJETO");
+        Label cantidadLabel = crearTextoAdmin("CANTIDAD");
+
+        contenidoAdmin.getChildren().addAll(
+                titulo,
+                tipo,
+                selector,
+                cantidadLabel,
+                cantidad,
+                agregar
+        );
+    }
+
+    // --------------------------------------------------
+    // ADMINISTRADOR: VER ESPECIES
+    // --------------------------------------------------
+
+    private void mostrarPokemonesDisponibles() {
+
+        contenidoAdmin.getChildren().clear();
+
+        Label titulo = crearTituloAdmin("POKÉMON DISPONIBLES");
+
+        List<DatosEspecie> especies =
+                adminController.obtenerEspeciesDisponibles();
+
+        if (especies == null || especies.isEmpty()) {
+            mostrarErrorAdmin("No hay Pokémon disponibles.");
+            return;
+        }
+
+        VBox lista = new VBox(8);
+        lista.setPadding(new Insets(4));
+
+        for (DatosEspecie especie : especies) {
+
+            Label nombre = new Label(especie.getNombre());
+
+            nombre.setStyle(
+                    "-fx-text-fill: #a8d957;" +
+                            "-fx-font-family: Monospaced;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-font-size: 12px;"
+            );
+
+            Label datos = new Label(
+                    "Tipo: " + especie.getTipo() +
+                            "\nVida: " + especie.getVida() +
+                            " | Daño: " + especie.getDanio() +
+                            "\nDefensa: " + especie.getDefensa() +
+                            " | Velocidad: " + especie.getVelocidad()
+            );
+
+            datos.setWrapText(true);
+            datos.setStyle(estiloTextoAdmin());
+
+            VBox tarjeta = new VBox(5, nombre, datos);
+
+            tarjeta.setPadding(new Insets(9));
+
+            tarjeta.setStyle(
+                    "-fx-background-color: #263b35;" +
+                            "-fx-border-color: #526c45;" +
+                            "-fx-border-width: 1;"
+            );
+
+            lista.getChildren().add(tarjeta);
+        }
+
+        ScrollPane scroll = new ScrollPane(lista);
+
+        scroll.setFitToWidth(true);
+        scroll.setPrefHeight(250);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        contenidoAdmin.getChildren().addAll(
+                titulo,
+                new Label("Total: " + especies.size()),
+                scroll
+        );
+    }
+
+    // --------------------------------------------------
+    // ADMINISTRADOR: CAMBIAR MAPA
+    // --------------------------------------------------
+
+    private void mostrarSelectorMapa() {
+
+        contenidoAdmin.getChildren().clear();
+
+        Label titulo = crearTituloAdmin("SELECCIONAR MAPA");
+
+        Button pueblo = crearBotonAdmin("PUEBLO");
+        Button bosque = crearBotonAdmin("BOSQUE");
+
+        pueblo.setOnAction(e -> {
+
+            mostrarConfirmacionAdmin("Cambiando al pueblo...");
+
+            cambiarMapa(
+                    new MapaPueblo(),
+                    450,
+                    150
+            );
+        });
+
+        bosque.setOnAction(e -> {
+
+            mostrarConfirmacionAdmin("Cambiando al bosque...");
+
+            cambiarMapa(
+                    new MapaCasa(),
+                    100,
+                    500
+            );
+        });
+
+        contenidoAdmin.getChildren().addAll(
+                titulo,
+                pueblo,
+                bosque
+        );
+    }
+
+    // --------------------------------------------------
+    // MENSAJES DEL ADMINISTRADOR
+    // --------------------------------------------------
+
+    private void mostrarConfirmacionAdmin(String mensaje) {
+
+        mensajeAdmin.setText("✓ " + mensaje);
+
+        mensajeAdmin.setStyle(
+                "-fx-text-fill: #a8d957;" +
+                        "-fx-font-family: Monospaced;" +
+                        "-fx-font-size: 12px;" +
+                        "-fx-font-weight: bold;"
+        );
+    }
+
+    private void mostrarErrorAdmin(String mensaje) {
+
+        mensajeAdmin.setText("✕ " + mensaje);
+
+        mensajeAdmin.setStyle(
+                "-fx-text-fill: #ff7777;" +
+                        "-fx-font-family: Monospaced;" +
+                        "-fx-font-size: 12px;" +
+                        "-fx-font-weight: bold;"
+        );
+    }
+
+    private Label crearTituloAdmin(String texto) {
+
+        Label titulo = new Label(texto);
+
+        titulo.setStyle(
+                "-fx-text-fill: #a8d957;" +
+                        "-fx-font-family: Monospaced;" +
+                        "-fx-font-size: 13px;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        return titulo;
+    }
+
+    private Label crearTextoAdmin(String texto) {
+
+        Label label = new Label(texto);
+
+        label.setStyle(estiloTextoAdmin());
+
+        return label;
+    }
+
+    private String estiloTextoAdmin() {
+
+        return
+                "-fx-text-fill: #dce8ce;" +
+                        "-fx-font-family: Monospaced;" +
+                        "-fx-font-size: 11px;";
     }
 
     // --------------------------------------------------
@@ -651,6 +1038,7 @@ public class VistaJuego extends PantallaBase {
     private void generarEncuentro() {
 
         if (vistaMapa.getCargador() instanceof MapaCasa) {
+            mostrarErrorAdmin("No se pueden generar encuentros en este mapa.");
             return;
         }
 
@@ -661,6 +1049,7 @@ public class VistaJuego extends PantallaBase {
         Pokemon pokemonActivo = jugador.getPokemonActivo();
 
         if (pokemonActivo == null) {
+            mostrarErrorAdmin("Necesitás un Pokémon activo.");
             return;
         }
 
@@ -693,6 +1082,7 @@ public class VistaJuego extends PantallaBase {
      * parpadeo blanco y aparición del mensaje retro.
      */
     public void animarEncuentro(Runnable alTerminar) {
+
         if (controlador != null) {
             controlador.detenerGameLoop();
         }
@@ -701,6 +1091,7 @@ public class VistaJuego extends PantallaBase {
         double alto = root.getHeight();
 
         Pane capaTransicion = new Pane();
+
         capaTransicion.setPrefSize(ancho, alto);
         capaTransicion.setMouseTransparent(true);
 
@@ -739,6 +1130,7 @@ public class VistaJuego extends PantallaBase {
         );
 
         parpadeo.setOnFinished(evento -> {
+
             capaTransicion.getChildren().remove(flash);
 
             mostrarMensajeEncuentro(
@@ -761,7 +1153,9 @@ public class VistaJuego extends PantallaBase {
             double alto,
             Runnable alTerminar
     ) {
+
         StackPane cartel = new StackPane();
+
         cartel.setMaxSize(580, 110);
 
         cartel.setStyle(
@@ -784,6 +1178,7 @@ public class VistaJuego extends PantallaBase {
         cartel.getChildren().add(mensaje);
 
         StackPane contenedor = new StackPane(cartel);
+
         contenedor.setPrefSize(ancho, alto);
 
         StackPane.setAlignment(cartel, Pos.BOTTOM_CENTER);
@@ -804,11 +1199,13 @@ public class VistaJuego extends PantallaBase {
         aparecer.setToValue(1);
 
         aparecer.setOnFinished(evento -> {
+
             PauseTransition pausa = new PauseTransition(
                     Duration.millis(1200)
             );
 
             pausa.setOnFinished(fin -> {
+
                 root.getChildren().remove(capaTransicion);
                 alTerminar.run();
             });
@@ -824,6 +1221,7 @@ public class VistaJuego extends PantallaBase {
     // --------------------------------------------------
 
     public void actualizarCamara() {
+
         if (escena == null || root == null) {
             return;
         }
@@ -858,7 +1256,9 @@ public class VistaJuego extends PantallaBase {
             double tamanoMapa,
             double tamanoVentana
     ) {
+
         if (tamanoMapa >= tamanoVentana) {
+
             return Math.max(
                     tamanoVentana - tamanoMapa,
                     Math.min(0, posicion)
@@ -877,6 +1277,7 @@ public class VistaJuego extends PantallaBase {
         escena.addEventFilter(KeyEvent.KEY_PRESSED, evento -> {
 
             if (evento.getCode() == KeyCode.ESCAPE) {
+
                 alternarMenuPausa();
                 evento.consume();
                 return;
@@ -890,11 +1291,18 @@ public class VistaJuego extends PantallaBase {
             controlador.manejarTeclaPresionada(evento);
 
             if (evento.getCode() == KeyCode.TAB) {
+
                 pantallas.mostrarEquipo();
                 evento.consume();
 
             } else if (evento.getCode() == KeyCode.E) {
+
                 pantallas.mostrarInventario();
+                evento.consume();
+
+            } else if (evento.getCode() == KeyCode.C) {
+
+                pantallas.mostrarPokemonesCapturados();
                 evento.consume();
             }
         });
@@ -902,6 +1310,7 @@ public class VistaJuego extends PantallaBase {
         escena.addEventFilter(
                 KeyEvent.KEY_RELEASED,
                 evento -> {
+
                     if (!menuAbierto) {
                         controlador.manejarTeclaLiberada(evento);
                     }
@@ -918,6 +1327,7 @@ public class VistaJuego extends PantallaBase {
             double nuevaX,
             double nuevaY
     ) {
+
         if (cambiandoMapa) {
             return;
         }
@@ -948,6 +1358,7 @@ public class VistaJuego extends PantallaBase {
         oscurecer.setToValue(1);
 
         oscurecer.setOnFinished(evento -> {
+
             aplicarCambioMapa(nuevoMapa, nuevaX, nuevaY);
 
             FadeTransition aparecer = new FadeTransition(
@@ -959,6 +1370,7 @@ public class VistaJuego extends PantallaBase {
             aparecer.setToValue(0);
 
             aparecer.setOnFinished(fin -> {
+
                 root.getChildren().remove(pantallaNegra);
 
                 pantallaNegra.widthProperty().unbind();
@@ -984,6 +1396,7 @@ public class VistaJuego extends PantallaBase {
             double nuevaX,
             double nuevaY
     ) {
+
         VistaMapa nuevoVistaMapa = new VistaMapa(nuevoMapa);
 
         this.vistaMapa = nuevoVistaMapa;
@@ -1012,11 +1425,14 @@ public class VistaJuego extends PantallaBase {
     }
 
     public void verificarTransicionMapa() {
+
         for (TransicionMapa transicion : transiciones) {
+
             if (transicion.jugadorEntro(
                     jugador.getX(),
                     jugador.getY()
             )) {
+
                 cambiarMapa(
                         transicion.getMapaDestino(),
                         transicion.getSpawnX(),
@@ -1026,129 +1442,5 @@ public class VistaJuego extends PantallaBase {
                 return;
             }
         }
-    }
-
-    // --------------------------------------------------
-    // ADMINISTRADOR: REGISTRAR POKÉMON
-    // --------------------------------------------------
-
-    private void mostrarFormularioPokemon() {
-        Dialog<ButtonType> dialog = new Dialog<>();
-
-        dialog.setTitle("Administrador");
-        dialog.setHeaderText("Registrar nueva especie");
-
-        ButtonType crear = new ButtonType(
-                "Registrar",
-                ButtonBar.ButtonData.OK_DONE
-        );
-
-        dialog.getDialogPane().getButtonTypes().addAll(
-                crear,
-                ButtonType.CANCEL
-        );
-
-        TextField nombre = new TextField();
-        nombre.setPromptText("Nombre");
-
-        ComboBox<TipoPokemon> tipo = new ComboBox<>();
-        tipo.getItems().setAll(TipoPokemon.values());
-        tipo.getSelectionModel().selectFirst();
-
-        TextField vida = new TextField("50");
-        TextField danio = new TextField("12");
-        TextField defensa = new TextField("5");
-        TextField velocidad = new TextField("10");
-
-        GridPane formulario = new GridPane();
-
-        formulario.setHgap(10);
-        formulario.setVgap(10);
-        formulario.setPadding(new Insets(15));
-
-        formulario.addRow(0, new Label("Nombre:"), nombre);
-        formulario.addRow(1, new Label("Tipo:"), tipo);
-        formulario.addRow(2, new Label("Vida:"), vida);
-        formulario.addRow(3, new Label("Daño:"), danio);
-        formulario.addRow(4, new Label("Defensa:"), defensa);
-        formulario.addRow(5, new Label("Velocidad:"), velocidad);
-
-        dialog.getDialogPane().setContent(formulario);
-
-        dialog.showAndWait().ifPresent(resultado -> {
-            if (resultado != crear) {
-                return;
-            }
-
-            try {
-                if (nombre.getText().isBlank()) {
-                    throw new IllegalArgumentException(
-                            "Ingresá un nombre."
-                    );
-                }
-
-                boolean existe = GeneradorPokemonSalvaje
-                        .getESPECIES()
-                        .stream()
-                        .anyMatch(p ->
-                                p.getNombre().equalsIgnoreCase(
-                                        nombre.getText().trim()
-                                )
-                        );
-
-                if (!existe) {
-                    throw new PokemonInexistenteException(
-                            "El nombre no se encuentra en el sistema."
-                    );
-                }
-
-                adminController.registrarEspecie(
-                        nombre.getText().trim(),
-                        tipo.getValue(),
-                        Double.parseDouble(vida.getText()),
-                        Double.parseDouble(danio.getText()),
-                        Double.parseDouble(defensa.getText()),
-                        Double.parseDouble(velocidad.getText())
-                );
-
-                Alert confirmacion = new Alert(
-                        Alert.AlertType.INFORMATION
-                );
-
-                confirmacion.setTitle("Administrador");
-                confirmacion.setHeaderText(null);
-                confirmacion.setContentText(
-                        "¡Especie registrada correctamente!"
-                );
-
-                confirmacion.showAndWait();
-
-            } catch (PokemonInexistenteException ex) {
-                System.err.println(
-                        "Ha ocurrido un error: " + ex.getMessage()
-                );
-                ex.printStackTrace();
-
-            } catch (NumberFormatException ex) {
-                mostrarErrorAdmin(
-                        "Las estadísticas deben ser números válidos."
-                );
-
-            } catch (IllegalArgumentException ex) {
-                mostrarErrorAdmin(ex.getMessage());
-            }
-        });
-    }
-
-    private void mostrarErrorAdmin(String mensaje) {
-        Alert alerta = new Alert(Alert.AlertType.ERROR);
-
-        alerta.setTitle("Error");
-        alerta.setHeaderText(
-                "No se pudo registrar la especie"
-        );
-        alerta.setContentText(mensaje);
-
-        alerta.showAndWait();
     }
 }

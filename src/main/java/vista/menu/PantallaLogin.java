@@ -72,7 +72,10 @@ public class PantallaLogin extends PantallaBase {
         menuInicial = new VBox(20, titulo, botones);
         menuInicial.setAlignment(Pos.CENTER);
 
-        usuario.setOnAction(e -> pantallas.mostrarInicio());
+        usuario.setOnAction(e -> {
+            pantallas.setModoAdministrador(false);
+            pantallas.mostrarInicio();
+        });
         administrador.setOnAction(e -> mostrarFormulario());
     }
 
@@ -119,6 +122,8 @@ public class PantallaLogin extends PantallaBase {
     private void validarContrasena() {
         if (CONTRASENA_ADMIN.equals(campoContrasena.getText())) {
             pantallas.setTipo(TipoJugador.ADMINISTRADOR);
+            pantallas.mostrarInicio();
+            pantallas.setModoAdministrador(true);
             pantallas.mostrarInicio();
             return;
         }

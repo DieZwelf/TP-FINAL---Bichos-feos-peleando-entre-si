@@ -1,6 +1,9 @@
 
 package model;
 
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -29,6 +32,11 @@ public class Jugador {
     private String rango = "Inicial";
     private Pokemon pokemonActivo;
     private Inventario inventario;
+    // PANEL DE ADMINISTRADOR
+    private VBox panelAdmin;
+    private VBox contenidoAdmin;
+    private Label mensajeAdmin;
+    private Label tituloContenidoAdmin;
 
     public Jugador(double xInicial, double yInicial, TipoJugador tipo) {
 

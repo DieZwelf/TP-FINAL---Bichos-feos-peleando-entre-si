@@ -15,6 +15,7 @@ import vista.base.PantallaMenuBase;
 import vista.combate.PantallaCombate;
 import vista.combate.PantallaResultados;
 import vista.equipo.PantallaEquipo;
+import vista.equipo.PantallaPokemonesCapturados;
 import vista.inventario.PantallaInventario;
 import vista.juego.CargadorMapaTiled;
 import vista.juego.VistaJuego;
@@ -36,6 +37,7 @@ public class GestorPantallas {
     private PantallaBase pantallaActual;
     private PantallaBase pantallaAnteriorEquipo;
     private PantallaBase pantallaAnteriorInventario;
+    private PantallaBase pantallaAnteriorCapturados;
     private PantallaBase pantallaMapaAnterior;
 
     private Jugador jugador;
@@ -43,6 +45,7 @@ public class GestorPantallas {
     private VistaJuego vistaJuego;
 
     private TipoJugador tipo = TipoJugador.USUARIO;
+    private boolean modoAdministrador = false;
 
     private guardarPartidaDAO partidaDAO;
     private MediaPlayer reproductorMenu;
@@ -62,16 +65,17 @@ public class GestorPantallas {
 
     public void cargarPartida(int jugadorId) {
 
-        Jugador jugador = partidaDAO.recuperarJugador(jugadorId);
+        jugador = partidaDAO.recuperarJugador(jugadorId);
 
         if (jugador == null) {
             return;
         }
 
-        this.jugador = jugador;
+        // Posición inicial igual que en Nueva partida.
+        jugador.setX(254);
+        jugador.setY(177);
 
         vistaJuego = new VistaJuego(jugador, this);
-
         vistaJuego.mostrar(stage);
     }
 
@@ -185,6 +189,14 @@ public class GestorPantallas {
         this.jugador = jugador;
     }
 
+    public boolean isModoAdministrador() {
+        return modoAdministrador;
+    }
+
+    public void setModoAdministrador(boolean modoAdministrador) {
+        this.modoAdministrador = modoAdministrador;
+    }
+
     // =====================================================
     // NAVEGACIÓN DE MENÚS
     // =====================================================
@@ -261,12 +273,36 @@ public class GestorPantallas {
     }
 
     // =====================================================
+    // POKÉMON CAPTURADOS
+    // =====================================================
+
+    public void mostrarPokemonesCapturados() {
+
+        if (jugador == null) {
+            return;
+        }
+
+        pantallaAnteriorCapturados = pantallaActual;
+
+        new PantallaPokemonesCapturados(
+                this,
+                jugador
+        ).mostrar(stage);
+    }
+
+    public void volverDesdePokemonesCapturados() {
+
+        restaurarPantalla(pantallaAnteriorCapturados);
+
+        pantallaAnteriorCapturados = null;
+    }
+
+    // =====================================================
     // INICIAR PARTIDA
     // =====================================================
 
     public void iniciarPartida() {
 
-        // Verificar que haya espacio antes de crear el jugador.
         if (!partidaDAO.hayLugarDisponible()) {
 
             Alert alerta = new Alert(Alert.AlertType.WARNING);
@@ -284,7 +320,12 @@ public class GestorPantallas {
             return;
         }
 
+        // Crear una partida nueva.
         jugador = partidaService.crearJugadorInicial(this.tipo);
+
+        // Posición inicial: solamente para partidas nuevas.
+        jugador.setX(254);
+        jugador.setY(177);
 
         vistaJuego = new VistaJuego(jugador, this);
 
@@ -306,11 +347,7 @@ public class GestorPantallas {
 
         Pokemon activo = entrenadorJugador.getPokemonActivo();
 
-        if (activo == null) {
-            return;
-        }
-
-        if (pokemon == null) {
+        if (activo == null || pokemon == null) {
             return;
         }
 
@@ -319,7 +356,6 @@ public class GestorPantallas {
         combateActivo = true;
         pantallaMapaAnterior = pantallaActual;
 
-        // Primero reproducir la animación sobre el mapa.
         if (vistaJuego != null) {
 
             vistaJuego.animarEncuentro(() ->
