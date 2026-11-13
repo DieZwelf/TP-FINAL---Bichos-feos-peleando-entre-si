@@ -1,44 +1,76 @@
+
 package vista.juego;
 
 import controlador.AdministradorController;
 import controlador.JuegoController;
+import javafx.animation.*;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.transform.Affine;
+import javafx.util.Duration;
 import model.*;
 import vista.GestorPantallas;
 import vista.base.PantallaBase;
 
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Affine;
-import javafx.geometry.Insets;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Pantalla de exploración: compone el mapa y al jugador. */
+/**
+ * Pantalla de exploración: compone el mapa y al jugador.
+ */
 public class VistaJuego extends PantallaBase {
+
+    // --------------------------------------------------
+    // CONSTANTES
+    // --------------------------------------------------
 
     private static final double ZOOM = 1.4;
 
+    // --------------------------------------------------
+    // ATRIBUTOS
+    // --------------------------------------------------
+
     private final Jugador jugador;
     private final VistaJugador vistaJugador;
+
     private VistaMapa vistaMapa;
+
     private final Pane mundo = new Pane();
     private final Affine transformacionCamara = new Affine();
     private final Rectangle recorte = new Rectangle();
 
     private StackPane root;
     private Scene escena;
+
     private JuegoController controlador;
+
     private List<TransicionMapa> transiciones = new ArrayList<>();
-    private AdministradorController adminController = new AdministradorController();
+
+    private final AdministradorController adminController =
+            new AdministradorController();
+
+    private boolean cambiandoMapa = false;
+    private boolean encuentroEnCurso = false;
+
+    // --------------------------------------------------
+    // CONSTRUCTOR
+    // --------------------------------------------------
 
     public VistaJuego(Jugador jugador, GestorPantallas pantallas) {
         super(pantallas);
+
         this.jugador = jugador;
 
         MapaCasa mapaInicial = new MapaCasa();
@@ -52,17 +84,23 @@ public class VistaJuego extends PantallaBase {
         actualizarTransiciones(mapaInicial);
     }
 
+    // --------------------------------------------------
+    // CREACIÓN DE PANTALLA
+    // --------------------------------------------------
+
     @Override
     protected Parent crearContenido() {
         root = new StackPane();
-
-        // Fondo negro fijo en toda la pantalla.
-        root.setStyle("-fx-background-color: #514638");
+        root.setStyle("-fx-background-color: #514638;");
 
         StackPane.setAlignment(mundo, Pos.TOP_LEFT);
 
         mundo.getChildren().setAll(vistaMapa, vistaJugador);
-        mundo.setPrefSize(vistaMapa.getPrefWidth(), vistaMapa.getPrefHeight());
+        mundo.setPrefSize(
+                vistaMapa.getPrefWidth(),
+                vistaMapa.getPrefHeight()
+        );
+
         mundo.getTransforms().setAll(transformacionCamara);
 
         root.getChildren().setAll(mundo);
@@ -72,7 +110,8 @@ public class VistaJuego extends PantallaBase {
             VBox panelAdmin = crearPanelAdministrador();
 
             root.getChildren().add(panelAdmin);
-            root.setAlignment(panelAdmin, Pos.TOP_RIGHT);
+
+            StackPane.setAlignment(panelAdmin, Pos.TOP_RIGHT);
             StackPane.setMargin(panelAdmin, new Insets(18));
         }
 
@@ -91,10 +130,19 @@ public class VistaJuego extends PantallaBase {
 
     @Override
     protected void configurarEscena(Scene escena) {
-        agregarCSS(escena,"/images/pantallaMenu/estilo.css");
+        agregarCSS(escena, "/images/pantallaMenu/estilo.css");
+
         this.escena = escena;
-        controlador = new JuegoController(jugador, vistaJugador, this, vistaMapa.getColisiones());
+
+        controlador = new JuegoController(
+                jugador,
+                vistaJugador,
+                this,
+                vistaMapa.getColisiones()
+        );
+
         controlador.setOnEncuentroGenerado(this::generarEncuentro);
+
         configurarTeclas(escena);
     }
 
@@ -103,6 +151,7 @@ public class VistaJuego extends PantallaBase {
         if (controlador != null) {
             controlador.reanudarGameLoop();
         }
+
         actualizarCamara();
         root.requestFocus();
     }
@@ -114,6 +163,10 @@ public class VistaJuego extends PantallaBase {
         }
     }
 
+    // --------------------------------------------------
+    // PANEL DE ADMINISTRADOR
+    // --------------------------------------------------
+
     private VBox crearPanelAdministrador() {
         VBox panel = new VBox(10);
         panel.getStyleClass().add("panel-admin");
@@ -123,7 +176,6 @@ public class VistaJuego extends PantallaBase {
 
         Button encuentro = new Button("Forzar encuentro");
         encuentro.getStyleClass().add("boton-admin");
-
         encuentro.setOnAction(e -> generarEncuentro());
 
         Button agregarPokemon = new Button("Agregar Pokémon");
@@ -138,15 +190,25 @@ public class VistaJuego extends PantallaBase {
         cambiarMapa.getStyleClass().add("boton-admin");
         cambiarMapa.setOnAction(e -> mostrarSelectorMapa());
 
-        panel.getChildren().addAll(titulo, encuentro, agregarPokemon,verPokemon, cambiarMapa);
+        panel.getChildren().addAll(
+                titulo,
+                encuentro,
+                agregarPokemon,
+                verPokemon,
+                cambiarMapa
+        );
 
-        panel.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+        panel.setMaxSize(
+                Region.USE_PREF_SIZE,
+                Region.USE_PREF_SIZE
+        );
 
         return panel;
     }
 
     private void mostrarPokemonesDisponibles() {
-        List<DatosEspecie> especies = adminController.obtenerEspeciesDisponibles();
+        List<DatosEspecie> especies =
+                adminController.obtenerEspeciesDisponibles();
 
         StringBuilder contenido = new StringBuilder();
 
@@ -156,7 +218,8 @@ public class VistaJuego extends PantallaBase {
                     .append(" | Vida: ").append(especie.getVida())
                     .append(" | Daño: ").append(especie.getDanio())
                     .append(" | Defensa: ").append(especie.getDefensa())
-                    .append(" | Velocidad: ").append(especie.getVelocidad()).append("\n");
+                    .append(" | Velocidad: ").append(especie.getVelocidad())
+                    .append("\n");
         }
 
         TextArea texto = new TextArea(contenido.toString());
@@ -166,13 +229,16 @@ public class VistaJuego extends PantallaBase {
 
         Alert alerta = new Alert(Alert.AlertType.INFORMATION);
         alerta.setTitle("Administrador");
-        alerta.setHeaderText("Pokémon disponibles (" + especies.size() + ")");
+        alerta.setHeaderText(
+                "Pokémon disponibles (" + especies.size() + ")"
+        );
         alerta.getDialogPane().setContent(texto);
         alerta.showAndWait();
     }
 
     private void mostrarSelectorMapa() {
-        ChoiceDialog<String> dialog = new ChoiceDialog<>("Pueblo", "Pueblo", "Bosque");
+        ChoiceDialog<String> dialog =
+                new ChoiceDialog<>("Pueblo", "Pueblo", "Bosque");
 
         dialog.setTitle("Administrador");
         dialog.setHeaderText("Cambiar mapa");
@@ -180,12 +246,18 @@ public class VistaJuego extends PantallaBase {
 
         dialog.showAndWait().ifPresent(mapa -> {
             switch (mapa) {
-                case "Pueblo" -> cambiarMapa(new MapaPueblo(), 450, 150);
+                case "Pueblo" ->
+                        cambiarMapa(new MapaPueblo(), 450, 150);
 
-                case "Bosque" -> cambiarMapa(new MapaCasa(), 100, 500);
+                case "Bosque" ->
+                        cambiarMapa(new MapaCasa(), 100, 500);
             }
         });
     }
+
+    // --------------------------------------------------
+    // ENCUENTROS
+    // --------------------------------------------------
 
     private void generarEncuentro() {
 
@@ -195,27 +267,186 @@ public class VistaJuego extends PantallaBase {
         }
 
         Pokemon pokemonActivo = jugador.getPokemonActivo();
-        if (pokemonActivo == null) return;
 
-        double probabilidad = CalculadoraCaptura.calcularProbabilidad(pokemonActivo);
+        if (pokemonActivo == null) {
+            return;
+        }
 
-        System.out.println("Vida: " + pokemonActivo.getVida() + "/" + pokemonActivo.getVidaMaxima());
-        System.out.println("Probabilidad: " + (probabilidad * 100) + "%");
+        double probabilidad =
+                CalculadoraCaptura.calcularProbabilidad(pokemonActivo);
+
+        System.out.println(
+                "Vida: " + pokemonActivo.getVida()
+                        + "/" + pokemonActivo.getVidaMaxima()
+        );
+
+        System.out.println(
+                "Probabilidad: " + (probabilidad * 100) + "%"
+        );
 
         int nivelJugador = pokemonActivo.getNivel();
-        Pokemon salvaje = GeneradorPokemonSalvaje.generarPokemonSegunNivel(nivelJugador);
 
-        pantallas.iniciarCombate(jugador, salvaje);
+        Pokemon salvaje =
+                GeneradorPokemonSalvaje.generarPokemonSegunNivel(
+                        nivelJugador
+                );
+
+        // Primero se ejecuta la transición y después comienza el combate.
+        animarEncuentro(() ->
+                pantallas.iniciarCombate(jugador, salvaje)
+        );
     }
+
+    /**
+     * Transición de encuentro:
+     * parpadeo blanco y aparición del mensaje retro.
+     */
+    public void animarEncuentro(Runnable alTerminar) {
+        if (controlador != null) {
+            controlador.detenerGameLoop();
+        }
+
+        double ancho = root.getWidth();
+        double alto = root.getHeight();
+
+        Pane capaTransicion = new Pane();
+        capaTransicion.setPrefSize(ancho, alto);
+        capaTransicion.setMouseTransparent(true);
+
+        root.getChildren().add(capaTransicion);
+
+        // Parpadeo blanco inicial.
+        Rectangle flash = new Rectangle(
+                ancho,
+                alto,
+                Color.WHITE
+        );
+
+        flash.setOpacity(0);
+        capaTransicion.getChildren().add(flash);
+
+        Timeline parpadeo = new Timeline(
+                new KeyFrame(
+                        Duration.ZERO,
+                        new KeyValue(flash.opacityProperty(), 0)
+                ),
+                new KeyFrame(
+                        Duration.millis(50),
+                        new KeyValue(flash.opacityProperty(), 0.95)
+                ),
+                new KeyFrame(
+                        Duration.millis(110),
+                        new KeyValue(flash.opacityProperty(), 0)
+                ),
+                new KeyFrame(
+                        Duration.millis(160),
+                        new KeyValue(flash.opacityProperty(), 0.9)
+                ),
+                new KeyFrame(
+                        Duration.millis(230),
+                        new KeyValue(flash.opacityProperty(), 0)
+                )
+        );
+
+        parpadeo.setOnFinished(evento -> {
+            capaTransicion.getChildren().remove(flash);
+
+            mostrarMensajeEncuentro(
+                    capaTransicion,
+                    ancho,
+                    alto,
+                    alTerminar
+            );
+        });
+
+        parpadeo.play();
+    }
+
+    /**
+     * Muestra el mensaje sobre el mapa, sin fondo negro.
+     */
+    private void mostrarMensajeEncuentro(
+            Pane capaTransicion,
+            double ancho,
+            double alto,
+            Runnable alTerminar
+    ) {
+        StackPane cartel = new StackPane();
+        cartel.setMaxSize(580, 110);
+
+        cartel.setStyle(
+                "-fx-background-color: #F8F8F8;" +
+                        "-fx-border-color: #202020;" +
+                        "-fx-border-width: 5;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 10, 0, 0, 4);"
+        );
+
+        Label mensaje = new Label(
+                "¡Un Pokémon salvaje apareció!"
+        );
+
+        mensaje.setFont(
+                Font.font("Monospaced", FontWeight.BOLD, 22)
+        );
+
+        mensaje.setTextFill(Color.web("#202020"));
+
+        cartel.getChildren().add(mensaje);
+
+        StackPane contenedor = new StackPane(cartel);
+        contenedor.setPrefSize(ancho, alto);
+
+        StackPane.setAlignment(cartel, Pos.BOTTOM_CENTER);
+        StackPane.setMargin(
+                cartel,
+                new Insets(0, 0, 50, 0)
+        );
+
+        capaTransicion.getChildren().setAll(contenedor);
+
+        FadeTransition aparecer = new FadeTransition(
+                Duration.millis(250),
+                cartel
+        );
+
+        aparecer.setFromValue(0);
+        aparecer.setToValue(1);
+
+        aparecer.setOnFinished(evento -> {
+            PauseTransition pausa = new PauseTransition(
+                    Duration.millis(1200)
+            );
+
+            pausa.setOnFinished(fin -> {
+                root.getChildren().remove(capaTransicion);
+                alTerminar.run();
+            });
+
+            pausa.play();
+        });
+
+        aparecer.play();
+    }
+
+    // --------------------------------------------------
+    // CÁMARA
+    // --------------------------------------------------
+
     public void actualizarCamara() {
-        if (escena == null || root == null) return;
+        if (escena == null || root == null) {
+            return;
+        }
 
         double anchoVentana = escena.getWidth();
         double altoVentana = escena.getHeight();
-        if (anchoVentana <= 0 || altoVentana <= 0) return;
+
+        if (anchoVentana <= 0 || altoVentana <= 0) {
+            return;
+        }
 
         double anchoEscalado = vistaMapa.getPrefWidth() * ZOOM;
         double altoEscalado = vistaMapa.getPrefHeight() * ZOOM;
+
         double centroX = jugador.getX() + 24;
         double centroY = jugador.getY() + 24;
 
@@ -225,32 +456,126 @@ public class VistaJuego extends PantallaBase {
         x = limitarCamara(x, anchoEscalado, anchoVentana);
         y = limitarCamara(y, altoEscalado, altoVentana);
 
-        transformacionCamara.setToTransform(ZOOM, 0, x, 0, ZOOM, y);
+        transformacionCamara.setToTransform(
+                ZOOM, 0, x,
+                0, ZOOM, y
+        );
     }
 
-    private double limitarCamara(double posicion, double tamanoMapa, double tamanoVentana) {
+    private double limitarCamara(
+            double posicion,
+            double tamanoMapa,
+            double tamanoVentana
+    ) {
         if (tamanoMapa >= tamanoVentana) {
-            return Math.max(tamanoVentana - tamanoMapa, Math.min(0, posicion));
+            return Math.max(
+                    tamanoVentana - tamanoMapa,
+                    Math.min(0, posicion)
+            );
         }
+
         return (tamanoVentana - tamanoMapa) / 2;
     }
+
+    // --------------------------------------------------
+    // CONTROLES
+    // --------------------------------------------------
 
     private void configurarTeclas(Scene escena) {
         escena.addEventFilter(KeyEvent.KEY_PRESSED, evento -> {
             controlador.manejarTeclaPresionada(evento);
+
             if (evento.getCode() == KeyCode.TAB) {
                 pantallas.mostrarEquipo();
                 evento.consume();
+
             } else if (evento.getCode() == KeyCode.E) {
                 pantallas.mostrarInventario();
                 evento.consume();
             }
         });
-        escena.addEventFilter(KeyEvent.KEY_RELEASED, controlador::manejarTeclaLiberada);
+
+        escena.addEventFilter(
+                KeyEvent.KEY_RELEASED,
+                controlador::manejarTeclaLiberada
+        );
     }
 
-    public void cambiarMapa(CargadorMapaTiled nuevoMapa, double nuevaX, double nuevaY) {
+    // --------------------------------------------------
+    // CAMBIO DE MAPA
+    // --------------------------------------------------
 
+    public void cambiarMapa(
+            CargadorMapaTiled nuevoMapa,
+            double nuevaX,
+            double nuevaY
+    ) {
+        if (cambiandoMapa) {
+            return;
+        }
+
+        cambiandoMapa = true;
+
+        if (controlador != null) {
+            controlador.detenerGameLoop();
+        }
+
+        Rectangle pantallaNegra = new Rectangle();
+
+        pantallaNegra.setFill(Color.BLACK);
+        pantallaNegra.setMouseTransparent(true);
+        pantallaNegra.setOpacity(0);
+
+        pantallaNegra.widthProperty().bind(root.widthProperty());
+        pantallaNegra.heightProperty().bind(root.heightProperty());
+
+        root.getChildren().add(pantallaNegra);
+
+        FadeTransition oscurecer = new FadeTransition(
+                Duration.millis(250),
+                pantallaNegra
+        );
+
+        oscurecer.setFromValue(0);
+        oscurecer.setToValue(1);
+
+        oscurecer.setOnFinished(evento -> {
+            aplicarCambioMapa(nuevoMapa, nuevaX, nuevaY);
+
+            FadeTransition aparecer = new FadeTransition(
+                    Duration.millis(250),
+                    pantallaNegra
+            );
+
+            aparecer.setFromValue(1);
+            aparecer.setToValue(0);
+
+            aparecer.setOnFinished(fin -> {
+                root.getChildren().remove(pantallaNegra);
+
+                pantallaNegra.widthProperty().unbind();
+                pantallaNegra.heightProperty().unbind();
+
+                cambiandoMapa = false;
+
+                if (controlador != null) {
+                    controlador.reanudarGameLoop();
+                }
+
+                root.requestFocus();
+            });
+
+            aparecer.play();
+        });
+
+        oscurecer.play();
+    }
+
+    private void aplicarCambioMapa(
+            CargadorMapaTiled nuevoMapa,
+            double nuevaX,
+            double nuevaY
+    ) {
         VistaMapa nuevoVistaMapa = new VistaMapa(nuevoMapa);
 
         this.vistaMapa = nuevoVistaMapa;
@@ -260,7 +585,10 @@ public class VistaJuego extends PantallaBase {
 
         mundo.getChildren().setAll(vistaMapa, vistaJugador);
 
-        mundo.setPrefSize(vistaMapa.getPrefWidth(), vistaMapa.getPrefHeight());
+        mundo.setPrefSize(
+                vistaMapa.getPrefWidth(),
+                vistaMapa.getPrefHeight()
+        );
 
         actualizarTransiciones(nuevoMapa);
 
@@ -271,49 +599,46 @@ public class VistaJuego extends PantallaBase {
         actualizarCamara();
     }
 
-    private void configurarTransiciones(CargadorMapaTiled mapa) {
-
-        transiciones.clear();
-
-        if (mapa instanceof MapaPueblo) {
-
-            // Salida del pueblo hacia el bosque.
-        transiciones.add(new TransicionMapa(450, 100, 80, 40, MapaCasa::new,100, 500));
-
-        } else if (mapa instanceof MapaCasa) {
-            // Regreso del bosque hacia el pueblo.
-            transiciones.add(new TransicionMapa(100, 550, 80, 40, MapaPueblo::new,
-                    450, 150));
-        }
+    private void actualizarTransiciones(CargadorMapaTiled mapa) {
+        transiciones = mapa.obtenerTransiciones();
     }
 
     public void verificarTransicionMapa() {
-
         for (TransicionMapa transicion : transiciones) {
+            if (transicion.jugadorEntro(
+                    jugador.getX(),
+                    jugador.getY()
+            )) {
+                cambiarMapa(
+                        transicion.getMapaDestino(),
+                        transicion.getSpawnX(),
+                        transicion.getSpawnY()
+                );
 
-            if (transicion.jugadorEntro(jugador.getX(), jugador.getY())) {
-
-                cambiarMapa(transicion.getMapaDestino(), transicion.getSpawnX(), transicion.getSpawnY());
                 return;
             }
         }
     }
 
-    private void actualizarTransiciones(CargadorMapaTiled mapa) {
-        transiciones = mapa.obtenerTransiciones();
-    }
+    // --------------------------------------------------
+    // ADMINISTRADOR: REGISTRAR POKÉMON
+    // --------------------------------------------------
 
-
-    private void mostrarFormularioPokemon()
-    {
-
+    private void mostrarFormularioPokemon() {
         Dialog<ButtonType> dialog = new Dialog<>();
 
         dialog.setTitle("Administrador");
         dialog.setHeaderText("Registrar nueva especie");
 
-        ButtonType crear = new ButtonType("Registrar", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(crear, ButtonType.CANCEL);
+        ButtonType crear = new ButtonType(
+                "Registrar",
+                ButtonBar.ButtonData.OK_DONE
+        );
+
+        dialog.getDialogPane().getButtonTypes().addAll(
+                crear,
+                ButtonType.CANCEL
+        );
 
         TextField nombre = new TextField();
         nombre.setPromptText("Nombre");
@@ -328,6 +653,7 @@ public class VistaJuego extends PantallaBase {
         TextField velocidad = new TextField("10");
 
         GridPane formulario = new GridPane();
+
         formulario.setHgap(10);
         formulario.setVgap(10);
         formulario.setPadding(new Insets(15));
@@ -342,25 +668,43 @@ public class VistaJuego extends PantallaBase {
         dialog.getDialogPane().setContent(formulario);
 
         dialog.showAndWait().ifPresent(resultado -> {
-
-            if (resultado != crear) return;
+            if (resultado != crear) {
+                return;
+            }
 
             try {
                 if (nombre.getText().isBlank()) {
-                    throw new IllegalArgumentException("Ingresá un nombre.");
+                    throw new IllegalArgumentException(
+                            "Ingresá un nombre."
+                    );
                 }
 
-                adminController.registrarEspecie(nombre.getText().trim(), tipo.getValue(), Double.parseDouble(vida.getText()), Double.parseDouble(danio.getText()),
-                        Double.parseDouble(defensa.getText()), Double.parseDouble(velocidad.getText()));
+                adminController.registrarEspecie(
+                        nombre.getText().trim(),
+                        tipo.getValue(),
+                        Double.parseDouble(vida.getText()),
+                        Double.parseDouble(danio.getText()),
+                        Double.parseDouble(defensa.getText()),
+                        Double.parseDouble(velocidad.getText())
+                );
 
-                Alert confirmacion = new Alert(Alert.AlertType.INFORMATION);
+                Alert confirmacion = new Alert(
+                        Alert.AlertType.INFORMATION
+                );
+
                 confirmacion.setTitle("Administrador");
                 confirmacion.setHeaderText(null);
-                confirmacion.setContentText("¡Especie registrada correctamente!");
+                confirmacion.setContentText(
+                        "¡Especie registrada correctamente!"
+                );
+
                 confirmacion.showAndWait();
 
             } catch (NumberFormatException ex) {
-                mostrarErrorAdmin("Las estadísticas deben ser números válidos.");
+                mostrarErrorAdmin(
+                        "Las estadísticas deben ser números válidos."
+                );
+
             } catch (IllegalArgumentException ex) {
                 mostrarErrorAdmin(ex.getMessage());
             }
@@ -369,9 +713,13 @@ public class VistaJuego extends PantallaBase {
 
     private void mostrarErrorAdmin(String mensaje) {
         Alert alerta = new Alert(Alert.AlertType.ERROR);
+
         alerta.setTitle("Error");
-        alerta.setHeaderText("No se pudo registrar la especie");
+        alerta.setHeaderText(
+                "No se pudo registrar la especie"
+        );
         alerta.setContentText(mensaje);
+
         alerta.showAndWait();
     }
 }

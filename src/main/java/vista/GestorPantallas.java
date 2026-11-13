@@ -172,31 +172,60 @@ public class GestorPantallas {
     }
 
     public void iniciarCombate(Jugador entrenadorJugador, Pokemon pokemon) {
+
         if (combateActivo || entrenadorJugador == null) return;
 
         Pokemon activo = entrenadorJugador.getPokemonActivo();
 
         if (activo == null) return;
 
-        Pokemon pokemonSalvaje = GeneradorPokemonSalvaje.generarPokemonSegunNivel(activo.getNivel());
+        if (pokemon == null) return;
+
+        Pokemon pokemonSalvaje = pokemon;
 
         combateActivo = true;
         pantallaMapaAnterior = pantallaActual;
 
+        // Primero reproducimos la animación sobre el mapa.
+        if (vistaJuego != null) {
+            vistaJuego.animarEncuentro(() -> mostrarPantallaCombate(
+                    entrenadorJugador,
+                    pokemonSalvaje
+            ));
+        } else {
+            mostrarPantallaCombate(entrenadorJugador, pokemonSalvaje);
+        }
+    }
+
+    private void mostrarPantallaCombate(
+            Jugador entrenadorJugador,
+            Pokemon pokemonSalvaje
+    ) {
+
         try {
-            CombateViewModel viewModel = new CombateViewModel(entrenadorJugador, pokemonSalvaje);
 
-            PantallaCombate pantallaCombate = new PantallaCombate(viewModel, this);
+            CombateViewModel viewModel =
+                    new CombateViewModel(entrenadorJugador, pokemonSalvaje);
 
-            viewModel.setOnTerminarCombateCallback(pantallaCombate::mostrarResultados);
+            PantallaCombate pantallaCombate =
+                    new PantallaCombate(viewModel, this);
+
+            viewModel.setOnTerminarCombateCallback(
+                    pantallaCombate::mostrarResultados
+            );
 
             pantallaCombate.mostrar(stage);
 
         } catch (RuntimeException e) {
+
             combateActivo = false;
+
+            if (vistaJuego != null) {
+                vistaJuego.alMostrar();
+            }
+
             throw e;
         }
-
     }
 
     public void regresarAlMapa() {

@@ -1,5 +1,3 @@
-
-package vista.juego;
 /**
  * Cargador encargado de interpretar y dibujar mapas de Tiled que utilizan
  * un tileset de colección de imágenes, donde cada tile tiene su propio
@@ -11,6 +9,8 @@ package vista.juego;
  * Hereda de CargadorMapaTiled, que centraliza la lectura del mapa,
  * el procesamiento de las capas y la detección de colisiones.
  */
+
+package vista.juego;
 
 import com.google.gson.*;
 import javafx.scene.canvas.GraphicsContext;
