@@ -1,4 +1,3 @@
-
 package vista.juego;
 
 import javafx.animation.FadeTransition;
@@ -16,9 +15,12 @@ import vista.gestor.GestorPantallas;
 
 /**
  * Gestiona el menú de pausa de la partida.
- *
  * Permite reanudar el juego, guardar la partida y volver
  * al menú principal después de confirmar la salida.
+ *
+ * @author Uriel
+ * @since 2026
+ * @version 1.0
  */
 public class MenuPausa {
 
@@ -40,10 +42,10 @@ public class MenuPausa {
     /**
      * Construye el menú de pausa y configura sus acciones.
      *
-     *  jugador jugador cuya partida se administra
-     *  pantallas gestor de navegación
-     *  detenerJuego acción para detener el ciclo del juego
-     *  reanudarJuego acción para reanudar el ciclo del juego
+     * @param jugador jugador cuya partida se administra
+     * @param pantallas gestor de navegación entre pantallas
+     * @param detenerJuego acción para detener el ciclo del juego
+     * @param reanudarJuego acción para reanudar el ciclo del juego
      */
     public MenuPausa(
             Jugador jugador,
@@ -66,7 +68,7 @@ public class MenuPausa {
     /**
      * Construye visualmente el menú de pausa.
      *
-     * @return panel del menú
+     * @return panel visual del menú de pausa
      */
     private StackPane crearVista() {
 
@@ -134,7 +136,7 @@ public class MenuPausa {
     /**
      * Crea un botón con el estilo general del juego.
      *
-     * @param texto texto del botón
+     * @param texto texto que mostrará el botón
      * @return botón configurado
      */
     private Button crearBoton(String texto) {
@@ -144,7 +146,7 @@ public class MenuPausa {
     }
 
     /**
-     * Aplica las propiedades comunes a los botones.
+     * Aplica las propiedades comunes a los botones del menú.
      *
      * @param boton botón que se configura
      */
@@ -154,7 +156,7 @@ public class MenuPausa {
     }
 
     /**
-     * Alterna entre abrir y cerrar el menú.
+     * Alterna entre abrir y cerrar el menú de pausa.
      */
     public void alternar() {
         if (abierto) {
@@ -165,7 +167,7 @@ public class MenuPausa {
     }
 
     /**
-     * Abre el menú y detiene el juego.
+     * Abre el menú de pausa y detiene el juego.
      */
     public void abrir() {
 
@@ -181,7 +183,7 @@ public class MenuPausa {
     }
 
     /**
-     * Cierra el menú y reanuda el juego.
+     * Cierra el menú de pausa y reanuda el juego.
      */
     public void cerrar() {
 
@@ -204,7 +206,8 @@ public class MenuPausa {
     }
 
     /**
-     * Guarda la partida actual.
+     * Guarda la partida actual y muestra el resultado de la operación.
+     * Si ocurre un error, muestra un mensaje y lo imprime en consola.
      */
     private void guardarPartida() {
 
@@ -222,6 +225,7 @@ public class MenuPausa {
 
     /**
      * Solicita confirmación antes de abandonar la partida.
+     * Muestra el mensaje de advertencia y los botones de confirmación.
      */
     private void confirmarVolverAlMenu() {
 
@@ -252,6 +256,8 @@ public class MenuPausa {
 
     /**
      * Muestra un mensaje temporal de éxito o error.
+     * El mensaje aparece mediante una animación y desaparece
+     * automáticamente después de unos segundos.
      *
      * @param texto contenido del mensaje
      * @param error indica si se trata de un error
@@ -305,7 +311,8 @@ public class MenuPausa {
     }
 
     /**
-     * Detiene las animaciones y temporizadores activos.
+     * Detiene las animaciones y los temporizadores activos.
+     * También libera sus referencias.
      */
     private void detenerAnimaciones() {
 
@@ -321,7 +328,7 @@ public class MenuPausa {
     }
 
     /**
-     * Oculta los botones de confirmación de salida.
+     * Oculta los botones utilizados para confirmar la salida.
      */
     private void ocultarConfirmacion() {
         confirmarSalida.setVisible(false);
@@ -334,16 +341,16 @@ public class MenuPausa {
     /**
      * Devuelve la vista del menú para incorporarla a la pantalla.
      *
-     * @return panel de pausa
+     * @return panel visual del menú de pausa
      */
     public StackPane getVista() {
         return vista;
     }
 
     /**
-     * Indica si el menú está abierto.
+     * Indica si el menú de pausa está abierto.
      *
-     * @return true si está abierto
+     * @return true si el menú está abierto, false en caso contrario
      */
     public boolean estaAbierto() {
         return abierto;

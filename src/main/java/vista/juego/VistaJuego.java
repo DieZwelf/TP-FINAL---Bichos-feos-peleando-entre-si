@@ -1,3 +1,4 @@
+
 package vista.juego;
 
 import controlador.JuegoController;
@@ -27,10 +28,19 @@ import vista.juego.mapa.MapaCasa;
 import vista.juego.mapa.VistaMapa;
 
 /**
- * Pantalla principal de exploración.
- *
+ * La clase VISTAJUEGO representa la pantalla principal de exploración.
  * Coordina el mapa, el jugador, la cámara, los controles y los
  * componentes auxiliares de pausa, administración y cambios de mapa.
+ * Tiene un constructor que recibe al jugador y al gestor de pantallas.
+ * Otros métodos: crearContenido(), configurarEscena(), crearTransicionInicial(),
+ * alMostrar(), alOcultar(), crearPanelJugador(), detenerGameLoop(),
+ * reanudarGameLoop(), generarEncuentro(), animarEncuentro(),
+ * mostrarErrorAdmin(), actualizarCamara(), limitarCamara(),
+ * configurarTeclas(), cambiarMapa() y verificarTransicionMapa().
+ *
+ * @author Uriel
+ * @since 2026
+ * @version 1.0
  */
 public class VistaJuego extends PantallaBase {
 
@@ -60,6 +70,7 @@ public class VistaJuego extends PantallaBase {
 
     /**
      * Construye la pantalla de exploración.
+     * Inicializa el mapa inicial y la representación visual del jugador.
      *
      * @param jugador jugador de la partida
      * @param pantallas gestor de navegación entre pantallas
@@ -77,6 +88,8 @@ public class VistaJuego extends PantallaBase {
 
     /**
      * Construye los componentes visuales de la pantalla.
+     * Inicializa el mundo, la cámara, los paneles auxiliares
+     * y la transición inicial.
      *
      * @return contenedor principal
      */
@@ -159,6 +172,7 @@ public class VistaJuego extends PantallaBase {
 
     /**
      * Configura el controlador del juego y los eventos de teclado.
+     * También inicializa el gestor encargado de los cambios de mapa.
      *
      * @param escena escena JavaFX
      */
@@ -197,6 +211,7 @@ public class VistaJuego extends PantallaBase {
 
     /**
      * Crea la capa negra inicial que se desvanece al entrar al juego.
+     * Ajusta sus dimensiones al tamaño del contenedor principal.
      */
     private void crearTransicionInicial() {
 
@@ -213,7 +228,9 @@ public class VistaJuego extends PantallaBase {
     }
 
     /**
-     * Acciones que se ejecutan cuando se muestra esta pantalla.
+     * Ejecuta las acciones correspondientes cuando se muestra esta pantalla.
+     * Reanuda el ciclo del juego, actualiza la cámara y reproduce
+     * la transición visual inicial cuando corresponde.
      */
     @Override
     public void alMostrar() {
@@ -261,6 +278,7 @@ public class VistaJuego extends PantallaBase {
 
     /**
      * Crea el botón que permite abrir el menú de pausa.
+     * Configura su apariencia y su acción correspondiente.
      *
      * @return panel del jugador
      */
@@ -285,7 +303,8 @@ public class VistaJuego extends PantallaBase {
     }
 
     /**
-     * Detiene el ciclo de actualización del juego.
+     * Detiene el ciclo de actualización del juego
+     * mediante el controlador correspondiente.
      */
     private void detenerGameLoop() {
 
@@ -295,7 +314,8 @@ public class VistaJuego extends PantallaBase {
     }
 
     /**
-     * Reanuda el ciclo de actualización del juego.
+     * Reanuda el ciclo de actualización del juego
+     * mediante el controlador correspondiente.
      */
     private void reanudarGameLoop() {
 
@@ -306,6 +326,8 @@ public class VistaJuego extends PantallaBase {
 
     /**
      * Genera un encuentro con un Pokémon salvaje.
+     * Comprueba que el mapa permita encuentros, que no exista
+     * otro encuentro en curso y que el jugador tenga un Pokémon activo.
      */
     private void generarEncuentro() {
 
@@ -351,6 +373,8 @@ public class VistaJuego extends PantallaBase {
 
     /**
      * Ejecuta la animación visual previa a un encuentro.
+     * Detiene el ciclo del juego durante la animación
+     * y ejecuta la acción indicada al finalizar.
      *
      * @param alTerminar acción que se ejecuta al finalizar
      */
@@ -365,6 +389,7 @@ public class VistaJuego extends PantallaBase {
 
     /**
      * Muestra un error en el panel de administración.
+     * Si el panel no está disponible, imprime el mensaje por consola.
      *
      * @param texto mensaje de error
      */
@@ -379,6 +404,8 @@ public class VistaJuego extends PantallaBase {
 
     /**
      * Actualiza la cámara para mantener al jugador centrado.
+     * Tiene en cuenta el tamaño de la ventana, las dimensiones del mapa
+     * y el nivel de zoom establecido.
      */
     public void actualizarCamara() {
 
@@ -439,6 +466,8 @@ public class VistaJuego extends PantallaBase {
 
     /**
      * Configura los controles de teclado.
+     * Permite abrir el menú de pausa, controlar al jugador
+     * y acceder a las pantallas de equipo, inventario y Pokémon capturados.
      *
      * @param escena escena donde se registran los eventos
      */
@@ -489,16 +518,14 @@ public class VistaJuego extends PantallaBase {
 
     /**
      * Solicita un cambio de mapa al gestor correspondiente.
+     * Detiene el ciclo del juego mientras se realiza la transición
+     * y lo reanuda cuando finaliza.
      *
      * @param nuevoMapa mapa de destino
      * @param nuevaX posición horizontal de aparición
      * @param nuevaY posición vertical de aparición
      */
-    public void cambiarMapa(
-            CargadorMapaTiled nuevoMapa,
-            double nuevaX,
-            double nuevaY
-    ) {
+    public void cambiarMapa(CargadorMapaTiled nuevoMapa, double nuevaX, double nuevaY) {
 
         if (gestorCambioMapa == null ||
                 gestorCambioMapa.estaCambiando()) {
@@ -507,16 +534,12 @@ public class VistaJuego extends PantallaBase {
 
         detenerGameLoop();
 
-        gestorCambioMapa.cambiarMapa(
-                nuevoMapa,
-                nuevaX,
-                nuevaY,
-                this::reanudarGameLoop
-        );
+        gestorCambioMapa.cambiarMapa(nuevoMapa, nuevaX, nuevaY, this::reanudarGameLoop);
     }
 
     /**
      * Comprueba si el jugador ingresó en una zona de transición.
+     * Delega la comprobación al gestor de cambios de mapa.
      * Lo invoca el controlador durante la exploración.
      */
     public void verificarTransicionMapa() {

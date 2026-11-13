@@ -16,13 +16,25 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * La clase VISTAJUGADOR representa visualmente al personaje del jugador.
+ * Hereda de Pane y contiene la imagen del personaje, su sombra
+ * y las animaciones correspondientes a sus movimientos y estados quietos.
+ * Utiliza diferentes sprites según la dirección y el estado del jugador.
+ * También genera y almacena contornos para mejorar la apariencia visual.
+ * Tiene un constructor que recibe al jugador.
+ * Otros métodos: generarContorno(), renderizar(), cargarFramesCaminando(),
+ * cargarFramesQuieto() y cargarImagen().
+ *
+ * @author Uriel
+ * @since 2026
+ * @version 1.0
+ */
 public class VistaJugador extends Pane {
 
-    private static final String RUTA_CAMINANDO =
-            "/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminando";
+    private static final String RUTA_CAMINANDO = "/images/personajes/entrenador/entrenadorCaminando/entrenadorCaminando";
 
-    private static final String RUTA_QUIETO =
-            "/images/personajes/entrenador/entrenadorQuieto/entrenador";
+    private static final String RUTA_QUIETO = "/images/personajes/entrenador/entrenadorQuieto/entrenador";
 
     private static final double TAMANIO = 48;
 
@@ -47,6 +59,12 @@ public class VistaJugador extends Pane {
     private final Image[] idleIzquierda = cargarFramesQuieto(5);
     private final Image[] idleArriba = cargarFramesQuieto(7);
 
+    /**
+     * Construye la representación visual del jugador.
+     * Configura la imagen, la sombra y renderiza su estado inicial.
+     *
+     * @param jugador jugador cuya representación visual se construye
+     */
     public VistaJugador(Jugador jugador) {
 
         imagenJugador.setPreserveRatio(false);
@@ -64,6 +82,11 @@ public class VistaJugador extends Pane {
     /**
      * Genera un borde oscuro de un píxel alrededor
      * de la silueta original del personaje.
+     * Almacena el resultado para evitar generar nuevamente
+     * el contorno de una imagen que ya fue procesada.
+     *
+     * @param original imagen original del personaje
+     * @return imagen original con el contorno generado
      */
     private Image generarContorno(Image original) {
 
@@ -140,6 +163,11 @@ public class VistaJugador extends Pane {
 
     /**
      * Actualiza la posición y la animación del jugador.
+     * Selecciona los frames correspondientes según su dirección
+     * y determina si está caminando o permanece quieto.
+     * También actualiza la sombra y las dimensiones de la imagen.
+     *
+     * @param jugador jugador cuyo estado se representa visualmente
      */
     public void renderizar(Jugador jugador) {
 
@@ -192,19 +220,29 @@ public class VistaJugador extends Pane {
         sombra.setCenterY(y + 44);
     }
 
+    /**
+     * Carga los cuatro frames correspondientes a la animación de caminata.
+     *
+     * @param sufijo sufijo que identifica la dirección de los sprites
+     * @return arreglo con los frames de la animación
+     */
     private Image[] cargarFramesCaminando(String sufijo) {
 
         Image[] frames = new Image[4];
 
         for (int i = 0; i < frames.length; i++) {
-            frames[i] = cargarImagen(
-                    RUTA_CAMINANDO + sufijo + (i + 1) + ".png"
-            );
+            frames[i] = cargarImagen(RUTA_CAMINANDO + sufijo + (i + 1) + ".png");
         }
 
         return frames;
     }
 
+    /**
+     * Carga los dos frames correspondientes a la animación de reposo.
+     *
+     * @param primerNumero número inicial de los archivos de imagen
+     * @return arreglo con los frames de reposo
+     */
     private Image[] cargarFramesQuieto(int primerNumero) {
 
         Image[] frames = new Image[2];
@@ -218,13 +256,16 @@ public class VistaJugador extends Pane {
         return frames;
     }
 
+    /**
+     * Carga una imagen a partir de su ruta dentro de los recursos del proyecto.
+     *
+     * @param ruta ubicación del archivo de imagen
+     * @return imagen cargada
+     */
     private Image cargarImagen(String ruta) {
 
         return new Image(
-                Objects.requireNonNull(
-                        getClass().getResourceAsStream(ruta),
-                        "No se encontró la imagen: " + ruta
-                )
+                Objects.requireNonNull(getClass().getResourceAsStream(ruta), "No se encontró la imagen: " + ruta)
         );
     }
 }
