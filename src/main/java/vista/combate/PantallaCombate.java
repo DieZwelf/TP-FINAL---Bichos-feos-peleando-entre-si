@@ -1,48 +1,26 @@
-/**
- * Representa la pantalla de combate entre el Pokémon del jugador y un Pokémon salvaje.
- *
- * Se encarga de construir y organizar los elementos visuales del combate,
- * incluyendo el escenario, los sprites de los Pokémon, las barras de vida,
- * los datos de cada participante y el panel de acciones.
- *
- * Utiliza un CombateViewModel para obtener y actualizar la información
- * del combate mediante bindings, manteniendo sincronizada la interfaz
- * con el estado del modelo.
- *
- * También gestiona las animaciones de los Pokémon, la carga de imágenes,
- * las acciones del jugador y la visualización de los resultados
- * una vez finalizado el combate.
- *
- * Hereda de PantallaBase para reutilizar la estructura y configuración
- * general de las pantallas del juego.
- */
 
 package vista.combate;
 
 import controlador.CombateViewModel;
-import javafx.animation.TranslateTransition;
+
+import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
-import model.AccionJugador;
-import model.DatosEspecie;
-import model.GeneradorPokemonSalvaje;
-import model.Pokemon;
+
+import model.*;
+
 import vista.GestorPantallas;
 import vista.base.PantallaBase;
-import javafx.animation.*;
-import javafx.application.Platform;
 
 import java.net.URL;
 import java.util.List;
@@ -55,11 +33,9 @@ public class PantallaCombate extends PantallaBase {
 
     private final CombateViewModel viewModel;
 
-    // Barras de vida
     private ProgressBar barraHpJugador;
     private ProgressBar barraHpEnemigo;
 
-    // Textos
     private Label lblNombreJugador;
     private Label lblNivelJugador;
     private Label lblMensajeActual;
@@ -67,7 +43,6 @@ public class PantallaCombate extends PantallaBase {
     private Label lblNombreEnemigo;
     private Label lblNivelEnemigo;
 
-    // Imágenes
     private Image pokemonActivoImagen;
     private Image pokemonSalvajeImagen;
 
@@ -77,13 +52,17 @@ public class PantallaCombate extends PantallaBase {
     private BorderPane interfazCombate;
 
     private boolean presentacionIniciada = false;
+    private boolean animacionResultadosIniciada = false;
 
 
     // =====================================================
     // CONSTRUCTOR
     // =====================================================
 
-    public PantallaCombate(CombateViewModel viewModel, GestorPantallas pantallas) {
+    public PantallaCombate(
+            CombateViewModel viewModel,
+            GestorPantallas pantallas
+    ) {
         super(pantallas);
         this.viewModel = viewModel;
     }
@@ -97,6 +76,7 @@ public class PantallaCombate extends PantallaBase {
     protected StackPane crearContenido() {
 
         StackPane root = new StackPane();
+
         root.getStyleClass().add("pantalla-combate-root");
 
         inicializarComponentes();
@@ -105,10 +85,9 @@ public class PantallaCombate extends PantallaBase {
         ImageView fondo = crearFondo(root);
         Pane capaSprites = crearCapaSprites();
 
-        // Capa independiente para posicionar HUD y panel inferior.
         interfazCombate = crearCapaInterfaz();
 
-// Ocultamos la interfaz hasta que entren los Pokémon.
+        // Ocultamos la interfaz hasta que entren los Pokémon.
         interfazCombate.setOpacity(0);
         interfazCombate.setDisable(true);
 
@@ -118,12 +97,13 @@ public class PantallaCombate extends PantallaBase {
                 interfazCombate
         );
 
-        // Los sprites se posicionan desde la esquina superior izquierda.
         StackPane.setAlignment(capaSprites, Pos.TOP_LEFT);
-
-        // La interfaz ocupa toda la pantalla.
         StackPane.setAlignment(interfazCombate, Pos.CENTER);
-        interfazCombate.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+
+        interfazCombate.setMaxSize(
+                Double.MAX_VALUE,
+                Double.MAX_VALUE
+        );
 
         return root;
     }
@@ -176,13 +156,11 @@ public class PantallaCombate extends PantallaBase {
         imagenPokemonActivo = new ImageView(pokemonActivoImagen);
         imagenPokemonSalvaje = new ImageView(pokemonSalvajeImagen);
 
-        // Pokémon del jugador.
         imagenPokemonActivo.setFitWidth(700);
         imagenPokemonActivo.setFitHeight(700);
         imagenPokemonActivo.setPreserveRatio(true);
         imagenPokemonActivo.getStyleClass().add("imagen-pokemon");
 
-        // Pokémon salvaje.
         imagenPokemonSalvaje.setFitWidth(400);
         imagenPokemonSalvaje.setFitHeight(400);
         imagenPokemonSalvaje.setPreserveRatio(true);
@@ -195,7 +173,6 @@ public class PantallaCombate extends PantallaBase {
 
         capaSprites.setMouseTransparent(true);
 
-        // Posiciones de los Pokémon.
         imagenPokemonSalvaje.setLayoutX(710);
         imagenPokemonSalvaje.setLayoutY(160);
 
@@ -245,16 +222,19 @@ public class PantallaCombate extends PantallaBase {
 
         interfaz.setPickOnBounds(false);
 
-        // HUD enemigo: arriba a la derecha.
+        // HUD enemigo.
         VBox hudEnemigo = crearHudEnemigo();
 
         HBox contenedorHud = new HBox(hudEnemigo);
+
         contenedorHud.setAlignment(Pos.TOP_RIGHT);
-        contenedorHud.setPadding(new Insets(40, 50, 0, 0));
+        contenedorHud.setPadding(
+                new Insets(40, 50, 0, 0)
+        );
 
         interfaz.setTop(contenedorHud);
 
-        // Panel del jugador: abajo y centrado.
+        // Panel inferior.
         HBox panelInferior = crearPanelInferior();
 
         BorderPane.setAlignment(
@@ -288,7 +268,6 @@ public class PantallaCombate extends PantallaBase {
 
     private HBox crearPanelInferior() {
 
-        // Información del Pokémon del jugador.
         HBox datosJugador = new HBox(
                 20,
                 lblNombreJugador,
@@ -307,7 +286,6 @@ public class PantallaCombate extends PantallaBase {
         miniHudJugador.getStyleClass().add("caja-hud");
         miniHudJugador.setMaxWidth(230);
 
-        // Cuadro de diálogo.
         StackPane cajaDialogo = new StackPane(lblMensajeActual);
 
         cajaDialogo.getStyleClass().add("caja-dialogo-rpg");
@@ -315,7 +293,6 @@ public class PantallaCombate extends PantallaBase {
 
         HBox.setHgrow(cajaDialogo, Priority.ALWAYS);
 
-        // Botones de combate.
         GridPane botones = crearBotonera();
 
         HBox inferior = new HBox(
@@ -415,7 +392,6 @@ public class PantallaCombate extends PantallaBase {
                 viewModel.nivelEnemigoProperty()
         );
 
-        // Animación cuando el enemigo recibe daño.
         viewModel.hpEnemigoProperty().addListener(
                 (obs, oldValue, newValue) -> {
 
@@ -425,7 +401,6 @@ public class PantallaCombate extends PantallaBase {
                 }
         );
 
-        // Actualización del mensaje de combate.
         viewModel.getLogsCombate().addListener(
                 (ListChangeListener<String>) cambio ->
                         actualizarMensaje()
@@ -438,7 +413,8 @@ public class PantallaCombate extends PantallaBase {
 
         if (!viewModel.getLogsCombate().isEmpty()) {
 
-            int ultimoIndice = viewModel.getLogsCombate().size() - 1;
+            int ultimoIndice =
+                    viewModel.getLogsCombate().size() - 1;
 
             lblMensajeActual.setText(
                     viewModel.getLogsCombate().get(ultimoIndice)
@@ -448,7 +424,7 @@ public class PantallaCombate extends PantallaBase {
 
 
     // =====================================================
-    // CICLO DE VIDA DE LA PANTALLA
+    // CICLO DE VIDA
     // =====================================================
 
     @Override
@@ -457,7 +433,6 @@ public class PantallaCombate extends PantallaBase {
         viewModel.refrescarEstado();
         cargarImagenPokemon();
 
-        // La presentación solo se ejecuta al entrar por primera vez.
         if (!presentacionIniciada) {
 
             presentacionIniciada = true;
@@ -476,25 +451,13 @@ public class PantallaCombate extends PantallaBase {
 
         aplicarBindings();
 
-        escena.addEventFilter(
-                KeyEvent.KEY_PRESSED,
-                event -> {
-
-                    if (event.getCode() == KeyCode.SPACE
-                            && viewModel.getLogsCombate().stream().anyMatch(
-                            log -> log.contains("ha vencido a")
-                    )) {
-
-                        pantallas.regresarAlMapa();
-                        event.consume();
-                    }
-                }
-        );
+        // No agregamos acá el evento de ESPACIO.
+        // La pantalla de resultados se ocupa de regresar al mapa.
     }
 
 
     // =====================================================
-    // CARGA DE IMÁGENES POKÉMON
+    // CARGA DE IMÁGENES
     // =====================================================
 
     public void cargarImagenPokemon() {
@@ -564,7 +527,7 @@ public class PantallaCombate extends PantallaBase {
 
 
     // =====================================================
-    // ANIMACIONES
+    // ANIMACIÓN DE GOLPE
     // =====================================================
 
     public void reproducirAnimacionGolpe(ImageView spriteAfectado) {
@@ -597,88 +560,184 @@ public class PantallaCombate extends PantallaBase {
 
     public void mostrarResultados() {
 
-        StackPane root = (StackPane) getEscena().getRoot();
-
-        BorderPane pantalla = new BorderPane();
-        pantalla.getStyleClass().add("pantalla-combate-root");
-
-        // Título.
-        Label titulo = new Label("RESULTADO DEL COMBATE");
-        titulo.getStyleClass().add("titulo-retro");
-
-        BorderPane.setAlignment(titulo, Pos.CENTER);
-        BorderPane.setMargin(titulo, new Insets(25, 0, 10, 0));
-
-        pantalla.setTop(titulo);
-
-        // Contenido central.
-        VBox contenidoCentral = new VBox(20);
-
-        contenidoCentral.setAlignment(Pos.CENTER);
-        contenidoCentral.setPadding(
-                new Insets(10, 40, 10, 40)
-        );
-
-        VBox tarjetaRegistro = crearTarjetaRegistro();
-        VBox tarjetaRecompensas = crearTarjetaRecompensas();
-
-        contenidoCentral.getChildren().addAll(
-                tarjetaRegistro,
-                tarjetaRecompensas
-        );
-
-        pantalla.setCenter(contenidoCentral);
-
-        // Parte inferior.
-        VBox inferior = crearPanelResultadosInferior();
-
-        pantalla.setBottom(inferior);
-
-        // Fondo.
-        URL recurso = getClass().getResource(
-                "/images/pantallaMenu/prueba.jpg"
-        );
-
-        if (recurso == null) {
-            throw new IllegalStateException(
-                    "No se encontró /images/pantallaMenu/prueba.jpg"
-            );
+        if (animacionResultadosIniciada) {
+            return;
         }
 
-        ImageView fondo = new ImageView(
-                new Image(recurso.toExternalForm())
+        animacionResultadosIniciada = true;
+
+        EstadoCombate estado =
+                viewModel.getModeloCombate().getEstado();
+
+        System.out.println(
+                "Finalizó el combate: " + estado
         );
 
-        fondo.setPreserveRatio(false);
-        fondo.fitWidthProperty().bind(root.widthProperty());
-        fondo.fitHeightProperty().bind(root.heightProperty());
+        if (estado == EstadoCombate.VICTORIA) {
 
-        root.getChildren().setAll(fondo, pantalla);
+            animarResultado(
+                    true,
+                    this::construirContenidoResultados
+            );
 
-        // Regresar al mapa con espacio.
-        pantalla.setFocusTraversable(true);
+        } else if (estado == EstadoCombate.DERROTA) {
 
-        pantalla.setOnKeyPressed(event -> {
+            animarResultado(
+                    false,
+                    this::construirContenidoResultados
+            );
 
-            if (event.getCode() == KeyCode.SPACE) {
-                pantallas.regresarAlMapa();
-                event.consume();
-            }
-        });
+        } else {
 
-        javafx.application.Platform.runLater(
-                pantalla::requestFocus
-        );
+            // HUIDA o CAPTURA.
+            construirContenidoResultados();
+        }
     }
+
+
+    // =====================================================
+    // CONSTRUCCIÓN DE LA PANTALLA DE RESULTADOS
+    // =====================================================
+
+    private void construirContenidoResultados() {
+
+        StackPane root = (StackPane) getEscena().getRoot();
+
+        // Fondo del escenario.
+        ImageView fondo = crearFondo(root);
+
+        // Capa principal.
+        BorderPane pantalla = new BorderPane();
+
+        pantalla.getStyleClass().add("pantalla-combate-root");
+
+        pantalla.setStyle(
+                "-fx-background-color: rgba(12, 20, 25, 0.88);"
+        );
+
+        // Título según el resultado.
+        EstadoCombate estado =
+                viewModel.getModeloCombate().getEstado();
+
+        String textoTitulo;
+
+        switch (estado) {
+            case VICTORIA:
+                textoTitulo = "¡VICTORIA!";
+                break;
+
+            case DERROTA:
+                textoTitulo = "DERROTA";
+                break;
+
+            case HUIDA:
+                textoTitulo = "¡ESCAPASTE!";
+                break;
+
+            case CAPTURA:
+                textoTitulo = "¡POKÉMON CAPTURADO!";
+                break;
+
+            default:
+                textoTitulo = "COMBATE FINALIZADO";
+                break;
+        }
+
+        Label titulo = new Label(textoTitulo);
+
+        titulo.getStyleClass().add("texto-retro");
+
+        titulo.setStyle(
+                "-fx-font-size: 34px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: #ffde00;"
+        );
+
+        VBox encabezado = new VBox(titulo);
+
+        encabezado.setAlignment(Pos.CENTER);
+        encabezado.setPadding(new Insets(25));
+
+        pantalla.setTop(encabezado);
+
+        // IMPORTANTE:
+        // Acá se construyen las dos tarjetas.
+        VBox registro = crearTarjetaRegistro();
+        VBox recompensas = crearTarjetaRecompensas();
+
+        HBox tarjetas = new HBox(
+                25,
+                registro,
+                recompensas
+        );
+
+        tarjetas.setAlignment(Pos.CENTER);
+        tarjetas.setPadding(new Insets(20));
+
+        HBox.setHgrow(registro, Priority.ALWAYS);
+        HBox.setHgrow(recompensas, Priority.ALWAYS);
+
+        ScrollPane contenedor = new ScrollPane(tarjetas);
+
+        contenedor.setFitToWidth(true);
+        contenedor.setFitToHeight(true);
+        contenedor.setPannable(true);
+
+        contenedor.setStyle(
+                "-fx-background: transparent;" +
+                        "-fx-background-color: transparent;"
+        );
+
+        pantalla.setCenter(contenedor);
+
+        // IMPORTANTE:
+        // Acá se construye el botón CONTINUAR.
+        pantalla.setBottom(crearPanelResultadosInferior());
+
+        // Reemplazamos el contenido del combate.
+        root.getChildren().setAll(
+                fondo,
+                pantalla
+        );
+
+        // ESPACIO también permite regresar al mapa.
+        Scene escena = getEscena();
+
+        escena.addEventFilter(
+                KeyEvent.KEY_PRESSED,
+                event -> {
+
+                    if (event.getCode() == KeyCode.SPACE) {
+
+                        pantallas.regresarAlMapa();
+
+                        event.consume();
+                    }
+                }
+        );
+
+        root.setFocusTraversable(true);
+
+        Platform.runLater(root::requestFocus);
+    }
+
+
+    // =====================================================
+    // TARJETA: REGISTRO DEL COMBATE
+    // =====================================================
 
     private VBox crearTarjetaRegistro() {
 
         Label titulo = new Label("REGISTRO DEL COMBATE");
 
         titulo.getStyleClass().add("texto-retro");
-        titulo.setStyle("-fx-text-fill: #ffde00;");
+
+        titulo.setStyle(
+                "-fx-text-fill: #ffde00;"
+        );
 
         VBox boxLogs = new VBox(5);
+
         boxLogs.setAlignment(Pos.CENTER_LEFT);
 
         for (String resultado : viewModel.getLogsCombate()) {
@@ -699,29 +758,47 @@ public class PantallaCombate extends PantallaBase {
         ScrollPane scrollLogs = new ScrollPane(boxLogs);
 
         scrollLogs.setFitToWidth(true);
-        scrollLogs.setPrefHeight(160);
+        scrollLogs.setPrefHeight(200);
+
         scrollLogs.setStyle(
-                "-fx-background: transparent; "
-                        + "-fx-background-color: transparent;"
+                "-fx-background: transparent;" +
+                        "-fx-background-color: transparent;"
         );
 
-        VBox tarjeta = new VBox(10, titulo, scrollLogs);
+        VBox tarjeta = new VBox(
+                10,
+                titulo,
+                scrollLogs
+        );
 
         tarjeta.getStyleClass().add("caja-hud");
+
         tarjeta.setPadding(new Insets(15));
+        tarjeta.setPrefWidth(500);
         tarjeta.setMaxWidth(700);
 
         return tarjeta;
     }
 
+
+    // =====================================================
+    // TARJETA: RECOMPENSAS Y EXPERIENCIA
+    // =====================================================
+
     private VBox crearTarjetaRecompensas() {
 
-        Label titulo = new Label("RECOMPENSAS Y EXPERIENCIA");
+        Label titulo = new Label(
+                "RECOMPENSAS Y EXPERIENCIA"
+        );
 
         titulo.getStyleClass().add("texto-retro");
-        titulo.setStyle("-fx-text-fill: #5fae3f;");
+
+        titulo.setStyle(
+                "-fx-text-fill: #5fae3f;"
+        );
 
         VBox boxRecompensas = new VBox(5);
+
         boxRecompensas.setAlignment(Pos.CENTER_LEFT);
 
         boolean hayRecompensas = false;
@@ -754,14 +831,25 @@ public class PantallaCombate extends PantallaBase {
             boxRecompensas.getChildren().add(sinRecompensa);
         }
 
-        VBox tarjeta = new VBox(10, titulo, boxRecompensas);
+        VBox tarjeta = new VBox(
+                10,
+                titulo,
+                boxRecompensas
+        );
 
         tarjeta.getStyleClass().add("caja-hud");
+
         tarjeta.setPadding(new Insets(15));
+        tarjeta.setPrefWidth(500);
         tarjeta.setMaxWidth(700);
 
         return tarjeta;
     }
+
+
+    // =====================================================
+    // PANEL INFERIOR DE RESULTADOS
+    // =====================================================
 
     private VBox crearPanelResultadosInferior() {
 
@@ -770,11 +858,15 @@ public class PantallaCombate extends PantallaBase {
         );
 
         instruccion.getStyleClass().add("texto-retro");
-        instruccion.setStyle("-fx-text-fill: #f3ecd0;");
+
+        instruccion.setStyle(
+                "-fx-text-fill: #f3ecd0;"
+        );
 
         Button btnContinuar = new Button("CONTINUAR");
 
         btnContinuar.getStyleClass().add("boton-retro");
+
         btnContinuar.setOnAction(e ->
                 pantallas.regresarAlMapa()
         );
@@ -791,70 +883,80 @@ public class PantallaCombate extends PantallaBase {
         return inferior;
     }
 
+
+    // =====================================================
+    // ANIMACIÓN DE ENTRADA DE LOS POKÉMON
+    // =====================================================
+
     private void animarEntradaPokemon() {
 
-        // Posiciones iniciales fuera de la pantalla.
         imagenPokemonSalvaje.setTranslateX(550);
         imagenPokemonActivo.setTranslateX(-550);
 
-        // Entrada del Pokémon salvaje.
-        TranslateTransition entradaSalvaje = new TranslateTransition(
-                Duration.millis(650),
-                imagenPokemonSalvaje
-        );
+        TranslateTransition entradaSalvaje =
+                new TranslateTransition(
+                        Duration.millis(650),
+                        imagenPokemonSalvaje
+                );
 
         entradaSalvaje.setFromX(550);
         entradaSalvaje.setToX(0);
-        entradaSalvaje.setInterpolator(Interpolator.EASE_OUT);
-
-        // Entrada del Pokémon del jugador.
-        TranslateTransition entradaJugador = new TranslateTransition(
-                Duration.millis(650),
-                imagenPokemonActivo
+        entradaSalvaje.setInterpolator(
+                Interpolator.EASE_OUT
         );
+
+        TranslateTransition entradaJugador =
+                new TranslateTransition(
+                        Duration.millis(650),
+                        imagenPokemonActivo
+                );
 
         entradaJugador.setFromX(-550);
         entradaJugador.setToX(0);
-        entradaJugador.setInterpolator(Interpolator.EASE_OUT);
+        entradaJugador.setInterpolator(
+                Interpolator.EASE_OUT
+        );
 
-        // Ambos entran al mismo tiempo.
         ParallelTransition entradas = new ParallelTransition(
                 entradaSalvaje,
                 entradaJugador
         );
 
-        // Pequeño rebote al llegar.
-        TranslateTransition reboteSalvaje = crearRebote(imagenPokemonSalvaje);
-        TranslateTransition reboteJugador = crearRebote(imagenPokemonActivo);
+        TranslateTransition reboteSalvaje =
+                crearRebote(imagenPokemonSalvaje);
+
+        TranslateTransition reboteJugador =
+                crearRebote(imagenPokemonActivo);
 
         ParallelTransition rebotes = new ParallelTransition(
                 reboteSalvaje,
                 reboteJugador
         );
 
-        // Primero entran, después rebotan.
-        SequentialTransition presentacion = new SequentialTransition(
-                entradas,
-                rebotes
-        );
+        SequentialTransition presentacion =
+                new SequentialTransition(
+                        entradas,
+                        rebotes
+                );
 
         presentacion.setOnFinished(evento -> {
 
-            // Mensaje inicial del combate.
-            lblMensajeActual.setText("¡Un Pokémon salvaje apareció!");
-
-            // Mostramos HUD, barras de vida y botones.
-            FadeTransition aparecerInterfaz = new FadeTransition(
-                    Duration.millis(300),
-                    interfazCombate
+            lblMensajeActual.setText(
+                    "¡Un Pokémon salvaje apareció!"
             );
+
+            FadeTransition aparecerInterfaz =
+                    new FadeTransition(
+                            Duration.millis(300),
+                            interfazCombate
+                    );
 
             aparecerInterfaz.setFromValue(0);
             aparecerInterfaz.setToValue(1);
 
-            aparecerInterfaz.setOnFinished(fin -> {
-                interfazCombate.setDisable(false);
-            });
+            aparecerInterfaz.setOnFinished(fin ->
+                    interfazCombate.setDisable(false)
+            );
 
             aparecerInterfaz.play();
         });
@@ -864,10 +966,11 @@ public class PantallaCombate extends PantallaBase {
 
     private TranslateTransition crearRebote(ImageView pokemon) {
 
-        TranslateTransition rebote = new TranslateTransition(
-                Duration.millis(180),
-                pokemon
-        );
+        TranslateTransition rebote =
+                new TranslateTransition(
+                        Duration.millis(180),
+                        pokemon
+                );
 
         rebote.setFromY(0);
         rebote.setToY(-15);
@@ -875,5 +978,148 @@ public class PantallaCombate extends PantallaBase {
         rebote.setAutoReverse(true);
 
         return rebote;
+    }
+
+
+    // =====================================================
+    // ANIMACIÓN DE VICTORIA / DERROTA
+    // =====================================================
+
+    private void animarResultado(
+            boolean victoria,
+            Runnable alTerminar
+    ) {
+
+        StackPane root = (StackPane) getEscena().getRoot();
+
+        StackPane overlay = new StackPane();
+
+        overlay.setMaxSize(
+                Double.MAX_VALUE,
+                Double.MAX_VALUE
+        );
+
+        String colorFondo = victoria
+                ? "rgba(25, 20, 5, 0.94)"
+                : "rgba(25, 5, 10, 0.95)";
+
+        String colorTexto = victoria
+                ? "#FFD700"
+                : "#FF5555";
+
+        String colorBrillo = victoria
+                ? "#FFF2A6"
+                : "#FF9999";
+
+        overlay.setStyle(
+                "-fx-background-color: " + colorFondo + ";"
+        );
+
+        Label titulo = new Label(
+                victoria ? "¡VICTORIA!" : "¡DERROTA!"
+        );
+
+        titulo.setStyle(
+                "-fx-font-size: 58px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: " + colorTexto + ";" +
+                        "-fx-effect: dropshadow(gaussian, " +
+                        colorBrillo +
+                        ", 24, 0.8, 0, 0);"
+        );
+
+        Label subtitulo = new Label(
+                victoria
+                        ? "HAS GANADO EL COMBATE"
+                        : "HAS SIDO DERROTADO"
+        );
+
+        subtitulo.setStyle(
+                "-fx-font-size: 17px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: white;" +
+                        "-fx-opacity: 0.85;"
+        );
+
+        VBox contenido = new VBox(
+                18,
+                titulo,
+                subtitulo
+        );
+
+        contenido.setAlignment(Pos.CENTER);
+
+        overlay.getChildren().add(contenido);
+
+        overlay.setOpacity(0);
+
+        titulo.setScaleX(0.65);
+        titulo.setScaleY(0.65);
+
+        root.getChildren().add(overlay);
+
+        FadeTransition entrada = new FadeTransition(
+                Duration.millis(300),
+                overlay
+        );
+
+        entrada.setFromValue(0);
+        entrada.setToValue(1);
+
+        ScaleTransition impacto = new ScaleTransition(
+                Duration.millis(450),
+                titulo
+        );
+
+        impacto.setFromX(0.65);
+        impacto.setFromY(0.65);
+        impacto.setToX(1.08);
+        impacto.setToY(1.08);
+
+        impacto.setInterpolator(Interpolator.EASE_OUT);
+
+        ScaleTransition ajuste = new ScaleTransition(
+                Duration.millis(180),
+                titulo
+        );
+
+        ajuste.setToX(1.0);
+        ajuste.setToY(1.0);
+
+        ajuste.setInterpolator(Interpolator.EASE_OUT);
+
+        PauseTransition pausa = new PauseTransition(
+                Duration.millis(1100)
+        );
+
+        FadeTransition salida = new FadeTransition(
+                Duration.millis(300),
+                overlay
+        );
+
+        salida.setFromValue(1);
+        salida.setToValue(0);
+
+        SequentialTransition secuencia =
+                new SequentialTransition(
+                        new ParallelTransition(
+                                entrada,
+                                impacto
+                        ),
+                        ajuste,
+                        pausa,
+                        salida
+                );
+
+        secuencia.setOnFinished(event -> {
+
+            root.getChildren().remove(overlay);
+
+            // Después de la animación se construye
+            // la pantalla completa de resultados.
+            alTerminar.run();
+        });
+
+        secuencia.play();
     }
 }

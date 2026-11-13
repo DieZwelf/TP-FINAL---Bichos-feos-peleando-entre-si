@@ -1,7 +1,12 @@
 package vista;
 
 import controlador.CombateViewModel;
+import javafx.animation.FadeTransition;
+import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.util.Duration;
 import model.*;
 import vista.base.PantallaBase;
 import vista.juego.CargadorMapaTiled;
@@ -35,6 +40,7 @@ public class GestorPantallas {
     private boolean combateActivo;
     private VistaJuego vistaJuego;
     private TipoJugador tipo = TipoJugador.USUARIO;
+
 
     public GestorPantallas(Stage stage) {
         this.stage = stage;
@@ -177,24 +183,13 @@ public class GestorPantallas {
 
         Pokemon activo = entrenadorJugador.getPokemonActivo();
 
-        if (activo == null) return;
-
-        if (pokemon == null) return;
-
-        Pokemon pokemonSalvaje = pokemon;
+        if (activo == null || pokemon == null) return;
 
         combateActivo = true;
         pantallaMapaAnterior = pantallaActual;
 
-        // Primero reproducimos la animación sobre el mapa.
-        if (vistaJuego != null) {
-            vistaJuego.animarEncuentro(() -> mostrarPantallaCombate(
-                    entrenadorJugador,
-                    pokemonSalvaje
-            ));
-        } else {
-            mostrarPantallaCombate(entrenadorJugador, pokemonSalvaje);
-        }
+        // La animación de encuentro ya se ejecutó desde VistaJuego.
+        mostrarPantallaCombate(entrenadorJugador, pokemon);
     }
 
     private void mostrarPantallaCombate(
@@ -229,9 +224,71 @@ public class GestorPantallas {
     }
 
     public void regresarAlMapa() {
-        combateActivo = false;
-        restaurarPantalla(pantallaMapaAnterior);
-        pantallaMapaAnterior = null;
+
+        if (pantallaMapaAnterior == null) {
+            combateActivo = false;
+            mostrarInicio();
+            return;
+        }
+
+        Scene escenaCombate = stage.getScene();
+        Scene escenaMapa = pantallaMapaAnterior.getEscena();
+
+        if (escenaCombate == null || escenaMapa == null) {
+            combateActivo = false;
+            restaurarPantalla(pantallaMapaAnterior);
+            pantallaMapaAnterior = null;
+            return;
+        }
+
+        Parent contenidoCombate = escenaCombate.getRoot();
+        Parent contenidoMapa = escenaMapa.getRoot();
+
+        Paint fondoCombate = escenaCombate.getFill();
+        Paint fondoMapa = escenaMapa.getFill();
+
+        // Fondo negro para ocultar el cambio de pantalla.
+        escenaCombate.setFill(Color.BLACK);
+
+        FadeTransition oscurecer = new FadeTransition(
+                Duration.millis(250),
+                contenidoCombate
+        );
+
+        oscurecer.setFromValue(1);
+        oscurecer.setToValue(0);
+
+        oscurecer.setOnFinished(evento -> {
+
+            // Preparamos el mapa completamente oscuro.
+            escenaMapa.setFill(Color.BLACK);
+            contenidoMapa.setOpacity(0);
+
+            combateActivo = false;
+
+            restaurarPantalla(pantallaMapaAnterior);
+
+            pantallaMapaAnterior = null;
+
+            // Aparece el mapa progresivamente.
+            FadeTransition aparecer = new FadeTransition(
+                    Duration.millis(300),
+                    contenidoMapa
+            );
+
+            aparecer.setFromValue(0);
+            aparecer.setToValue(1);
+
+            aparecer.setOnFinished(fin -> {
+                contenidoMapa.setOpacity(1);
+                escenaMapa.setFill(fondoMapa);
+                escenaCombate.setFill(fondoCombate);
+            });
+
+            aparecer.play();
+        });
+
+        oscurecer.play();
     }
 
     public void salir() {
