@@ -102,6 +102,13 @@ public class VistaJuego extends PantallaBase {
         root.getChildren().setAll(mundo);
         root.setClip(recorte);
 
+        VBox panelJugador = crearPanelJugador();
+
+        root.getChildren().add(panelJugador);
+
+        StackPane.setAlignment(panelJugador, Pos.TOP_LEFT);
+        StackPane.setMargin(panelJugador, new Insets(18));
+
         if (jugador.getTipo() == TipoJugador.ADMINISTRADOR) {
             VBox panelAdmin = crearPanelAdministrador();
 
@@ -126,6 +133,7 @@ public class VistaJuego extends PantallaBase {
 
     @Override
     protected void configurarEscena(Scene escena) {
+
         agregarCSS(escena, "/images/pantallaMenu/estilo.css");
 
         this.escena = escena;
@@ -153,6 +161,31 @@ public class VistaJuego extends PantallaBase {
             controlador.detenerGameLoop();
         }
     }
+
+    private VBox crearPanelJugador() {
+        VBox panel = new VBox(10);
+        panel.setAlignment(Pos.TOP_LEFT);
+
+        Button guardar = new Button("GUARDAR PARTIDA");
+        guardar.getStyleClass().add("boton-retro");
+
+        guardar.setOnAction(e -> {
+            pantallas.guardarPartida(jugador);
+
+            Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+            alerta.setTitle("Partida guardada");
+            alerta.setHeaderText(null);
+            alerta.setContentText("¡Tu partida se guardó correctamente!");
+            alerta.showAndWait();
+        });
+
+        panel.getChildren().add(guardar);
+
+        panel.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+
+        return panel;
+    }
+
 
     // --------------------------------------------------
     // PANEL DE ADMINISTRADOR
@@ -341,16 +374,12 @@ public class VistaJuego extends PantallaBase {
         StackPane cartel = new StackPane();
         cartel.setMaxSize(580, 110);
 
-        cartel.setStyle(
-                "-fx-background-color: #F8F8F8;" +
+        cartel.setStyle("-fx-background-color: #F8F8F8;" +
                         "-fx-border-color: #202020;" +
                         "-fx-border-width: 5;" +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 10, 0, 0, 4);"
-        );
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 10, 0, 0, 4);");
 
-        Label mensaje = new Label(
-                "¡Un Pokémon salvaje apareció!"
-        );
+        Label mensaje = new Label("¡Un Pokémon salvaje apareció!");
 
         mensaje.setFont(
                 Font.font("Monospaced", FontWeight.BOLD, 22)
@@ -449,23 +478,23 @@ public class VistaJuego extends PantallaBase {
     // --------------------------------------------------
 
     private void configurarTeclas(Scene escena) {
+        System.out.println("Registrando eventos de teclado");
         escena.addEventFilter(KeyEvent.KEY_PRESSED, evento -> {
             controlador.manejarTeclaPresionada(evento);
 
             if (evento.getCode() == KeyCode.TAB) {
+                System.out.println("Tecla detectada: " + evento.getCode());
                 pantallas.mostrarEquipo();
                 evento.consume();
 
             } else if (evento.getCode() == KeyCode.E) {
+                System.out.println("Tecla detectada: " + evento.getCode());
                 pantallas.mostrarInventario();
                 evento.consume();
             }
         });
 
-        escena.addEventFilter(
-                KeyEvent.KEY_RELEASED,
-                controlador::manejarTeclaLiberada
-        );
+        escena.addEventFilter(KeyEvent.KEY_RELEASED, controlador::manejarTeclaLiberada);
     }
 
     // --------------------------------------------------
@@ -498,10 +527,7 @@ public class VistaJuego extends PantallaBase {
 
         root.getChildren().add(pantallaNegra);
 
-        FadeTransition oscurecer = new FadeTransition(
-                Duration.millis(250),
-                pantallaNegra
-        );
+        FadeTransition oscurecer = new FadeTransition(Duration.millis(250), pantallaNegra);
 
         oscurecer.setFromValue(0);
         oscurecer.setToValue(1);
@@ -509,10 +535,7 @@ public class VistaJuego extends PantallaBase {
         oscurecer.setOnFinished(evento -> {
             aplicarCambioMapa(nuevoMapa, nuevaX, nuevaY);
 
-            FadeTransition aparecer = new FadeTransition(
-                    Duration.millis(250),
-                    pantallaNegra
-            );
+            FadeTransition aparecer = new FadeTransition(Duration.millis(250), pantallaNegra);
 
             aparecer.setFromValue(1);
             aparecer.setToValue(0);
