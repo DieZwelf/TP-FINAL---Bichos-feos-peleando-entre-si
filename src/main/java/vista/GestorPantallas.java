@@ -1,12 +1,8 @@
 package vista;
 
+import DAO.guardarPartidaDAO;
 import controlador.CombateViewModel;
-import javafx.animation.FadeTransition;
-import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.util.Duration;
 import model.*;
 import vista.base.PantallaBase;
 import vista.juego.CargadorMapaTiled;
@@ -14,15 +10,14 @@ import vista.menu.PantallaLogin;
 import vista.menu.PantallaInicio;
 import vista.menu.PantallaPartidaNueva;
 import vista.menu.PantallaCargarPartida;
-import vista.equipo.PantallaEquipo;
-import vista.inventario.PantallaInventario;
+import vista.combate.PantallaEquipo;
+import vista.combate.PantallaInventario;
 import vista.combate.PantallaCombate;
 import vista.juego.VistaJuego;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import servicio.PartidaService;
-import vista.combate.PantallaResultados;
 
 import java.net.URL;
 
@@ -41,15 +36,30 @@ public class GestorPantallas {
     private boolean combateActivo;
     private VistaJuego vistaJuego;
     private TipoJugador tipo = TipoJugador.USUARIO;
-
-
+    private guardarPartidaDAO partidaDAO;
 
     public GestorPantallas(Stage stage) {
         this.stage = stage;
         configurarVentana();
+        this.partidaDAO = new guardarPartidaDAO();
     }
 
+    public void cargarPartida(int jugadorId) {
+        Jugador jugador = partidaDAO.recuperarJugador(jugadorId);
 
+        if (jugador == null) {
+            return;
+        }
+
+        this.jugador = jugador;
+
+        vistaJuego = new VistaJuego(jugador, this);
+        vistaJuego.mostrar(stage);
+    }
+
+    public void guardarPartida(Jugador jugador) {
+        partidaDAO.guardarJugador(jugador);
+    }
 
     private void configurarVentana() {
         stage.setTitle("Bichos feos");
@@ -185,13 +195,24 @@ public class GestorPantallas {
 
         Pokemon activo = entrenadorJugador.getPokemonActivo();
 
-        if (activo == null || pokemon == null) return;
+        if (activo == null) return;
+
+        if (pokemon == null) return;
+
+        Pokemon pokemonSalvaje = pokemon;
 
         combateActivo = true;
         pantallaMapaAnterior = pantallaActual;
 
-        // La animación de encuentro ya se ejecutó desde VistaJuego.
-        mostrarPantallaCombate(entrenadorJugador, pokemon);
+        // Primero reproducimos la animación sobre el mapa.
+        if (vistaJuego != null) {
+            vistaJuego.animarEncuentro(() -> mostrarPantallaCombate(
+                    entrenadorJugador,
+                    pokemonSalvaje
+            ));
+        } else {
+            mostrarPantallaCombate(entrenadorJugador, pokemonSalvaje);
+        }
     }
 
     private void mostrarPantallaCombate(
@@ -226,71 +247,9 @@ public class GestorPantallas {
     }
 
     public void regresarAlMapa() {
-
-        if (pantallaMapaAnterior == null) {
-            combateActivo = false;
-            mostrarInicio();
-            return;
-        }
-
-        Scene escenaCombate = stage.getScene();
-        Scene escenaMapa = pantallaMapaAnterior.getEscena();
-
-        if (escenaCombate == null || escenaMapa == null) {
-            combateActivo = false;
-            restaurarPantalla(pantallaMapaAnterior);
-            pantallaMapaAnterior = null;
-            return;
-        }
-
-        Parent contenidoCombate = escenaCombate.getRoot();
-        Parent contenidoMapa = escenaMapa.getRoot();
-
-        Paint fondoCombate = escenaCombate.getFill();
-        Paint fondoMapa = escenaMapa.getFill();
-
-        // Fondo negro para ocultar el cambio de pantalla.
-        escenaCombate.setFill(Color.BLACK);
-
-        FadeTransition oscurecer = new FadeTransition(
-                Duration.millis(250),
-                contenidoCombate
-        );
-
-        oscurecer.setFromValue(1);
-        oscurecer.setToValue(0);
-
-        oscurecer.setOnFinished(evento -> {
-
-            // Preparamos el mapa completamente oscuro.
-            escenaMapa.setFill(Color.BLACK);
-            contenidoMapa.setOpacity(0);
-
-            combateActivo = false;
-
-            restaurarPantalla(pantallaMapaAnterior);
-
-            pantallaMapaAnterior = null;
-
-            // Aparece el mapa progresivamente.
-            FadeTransition aparecer = new FadeTransition(
-                    Duration.millis(300),
-                    contenidoMapa
-            );
-
-            aparecer.setFromValue(0);
-            aparecer.setToValue(1);
-
-            aparecer.setOnFinished(fin -> {
-                contenidoMapa.setOpacity(1);
-                escenaMapa.setFill(fondoMapa);
-                escenaCombate.setFill(fondoCombate);
-            });
-
-            aparecer.play();
-        });
-
-        oscurecer.play();
+        combateActivo = false;
+        restaurarPantalla(pantallaMapaAnterior);
+        pantallaMapaAnterior = null;
     }
 
     public void salir() {
@@ -308,8 +267,5 @@ public class GestorPantallas {
         if (vistaJuego == null) return;
 
         vistaJuego.cambiarMapa(mapa, x, y);
-    }
-    public void mostrarResultados(CombateViewModel viewModel) {
-        new PantallaResultados(viewModel, this).mostrar(stage);
     }
 }
