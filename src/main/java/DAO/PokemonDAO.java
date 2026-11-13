@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Gestiona la persistencia de los Pokémon de cada jugador.
  */
-public class PokemonDAO implements IPokemonDAO  {
+public class PokemonDAO implements IPokemonDAO {
 
     /**
      * Guarda un Pokémon nuevo o actualiza uno existente.
@@ -28,7 +28,7 @@ public class PokemonDAO implements IPokemonDAO  {
         String sql = "UPDATE pokemones SET " +
                 "nombre = ?, vida_maxima = ?, vida = ?, danio = ?, " +
                 "defensa = ?, tipo = ?, nivel = ?, experiencia = ?, " +
-                "danio_base = ?, defensa_base = ?, en_equipo = ? " +
+                "danio_base = ?, defensa_base = ? " +
                 "WHERE id = ? AND jugador_id = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -43,9 +43,8 @@ public class PokemonDAO implements IPokemonDAO  {
             ps.setInt(8, p.getExperiencia());
             ps.setInt(9, (int) p.getDanioBase());
             ps.setInt(10, (int) p.getDefensaBase());
-            ps.setBoolean(11, p.isEnEquipo());
-            ps.setInt(12, p.getId());
-            ps.setInt(13, jugadorId);
+            ps.setInt(11, p.getId());
+            ps.setInt(12, jugadorId);
 
             ps.executeUpdate();
         }
@@ -62,8 +61,8 @@ public class PokemonDAO implements IPokemonDAO  {
 
         String sql = "INSERT INTO pokemones " +
                 "(jugador_id, nombre, vida_maxima, vida, danio, defensa, " +
-                "tipo, nivel, experiencia, danio_base, defensa_base, en_equipo) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "tipo, nivel, experiencia, danio_base, defensa_base) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = conn.prepareStatement(
                 sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -79,7 +78,6 @@ public class PokemonDAO implements IPokemonDAO  {
             ps.setInt(9, p.getExperiencia());
             ps.setInt(10, (int) p.getDanioBase());
             ps.setInt(11, (int) p.getDefensaBase());
-            ps.setBoolean(12, p.isEnEquipo());
 
             ps.executeUpdate();
 
@@ -139,7 +137,7 @@ public class PokemonDAO implements IPokemonDAO  {
                         rs.getInt("defensa_base")
                 );
 
-                pokemon.setEnEquipo(rs.getBoolean("en_equipo"));
+                pokemon.setId(pokemonId);
 
                 pokemones.put(pokemonId, pokemon);
 

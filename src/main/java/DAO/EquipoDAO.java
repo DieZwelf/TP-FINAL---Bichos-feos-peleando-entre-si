@@ -2,110 +2,65 @@
 package DAO;
 
 import model.*;
+
 import java.sql.*;
 import java.util.*;
 
 /**
- * Gestiona el equipo y los Pokémon capturados de un jugador.
+ * Gestiona la persistencia del equipo y de los Pokémon capturados
+ * de cada jugador.
  */
 public class EquipoDAO {
 
-    private final IPokemonDAO pokemonDAO;
+    private final PokemonDAO pokemonDAO;
 
-    public EquipoDAO(IPokemonDAO pokemonDAO) {
+    /**
+     * Constructor que recibe el DAO encargado de los Pokémon.
+     */
+    public EquipoDAO(PokemonDAO pokemonDAO) {
         this.pokemonDAO = pokemonDAO;
     }
 
     /**
-     * Reemplaza los Pokémon capturados guardados por los actuales.
+     * Guarda los nombres de los Pokémon capturados por el jugador.
      */
     public void guardarPokemonesCapturados(
             Jugador jugador,
             Connection conn
     ) throws SQLException {
 
-        try (PreparedStatement ps = conn.prepareStatement(
-                "DELETE FROM jugador_pokemones_capturados WHERE jugador_id = ?")) {
+        String eliminar =
+                "DELETE FROM jugador_pokemones_capturados WHERE jugador_id = ?";
 
+        try (PreparedStatement ps = conn.prepareStatement(eliminar)) {
             ps.setInt(1, jugador.getId());
             ps.executeUpdate();
         }
 
-        if (jugador.getPokemonesCapturados() != null) {
+        String insertar =
+                "INSERT INTO jugador_pokemones_capturados " +
+                        "(jugador_id, nombre_pokemon, orden) VALUES (?, ?, ?)";
 
-            String sqlCapturados =
-                    "INSERT INTO jugador_pokemones_capturados " +
-                            "(jugador_id, nombre_pokemon, orden) VALUES (?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(insertar)) {
 
-            try (PreparedStatement ps =
-                         conn.prepareStatement(sqlCapturados)) {
+            int orden = 1;
 
-                int orden = 0;
+            for (String nombre : jugador.getPokemonesCapturados()) {
 
-                for (String nombre : jugador.getPokemonesCapturados()) {
+                ps.setInt(1, jugador.getId());
+                ps.setString(2, nombre);
+                ps.setInt(3, orden++);
 
-                    ps.setInt(1, jugador.getId());
-                    ps.setString(2, nombre);
-                    ps.setInt(3, orden++);
-                    ps.addBatch();
-                }
-
-                ps.executeBatch();
+                ps.addBatch();
             }
+
+            ps.executeBatch();
         }
     }
 
     /**
-     * Reemplaza las relaciones del equipo por las actuales.
-     */
-    public void guardarEquipo(
-            Jugador jugador,
-            Connection conn
-    ) throws SQLException {
-
-        try (PreparedStatement ps = conn.prepareStatement(
-                "DELETE FROM jugador_equipo WHERE jugador_id = ?")) {
-
-            ps.setInt(1, jugador.getId());
-            ps.executeUpdate();
-        }
-
-        List<Pokemon> equipo = jugador.getEquipoCompleto();
-
-        if (equipo != null) {
-
-            String sqlEquipo =
-                    "INSERT INTO jugador_equipo " +
-                            "(jugador_id, slot, pokemon_id) VALUES (?, ?, ?)";
-
-            try (PreparedStatement ps =
-                         conn.prepareStatement(sqlEquipo)) {
-
-                for (int slot = 0; slot < equipo.size(); slot++) {
-
-                    Pokemon p = equipo.get(slot);
-
-                    if (p == null) {
-                        continue;
-                    }
-
-                    pokemonDAO.guardarPokemon(
-                            p, jugador.getId(), conn
-                    );
-
-                    ps.setInt(1, jugador.getId());
-                    ps.setInt(2, slot);
-                    ps.setInt(3, p.getId());
-                    ps.addBatch();
-                }
-
-                ps.executeBatch();
-            }
-        }
-    }
-
-    /**
-     * Recupera los nombres de los Pokémon capturados.
+     * Recupera los nombres de los Pokémon capturados por el jugador,
+     * respetando el orden en el que fueron capturados.
      */
     public LinkedHashSet<String> recuperarPokemonesCapturados(
             int jugadorId,
@@ -115,8 +70,9 @@ public class EquipoDAO {
         LinkedHashSet<String> capturados = new LinkedHashSet<>();
 
         String sql =
-                "SELECT nombre_pokemon FROM jugador_pokemones_capturados " +
-                        "WHERE jugador_id = ? ORDER BY orden";
+                "SELECT nombre_pokemon " +
+                        "FROM jugador_pokemones_capturados " +
+                        "WHERE jugador_id = ? ORDER BY orden ASC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -134,7 +90,57 @@ public class EquipoDAO {
     }
 
     /**
-     * Recupera el equipo conservando las posiciones originales.
+     * Guarda los Pokémon del equipo y sus posiciones.
+     */
+    public void guardarEquipo(
+            Jugador jugador,
+            Connection conn
+    ) throws SQLException {
+
+        List<Pokemon> equipo = jugador.getEquipoCompleto();
+
+        String eliminar =
+                "DELETE FROM jugador_equipo WHERE jugador_id = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(eliminar)) {
+            ps.setInt(1, jugador.getId());
+            ps.executeUpdate();
+        }
+
+        String insertar =
+                "INSERT INTO jugador_equipo " +
+                        "(jugador_id, slot, pokemon_id) VALUES (?, ?, ?)";
+
+        try (PreparedStatement ps = conn.prepareStatement(insertar)) {
+
+            for (int i = 0; i < equipo.size(); i++) {
+
+                Pokemon pokemon = equipo.get(i);
+
+                if (pokemon == null) {
+                    continue;
+                }
+
+                pokemonDAO.guardarPokemon(
+                        pokemon,
+                        jugador.getId(),
+                        conn
+                );
+
+                ps.setInt(1, jugador.getId());
+                ps.setInt(2, i);
+                ps.setInt(3, pokemon.getId());
+
+                ps.addBatch();
+            }
+
+            ps.executeBatch();
+        }
+    }
+
+    /**
+     * Recupera el equipo del jugador respetando las posiciones
+     * almacenadas en la tabla jugador_equipo.
      */
     public List<Pokemon> recuperarEquipo(
             int jugadorId,
@@ -145,8 +151,9 @@ public class EquipoDAO {
         List<Pokemon> equipo = new ArrayList<>();
 
         String sql =
-                "SELECT slot, pokemon_id FROM jugador_equipo " +
-                        "WHERE jugador_id = ? ORDER BY slot";
+                "SELECT pokemon_id, slot " +
+                        "FROM jugador_equipo " +
+                        "WHERE jugador_id = ? ORDER BY slot ASC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -156,8 +163,8 @@ public class EquipoDAO {
 
                 while (rs.next()) {
 
-                    int slot = rs.getInt("slot");
                     int pokemonId = rs.getInt("pokemon_id");
+                    int slot = rs.getInt("slot");
 
                     Pokemon pokemon = pokemonDAO.recuperarPokemon(
                             pokemonId,
@@ -166,11 +173,14 @@ public class EquipoDAO {
                             pokemones
                     );
 
-                    while (equipo.size() <= slot) {
-                        equipo.add(null);
-                    }
+                    if (pokemon != null) {
 
-                    equipo.set(slot, pokemon);
+                        while (equipo.size() <= slot) {
+                            equipo.add(null);
+                        }
+
+                        equipo.set(slot, pokemon);
+                    }
                 }
             }
         }

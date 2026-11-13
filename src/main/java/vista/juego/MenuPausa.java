@@ -78,9 +78,15 @@ public class MenuPausa {
 
         VBox contenido = new VBox(20);
         contenido.getStyleClass().add("contenido-menu-pausa");
+
         contenido.setAlignment(Pos.CENTER);
-        contenido.setPadding(new Insets(35));
-        contenido.setMaxWidth(420);
+        contenido.setPadding(new Insets(30));
+
+        contenido.setPrefSize(420, 600);
+        contenido.setMinSize(420, 600);
+        contenido.setMaxSize(420, 600);
+
+        StackPane.setAlignment(contenido, Pos.CENTER);
 
         Label titulo = new Label("MENÚ DE PAUSA");
         titulo.getStyleClass().add("titulo-menu-pausa");
