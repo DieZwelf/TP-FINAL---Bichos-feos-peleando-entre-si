@@ -122,8 +122,7 @@ public class Combate {
             return registros;
         }
 
-        if (item instanceof Pokebola pokebola && pokebola.isOcupada())
-        {
+        if (item instanceof Pokebola pokebola && pokebola.isCapturaExitosa()) {
             estado = EstadoCombate.CAPTURA;
             return registros;
         }

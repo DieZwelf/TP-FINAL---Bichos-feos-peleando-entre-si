@@ -6,7 +6,7 @@ import java.util.Objects;
 
 /**
  * Representa una Pokebola del inventario.
- * Permite capturar Pokémon y registra si está ocupada.
+ * Permite intentar capturar Pokémon.
  *
  * @author Uriel
  * @since 2026
@@ -14,77 +14,96 @@ import java.util.Objects;
  */
 public class Pokebola extends Item {
 
-    private boolean ocupada;
+    private boolean capturaExitosa;
 
     public Pokebola(String nombre, String descripcion, boolean ocupada) {
         super(nombre, descripcion);
-        this.ocupada = ocupada;
-    }
-
-    public boolean isOcupada() {
-        return ocupada;
-    }
-
-    public void setOcupada(boolean ocupada) {
-        this.ocupada = ocupada;
+        this.capturaExitosa = false;
     }
 
     /**
-     * Intenta utilizar la Pokebola para capturar un Pokémon.
+     * Las Pokebolas nunca se consideran ocupadas.
+     */
+    public boolean isOcupada() {
+        return false;
+    }
+
+    /**
+     * Se conserva por compatibilidad con otras clases.
+     */
+    public void setOcupada(boolean ocupada) {
+        // No modifica el estado.
+    }
+
+    /**
+     * Indica si la última utilización consiguió capturar
+     * al Pokémon objetivo.
+     */
+    public boolean isCapturaExitosa() {
+        return capturaExitosa;
+    }
+
+    /**
+     * Intenta capturar un Pokémon.
      */
     @Override
-    public boolean usar(Jugador jugador, Pokemon objetivo, List<String> registro) {
+    public boolean usar(
+            Jugador jugador,
+            Pokemon objetivo,
+            List<String> registro
+    ) {
 
-        if (ocupada) {
-            registro.add("¡Esa Pokebola ya está ocupada!");
-            return false;
-        }
+        capturaExitosa = false;
 
-        if (objetivo == null || jugador == null) {
-            registro.add("No se puede realizar la captura");
+        if (jugador == null || objetivo == null) {
+            registro.add("No se puede realizar la captura.");
             return false;
         }
 
         if (jugador.getEquipo().size() >= 5) {
-            registro.add("Tu equipo está lleno");
+            registro.add("Tu equipo está lleno.");
             return false;
         }
 
-        double probabilidad = CalculadoraCaptura.calcularProbabilidad(objetivo);
+        double probabilidad =
+                CalculadoraCaptura.calcularProbabilidad(objetivo);
 
         if (Math.random() < probabilidad) {
-            ocupada = true;
+
             jugador.aniadir(objetivo);
+            capturaExitosa = true;
 
             registro.add(
                     "¡Se ha capturado con éxito a: "
                             + objetivo.getNombre() + "!"
             );
+
         } else {
-            registro.add(objetivo.getNombre() + " escapó de la Pokebola!");
+
+            registro.add(
+                    objetivo.getNombre() + " escapó de la Pokebola!"
+            );
         }
 
         return true;
     }
 
     /**
-     * Compara dos Pokebolas según sus datos.
+     * Compara Pokebolas por su nombre.
      */
     @Override
     public boolean equals(Object objeto) {
         if (this == objeto) return true;
         if (!(objeto instanceof Pokebola otra)) return false;
 
-        return ocupada == otra.ocupada
-                && Objects.equals(getNombre(), otra.getNombre())
-                && Objects.equals(getDescripcion(), otra.getDescripcion());
+        return Objects.equals(getNombre(), otra.getNombre());
     }
 
     /**
-     * Genera el código hash según los mismos atributos usados en equals.
+     * Genera un hash estable para el inventario.
      */
     @Override
     public int hashCode() {
-        return Objects.hash(getNombre(), getDescripcion(), ocupada);
+        return Objects.hashCode(getNombre());
     }
 }
