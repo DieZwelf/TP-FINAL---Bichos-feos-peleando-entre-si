@@ -23,6 +23,17 @@ import model.Item;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Representa la pantalla del inventario del jugador.
+ * Permite visualizar los objetos disponibles, utilizarlos
+ * y mostrar mensajes relacionados con sus acciones.
+ * También controla el uso de Pokébolas, restringiéndolo
+ * a los momentos en los que existe un combate activo.
+ *
+ * @author Uriel
+ * @since 2026
+ * @version 1.0
+ */
 public class PantallaInventario extends PantallaBase {
 
     private final Jugador jugador;
@@ -31,16 +42,38 @@ public class PantallaInventario extends PantallaBase {
     private Label lblMensajePantalla;
     private CombateViewModel combateViewModel;
 
-    public PantallaInventario(GestorPantallas pantallas, Jugador jugador, CombateViewModel combateViewModel) {
+    /**
+     * Construye la pantalla del inventario.
+     * Inicializa el ViewModel y configura el callback
+     * para utilizar Pokébolas cuando existe un combate.
+     *
+     * @param pantallas gestor de navegación entre pantallas
+     * @param jugador jugador propietario del inventario
+     * @param combateViewModel ViewModel del combate activo, si existe
+     */
+    public PantallaInventario(
+            GestorPantallas pantallas,
+            Jugador jugador,
+            CombateViewModel combateViewModel
+    ) {
         super(pantallas);
         this.jugador = jugador;
         this.viewModel = new InventarioViewModel(jugador.getInventario(), this);
+
         if (combateViewModel != null) {
             this.viewModel.setCallbackUsarPokebola(combateViewModel::intentarUsarPokebola);
         }
+
         this.combateViewModel = combateViewModel;
     }
 
+    /**
+     * Construye los componentes visuales de la pantalla del inventario.
+     * Organiza el título, los mensajes, la lista de objetos
+     * y el botón para regresar.
+     *
+     * @return contenedor principal de la pantalla
+     */
     @Override
     protected Parent crearContenido() {
         BorderPane root = new BorderPane();
@@ -55,7 +88,7 @@ public class PantallaInventario extends PantallaBase {
         // Etiqueta para mostrar los mensajes de aviso directamente en la pantalla
         lblMensajePantalla = new Label("");
         lblMensajePantalla.getStyleClass().add("texto-retro");
-        lblMensajePantalla.setStyle("-fx-text-fill: #ffde00;"); // Color destacado para el aviso
+        lblMensajePantalla.setStyle("-fx-text-fill: #ffde00;");
         lblMensajePantalla.setMinHeight(30);
 
         VBox topContainer = new VBox(10, titulo, lblMensajePantalla);
@@ -88,6 +121,13 @@ public class PantallaInventario extends PantallaBase {
         return root;
     }
 
+    /**
+     * Actualiza visualmente los objetos que aparecen en el inventario.
+     * Si no existen objetos, muestra un mensaje indicando que el inventario
+     * se encuentra vacío. En caso contrario, genera una tarjeta por objeto.
+     *
+     * @param objetos lista de descripciones de los objetos del inventario
+     */
     public void actualizarInventario(List<String> objetos) {
         listaItemsContainer.getChildren().clear();
         List<Item> itemsReales = viewModel.obtenerItemsOrdenados();
@@ -106,6 +146,14 @@ public class PantallaInventario extends PantallaBase {
         }
     }
 
+    /**
+     * Construye la tarjeta visual correspondiente a un objeto.
+     * Muestra su descripción y agrega un botón para utilizarlo.
+     *
+     * @param item objeto representado en la tarjeta
+     * @param descripcionTexto descripción que se mostrará
+     * @return contenedor horizontal con la información y el botón
+     */
     private HBox crearTarjetaItem(Item item, String descripcionTexto) {
         Label lblDescripcion = new Label(descripcionTexto);
         lblDescripcion.getStyleClass().add("texto-retro");
@@ -129,6 +177,13 @@ public class PantallaInventario extends PantallaBase {
         return tarjeta;
     }
 
+    /**
+     * Ejecuta el uso de un objeto del inventario.
+     * Impide utilizar Pokébolas fuera de combate, registra los mensajes
+     * producidos por el ViewModel y actualiza la vista del inventario.
+     *
+     * @param item objeto que el jugador intenta utilizar
+     */
     private void usarObjeto(Item item) {
         try {
             if (item instanceof Pokebola && combateViewModel == null) {
@@ -151,6 +206,11 @@ public class PantallaInventario extends PantallaBase {
         }
     }
 
+    /**
+     * Configura los estilos CSS correspondientes a la pantalla.
+     *
+     * @param escena escena sobre la que se aplican los estilos
+     */
     @Override
     protected void configurarEscena(Scene escena) {
         agregarCSS(escena, "/images/pantallaMenu/estilo.css");
