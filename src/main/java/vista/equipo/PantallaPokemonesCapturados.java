@@ -21,7 +21,7 @@ import javafx.scene.layout.VBox;
 
 import model.Jugador;
 import model.Pokemon;
-import vista.GestorPantallas;
+import vista.gestor.GestorPantallas;
 import vista.base.PantallaBase;
 
 import java.io.InputStream;

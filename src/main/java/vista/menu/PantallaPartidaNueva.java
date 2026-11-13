@@ -4,7 +4,7 @@ package vista.menu;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import vista.GestorPantallas;
+import vista.gestor.GestorPantallas;
 import vista.base.PantallaMenuBase;
 
 public class PantallaPartidaNueva extends PantallaMenuBase {

@@ -18,7 +18,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 import model.EstadoCombate;
-import vista.GestorPantallas;
+import vista.gestor.GestorPantallas;
 import vista.base.PantallaBase;
 import vista.combate.animaciones.AnimacionResultado;
 

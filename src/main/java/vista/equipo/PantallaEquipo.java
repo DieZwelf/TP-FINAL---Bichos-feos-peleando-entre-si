@@ -1,7 +1,7 @@
 
 package vista.equipo;
 
-import vista.GestorPantallas;
+import vista.gestor.GestorPantallas;
 import vista.base.PantallaBase;
 
 import javafx.geometry.Insets;

@@ -3,7 +3,7 @@ package vista.base;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import vista.GestorPantallas;
+import vista.gestor.GestorPantallas;
 import vista.IPantalla;
 
 /**

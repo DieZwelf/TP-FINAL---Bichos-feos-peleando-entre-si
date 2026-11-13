@@ -1,7 +1,7 @@
 
 package application;
 
-import vista.GestorPantallas;
+import vista.gestor.GestorPantallas;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

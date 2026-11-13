@@ -12,7 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import model.*;
-import vista.GestorPantallas;
+import vista.gestor.GestorPantallas;
 import vista.base.PantallaBase;
 import vista.combate.animaciones.AnimacionCombate;
 import vista.combate.animaciones.AnimacionResultado;

@@ -1,7 +1,7 @@
 package vista.menu;
 
 import model.TipoJugador;
-import vista.GestorPantallas;
+import vista.gestor.GestorPantallas;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;

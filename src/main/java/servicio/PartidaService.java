@@ -1,9 +1,7 @@
 package servicio;
 
 import model.*;
-import DAO.guardarPartidaDAO;
-import java.util.ArrayList;
-import java.util.TreeMap;
+import DAO.GuardarPartidaDAO;
 
 /** Construye el estado inicial de una partida sin mezclarlo con la navegación. */
 public class PartidaService {
@@ -23,7 +21,7 @@ public class PartidaService {
         jugador.getInventario().agregarObjeto(new Pocion(50));
 
         jugador.getInventario().agregarObjeto(new Pokebola("Pokebola", "Captura pokemones", false));
-        guardarPartidaDAO g = new guardarPartidaDAO();
+        GuardarPartidaDAO g = new GuardarPartidaDAO();
         g.guardarJugador(jugador);
         return jugador;
     }

@@ -665,3 +665,125 @@
     -fx-border-color: #2a1714, #ffde00;
     -fx-text-fill: #ffde00;
 }
+
+/* ==================================================
+   PANTALLA DE JUEGO
+   ================================================== */
+
+.fondo-juego {
+    -fx-background-color: #514638;
+}
+
+/* ==================================================
+   MENÚ DE PAUSA
+   ================================================== */
+
+.fondo-menu-pausa {
+    -fx-background-color: rgba(0, 0, 0, 0.78);
+}
+
+.contenido-menu-pausa {
+    -fx-background-color: #182329;
+    -fx-border-color: #8fbc45;
+    -fx-border-width: 4;
+    -fx-effect: dropshadow(gaussian, black, 20, 0.4, 0, 5);
+}
+
+.titulo-menu-pausa {
+    -fx-font-family: Monospaced;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #a8d957;
+}
+
+.mensaje-menu-pausa {
+    -fx-font-family: Monospaced;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #a8d957;
+}
+
+.mensaje-exito {
+    -fx-text-fill: #a8d957;
+}
+
+.mensaje-error {
+    -fx-text-fill: #ff7777;
+}
+
+.mensaje-advertencia {
+    -fx-text-fill: #e8c66a;
+}
+
+/* ==================================================
+   PANEL DE ADMINISTRADOR
+   ================================================== */
+
+.mensaje-admin {
+    -fx-font-family: Monospaced;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #a8d957;
+}
+
+.mensaje-admin-exito {
+    -fx-text-fill: #a8d957;
+}
+
+.mensaje-admin-error {
+    -fx-text-fill: #ff7777;
+}
+
+.texto-admin {
+    -fx-text-fill: #dce8ce;
+    -fx-font-family: Monospaced;
+    -fx-font-size: 11px;
+}
+
+.nombre-especie-admin {
+    -fx-text-fill: #a8d957;
+    -fx-font-family: Monospaced;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+.tarjeta-admin {
+    -fx-background-color: #263b35;
+    -fx-border-color: #526c45;
+    -fx-border-width: 1;
+}
+
+.scroll-admin {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-admin > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ==================================================
+   ANIMACIÓN DE ENCUENTRO
+   ================================================== */
+
+.cartel-encuentro {
+    -fx-background-color: #F8F8F8;
+    -fx-border-color: #202020;
+    -fx-border-width: 5;
+    -fx-effect: dropshadow(
+            gaussian,
+            rgba(0, 0, 0, 0.6),
+            10,
+            0,
+            0,
+            4
+    );
+}
+
+.texto-cartel-encuentro {
+    -fx-font-family: Monospaced;
+    -fx-font-weight: bold;
+    -fx-font-size: 22px;
+    -fx-text-fill: #202020;
+}

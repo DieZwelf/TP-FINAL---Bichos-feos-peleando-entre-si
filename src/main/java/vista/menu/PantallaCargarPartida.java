@@ -1,7 +1,7 @@
 
 package vista.menu;
 
-import DAO.guardarPartidaDAO;
+import DAO.GuardarPartidaDAO;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -10,7 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import vista.GestorPantallas;
+import vista.gestor.GestorPantallas;
 import vista.base.PantallaMenuBase;
 
 import java.util.ArrayList;
@@ -19,8 +19,8 @@ import java.util.Map;
 
 public class PantallaCargarPartida extends PantallaMenuBase {
 
-    private final guardarPartidaDAO partidaDAO =
-            new guardarPartidaDAO();
+    private final GuardarPartidaDAO partidaDAO =
+            new GuardarPartidaDAO();
 
     public PantallaCargarPartida(GestorPantallas pantallas) {
         super(pantallas);

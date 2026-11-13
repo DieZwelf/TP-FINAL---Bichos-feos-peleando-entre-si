@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
-import vista.GestorPantallas;
+import vista.gestor.GestorPantallas;
 
 public abstract class PantallaMenuBase extends PantallaBase {
 
