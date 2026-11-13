@@ -15,5 +15,7 @@ requires java.sql;
     exports vista.menu;
     exports vista.juego;
     exports vista.combate;
+    exports vista.inventario;
+    exports vista.equipo;
 
 }

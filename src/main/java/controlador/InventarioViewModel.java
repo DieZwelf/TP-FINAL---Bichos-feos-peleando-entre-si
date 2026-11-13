@@ -1,12 +1,11 @@
 package controlador;
 
 import model.*;
-import vista.combate.PantallaInventario;
+import vista.inventario.PantallaInventario;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /** Adapta los datos del inventario para que la pantalla pueda mostrarlos. */
