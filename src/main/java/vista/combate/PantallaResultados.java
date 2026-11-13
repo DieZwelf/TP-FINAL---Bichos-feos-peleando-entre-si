@@ -15,12 +15,15 @@ import javafx.scene.layout.*;
 import model.EstadoCombate;
 import vista.GestorPantallas;
 import vista.base.PantallaBase;
+import vista.combate.animaciones.AnimacionResultado;
 
 import java.net.URL;
 
 public class PantallaResultados extends PantallaBase {
 
     private final CombateViewModel viewModel;
+    private final AnimacionResultado animacionResultado =
+            new AnimacionResultado();
 
     public PantallaResultados(
             CombateViewModel viewModel,
@@ -242,7 +245,21 @@ public class PantallaResultados extends PantallaBase {
     public void alMostrar() {
         Platform.runLater(() -> {
             if (getEscena() != null) {
+
                 getEscena().getRoot().requestFocus();
+
+                EstadoCombate estado =
+                        viewModel.getModeloCombate().getEstado();
+
+                boolean victoria =
+                        estado == EstadoCombate.VICTORIA
+                                || estado == EstadoCombate.CAPTURA;
+
+                animacionResultado.reproducir(
+                        getEscena(),
+                        victoria,
+                        null
+                );
             }
         });
     }

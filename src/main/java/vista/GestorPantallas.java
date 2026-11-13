@@ -5,13 +5,14 @@ import controlador.CombateViewModel;
 import javafx.scene.input.KeyCode;
 import model.*;
 import vista.base.PantallaBase;
+import vista.combate.PantallaResultados;
 import vista.juego.CargadorMapaTiled;
 import vista.menu.PantallaLogin;
 import vista.menu.PantallaInicio;
 import vista.menu.PantallaPartidaNueva;
 import vista.menu.PantallaCargarPartida;
-import vista.combate.PantallaEquipo;
-import vista.combate.PantallaInventario;
+import vista.equipo.PantallaEquipo;
+import vista.inventario.PantallaInventario;
 import vista.combate.PantallaCombate;
 import vista.juego.VistaJuego;
 import javafx.scene.Scene;
@@ -267,5 +268,9 @@ public class GestorPantallas {
         if (vistaJuego == null) return;
 
         vistaJuego.cambiarMapa(mapa, x, y);
+    }
+
+    public void mostrarResultados(CombateViewModel viewModel) {
+        new PantallaResultados(viewModel, this).mostrar(stage);
     }
 }
