@@ -23,6 +23,10 @@ import java.util.List;
  *
  * Permite modificar el equipo y el inventario del jugador,
  * consultar las especies disponibles y cambiar de mapa.
+ *
+ * @author
+ * @since 2026
+ * @version 1.0
  */
 public class PanelAdministrador {
 
@@ -221,26 +225,21 @@ public class PanelAdministrador {
             return;
         }
 
-        List<Pokemon> equipoCompleto = jugador.getEquipoCompleto();
-
-        if (jugador.getEquipo().size() >= 5) {
-            mostrarError("El equipo ya tiene cinco Pokémon.");
-            return;
-        }
-
-        boolean duplicado = equipoCompleto.stream()
-                .anyMatch(p ->
-                        p != null &&
-                                p.getNombre().equalsIgnoreCase(especie.getNombre())
-                );
+        boolean duplicado = jugador.getEquipoCompleto().stream()
+                .anyMatch(p -> p != null
+                        && p.getNombre().equalsIgnoreCase(especie.getNombre()));
 
         if (duplicado) {
             mostrarError("Ese Pokémon ya existe en tu equipo.");
             return;
         }
 
-        try {
+        if (jugador.getEquipo().size() >= 5) {
+            mostrarError("El equipo ya tiene cinco Pokémon.");
+            return;
+        }
 
+        try {
             Pokemon nuevo = new Pokemon(
                     especie.getNombre(),
                     especie.getVida(),
@@ -254,14 +253,9 @@ public class PanelAdministrador {
                     (int) especie.getDefensa()
             );
 
-            nuevo.setEnEquipo(true);
-
-            // Se agrega directamente para no modificar el registro
-            // de Pokémon capturados que administra jugador.aniadir().
-            equipoCompleto.add(nuevo);
-
-            if (jugador.getPokemonActivo() == null) {
-                jugador.setPokemonActivo(nuevo);
+            if (!jugador.aniadir(nuevo)) {
+                mostrarError("No se pudo incorporar el Pokémon.");
+                return;
             }
 
             mostrarConfirmacion(
@@ -323,38 +317,33 @@ public class PanelAdministrador {
             return;
         }
 
-        int agregados = 0;
-
-        for (int i = 0; i < cantidad; i++) {
-
-            boolean resultado;
-
-            if ("Poción".equals(tipo)) {
-                resultado = inventario.agregarObjeto(new Pocion(30));
-            } else {
-                resultado = inventario.agregarObjeto(
-                        new Pokebola(
-                                "Pokebola",
-                                "Permite capturar Pokémon salvajes.",
-                                false
-                        )
-                );
-            }
-
-            if (!resultado) {
-                break;
-            }
-
-            agregados++;
+        if (cantidad <= 0) {
+            mostrarError("La cantidad debe ser mayor que cero.");
+            return;
         }
 
-        if (agregados == 0) {
-            mostrarError(
-                    "No se pudieron agregar objetos. Inventario lleno."
+        Item item;
+
+        if ("Poción".equals(tipo)) {
+            item = new Pocion(30);
+        } else if ("Pokébola".equals(tipo)) {
+            item = new Pokebola(
+                    "Pokebola",
+                    "Permite capturar Pokémon salvajes.",
+                    false
             );
         } else {
+            mostrarError("Tipo de objeto no válido.");
+            return;
+        }
+
+        if (inventario.agregarObjeto(item, cantidad)) {
             mostrarConfirmacion(
-                    "Se agregaron " + agregados + " objetos."
+                    "Se agregaron " + cantidad + " " + tipo + "(s)."
+            );
+        } else {
+            mostrarError(
+                    "No se pudieron agregar los objetos. Inventario lleno."
             );
         }
     }
@@ -424,16 +413,16 @@ public class PanelAdministrador {
         Label titulo = crearTitulo("SELECCIONAR MAPA");
 
         Button pueblo = crearBoton("PUEBLO");
-        Button bosque = crearBoton("BOSQUE");
+        Button bosque = crearBoton("CASA");
 
         pueblo.setOnAction(e -> {
             mostrarConfirmacion("Cambiando al pueblo...");
-            accionCambioMapa.cambiar(new MapaPueblo(), 450, 150);
+            accionCambioMapa.cambiar(new MapaPueblo(), 250, 150);
         });
 
-        // Se conserva el destino que tenía el botón en la versión original.
+        // Se conservan las coordenadas originales del bosque.
         bosque.setOnAction(e -> {
-            mostrarConfirmacion("Cambiando al bosque...");
+            mostrarConfirmacion("Cambiando a la casa...");
             accionCambioMapa.cambiar(new MapaCasa(), 100, 500);
         });
 
@@ -448,7 +437,10 @@ public class PanelAdministrador {
     private void mostrarConfirmacion(String texto) {
         mensaje.setText("✓ " + texto);
         mensaje.getStyleClass().remove("mensaje-admin-error");
-        mensaje.getStyleClass().add("mensaje-admin-exito");
+
+        if (!mensaje.getStyleClass().contains("mensaje-admin-exito")) {
+            mensaje.getStyleClass().add("mensaje-admin-exito");
+        }
     }
 
     /**
@@ -459,7 +451,10 @@ public class PanelAdministrador {
     private void mostrarError(String texto) {
         mensaje.setText("✕ " + texto);
         mensaje.getStyleClass().remove("mensaje-admin-exito");
-        mensaje.getStyleClass().add("mensaje-admin-error");
+
+        if (!mensaje.getStyleClass().contains("mensaje-admin-error")) {
+            mensaje.getStyleClass().add("mensaje-admin-error");
+        }
     }
 
     /**
@@ -498,6 +493,8 @@ public class PanelAdministrador {
     /**
      * Permite que VistaJuego muestre mensajes de error
      * en el panel de administración.
+     *
+     * @param texto mensaje de error
      */
     public void mostrarErrorDesdeJuego(String texto) {
         mostrarError(texto);
