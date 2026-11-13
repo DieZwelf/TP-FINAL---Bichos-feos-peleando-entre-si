@@ -23,7 +23,7 @@ import javafx.util.Duration;
 import model.*;
 import vista.GestorPantallas;
 import vista.base.PantallaBase;
-
+import excepciones.PokemonInexistenteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,8 +58,7 @@ public class VistaJuego extends PantallaBase {
 
     private List<TransicionMapa> transiciones = new ArrayList<>();
 
-    private final AdministradorController adminController =
-            new AdministradorController();
+    private final AdministradorController adminController = new AdministradorController();
 
     private boolean cambiandoMapa = false;
     private boolean encuentroEnCurso = false;
@@ -96,10 +95,7 @@ public class VistaJuego extends PantallaBase {
         StackPane.setAlignment(mundo, Pos.TOP_LEFT);
 
         mundo.getChildren().setAll(vistaMapa, vistaJugador);
-        mundo.setPrefSize(
-                vistaMapa.getPrefWidth(),
-                vistaMapa.getPrefHeight()
-        );
+        mundo.setPrefSize(vistaMapa.getPrefWidth(), vistaMapa.getPrefHeight());
 
         mundo.getTransforms().setAll(transformacionCamara);
 
@@ -134,12 +130,7 @@ public class VistaJuego extends PantallaBase {
 
         this.escena = escena;
 
-        controlador = new JuegoController(
-                jugador,
-                vistaJugador,
-                this,
-                vistaMapa.getColisiones()
-        );
+        controlador = new JuegoController(jugador, vistaJugador, this, vistaMapa.getColisiones());
 
         controlador.setOnEncuentroGenerado(this::generarEncuentro);
 
@@ -190,25 +181,15 @@ public class VistaJuego extends PantallaBase {
         cambiarMapa.getStyleClass().add("boton-admin");
         cambiarMapa.setOnAction(e -> mostrarSelectorMapa());
 
-        panel.getChildren().addAll(
-                titulo,
-                encuentro,
-                agregarPokemon,
-                verPokemon,
-                cambiarMapa
-        );
+        panel.getChildren().addAll(titulo, encuentro, agregarPokemon, verPokemon, cambiarMapa);
 
-        panel.setMaxSize(
-                Region.USE_PREF_SIZE,
-                Region.USE_PREF_SIZE
-        );
+        panel.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
 
         return panel;
     }
 
     private void mostrarPokemonesDisponibles() {
-        List<DatosEspecie> especies =
-                adminController.obtenerEspeciesDisponibles();
+        List<DatosEspecie> especies = adminController.obtenerEspeciesDisponibles();
 
         StringBuilder contenido = new StringBuilder();
 
@@ -229,16 +210,13 @@ public class VistaJuego extends PantallaBase {
 
         Alert alerta = new Alert(Alert.AlertType.INFORMATION);
         alerta.setTitle("Administrador");
-        alerta.setHeaderText(
-                "Pokémon disponibles (" + especies.size() + ")"
-        );
+        alerta.setHeaderText("Pokémon disponibles (" + especies.size() + ")");
         alerta.getDialogPane().setContent(texto);
         alerta.showAndWait();
     }
 
     private void mostrarSelectorMapa() {
-        ChoiceDialog<String> dialog =
-                new ChoiceDialog<>("Pueblo", "Pueblo", "Bosque");
+        ChoiceDialog<String> dialog = new ChoiceDialog<>("Pueblo", "Pueblo", "Bosque");
 
         dialog.setTitle("Administrador");
         dialog.setHeaderText("Cambiar mapa");
@@ -246,11 +224,9 @@ public class VistaJuego extends PantallaBase {
 
         dialog.showAndWait().ifPresent(mapa -> {
             switch (mapa) {
-                case "Pueblo" ->
-                        cambiarMapa(new MapaPueblo(), 450, 150);
+                case "Pueblo" -> cambiarMapa(new MapaPueblo(), 450, 150);
 
-                case "Bosque" ->
-                        cambiarMapa(new MapaCasa(), 100, 500);
+                case "Bosque" -> cambiarMapa(new MapaCasa(), 100, 500);
             }
         });
     }
@@ -272,24 +248,15 @@ public class VistaJuego extends PantallaBase {
             return;
         }
 
-        double probabilidad =
-                CalculadoraCaptura.calcularProbabilidad(pokemonActivo);
+        double probabilidad = CalculadoraCaptura.calcularProbabilidad(pokemonActivo);
 
-        System.out.println(
-                "Vida: " + pokemonActivo.getVida()
-                        + "/" + pokemonActivo.getVidaMaxima()
-        );
+        System.out.println("Vida: " + pokemonActivo.getVida() + "/" + pokemonActivo.getVidaMaxima());
 
-        System.out.println(
-                "Probabilidad: " + (probabilidad * 100) + "%"
-        );
+        System.out.println("Probabilidad: " + (probabilidad * 100) + "%");
 
         int nivelJugador = pokemonActivo.getNivel();
 
-        Pokemon salvaje =
-                GeneradorPokemonSalvaje.generarPokemonSegunNivel(
-                        nivelJugador
-                );
+        Pokemon salvaje = GeneradorPokemonSalvaje.generarPokemonSegunNivel(nivelJugador);
 
         // Primero se ejecuta la transición y después comienza el combate.
         animarEncuentro(() ->
@@ -630,15 +597,9 @@ public class VistaJuego extends PantallaBase {
         dialog.setTitle("Administrador");
         dialog.setHeaderText("Registrar nueva especie");
 
-        ButtonType crear = new ButtonType(
-                "Registrar",
-                ButtonBar.ButtonData.OK_DONE
-        );
+        ButtonType crear = new ButtonType("Registrar", ButtonBar.ButtonData.OK_DONE);
 
-        dialog.getDialogPane().getButtonTypes().addAll(
-                crear,
-                ButtonType.CANCEL
-        );
+        dialog.getDialogPane().getButtonTypes().addAll(crear, ButtonType.CANCEL);
 
         TextField nombre = new TextField();
         nombre.setPromptText("Nombre");
@@ -674,36 +635,32 @@ public class VistaJuego extends PantallaBase {
 
             try {
                 if (nombre.getText().isBlank()) {
-                    throw new IllegalArgumentException(
-                            "Ingresá un nombre."
-                    );
+                    throw new IllegalArgumentException("Ingresá un nombre.");
                 }
 
-                adminController.registrarEspecie(
-                        nombre.getText().trim(),
-                        tipo.getValue(),
-                        Double.parseDouble(vida.getText()),
-                        Double.parseDouble(danio.getText()),
-                        Double.parseDouble(defensa.getText()),
-                        Double.parseDouble(velocidad.getText())
-                );
+                boolean existe = GeneradorPokemonSalvaje.getESPECIES().stream().anyMatch(p -> p.getNombre().equalsIgnoreCase(nombre.getText()));
 
-                Alert confirmacion = new Alert(
-                        Alert.AlertType.INFORMATION
-                );
+                if (!existe) {
+                    throw new PokemonInexistenteException("El nombre no se encuentra en el sistema.");
+                }
+
+                adminController.registrarEspecie(nombre.getText().trim(), tipo.getValue(), Double.parseDouble(vida.getText()), Double.parseDouble(danio.getText()), Double.parseDouble(defensa.getText()), Double.parseDouble(velocidad.getText()));
+
+                Alert confirmacion = new Alert(Alert.AlertType.INFORMATION);
 
                 confirmacion.setTitle("Administrador");
                 confirmacion.setHeaderText(null);
-                confirmacion.setContentText(
-                        "¡Especie registrada correctamente!"
-                );
+                confirmacion.setContentText("¡Especie registrada correctamente!");
 
                 confirmacion.showAndWait();
 
+            }catch (PokemonInexistenteException ex)
+            {
+                System.err.println("Ha ocurrido un error: " + ex.getMessage());
+                ex.printStackTrace();
+
             } catch (NumberFormatException ex) {
-                mostrarErrorAdmin(
-                        "Las estadísticas deben ser números válidos."
-                );
+                mostrarErrorAdmin("Las estadísticas deben ser números válidos.");
 
             } catch (IllegalArgumentException ex) {
                 mostrarErrorAdmin(ex.getMessage());
@@ -715,9 +672,7 @@ public class VistaJuego extends PantallaBase {
         Alert alerta = new Alert(Alert.AlertType.ERROR);
 
         alerta.setTitle("Error");
-        alerta.setHeaderText(
-                "No se pudo registrar la especie"
-        );
+        alerta.setHeaderText("No se pudo registrar la especie");
         alerta.setContentText(mensaje);
 
         alerta.showAndWait();
