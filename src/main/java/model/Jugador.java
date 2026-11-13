@@ -19,8 +19,6 @@ import java.util.LinkedHashSet;
  * @version 1.0
  */
 
-
-
 public class Jugador {
     private double x;
     private double y;
@@ -64,10 +62,13 @@ public class Jugador {
         this.pokemonesCapturados = pokemonesCapturados != null ? pokemonesCapturados : new LinkedHashSet<>();
         this.equipo = equipo != null ? new ArrayList<>(equipo) : new ArrayList<>(5);
         this.rango = rango;
-        this.inventario = new Inventario(new HashMap<>());
+        this.inventario = inventario != null ? inventario : new Inventario(new HashMap<>());
         if (!this.equipo.isEmpty()) {
             this.pokemonActivo = this.equipo.get(0);
         }
+        this.direccion = "ABAJO";
+        this.frameActual = 0;
+        this.enMovimiento = false;
     }
 
     // Métodos para mover al personaje
