@@ -7,12 +7,33 @@ import javafx.scene.layout.VBox;
 import vista.gestor.GestorPantallas;
 import vista.base.PantallaMenuBase;
 
+/**
+ * La clase PANTALLAPARTIDANUEVA representa la pantalla desde la cual
+ * el jugador puede comenzar una nueva partida o regresar al menú principal.
+ * Hereda de PantallaMenuBase.
+ * Tiene un constructor que recibe el gestor de pantallas.
+ * Otros métodos: configurarBotones(): configura los componentes visuales
+ * y las acciones de los botones de la pantalla.
+ *
+ * @author Uriel
+ * @since 2026
+ * @version 1.0
+ */
 public class PantallaPartidaNueva extends PantallaMenuBase {
 
+    /**
+     * Construye la pantalla de nueva partida.
+     *
+     * @param pantallas gestor encargado de la navegación entre pantallas
+     */
     public PantallaPartidaNueva(GestorPantallas pantallas) {
         super(pantallas);
     }
 
+    /**
+     * Configura los botones y los componentes visuales de la pantalla.
+     * Permite comenzar una nueva aventura o regresar al menú inicial.
+     */
     @Override
     protected void configurarBotones() {
 
