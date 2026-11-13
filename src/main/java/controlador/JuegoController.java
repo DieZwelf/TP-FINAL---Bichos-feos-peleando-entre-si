@@ -12,7 +12,18 @@ import vista.juego.VistaJugador;
 
 import java.util.List;
 
-/** Controla entradas, movimiento, colisiones, animación y encuentros aleatorios. */
+/**
+ * La clase 'JuegoController' controla las entradas del jugador, el movimiento, las colisiones,
+ * las animaciones y la generación de encuentros aleatorios durante la partida.
+ * Métodos: setOnEncuentroGenerado(), reanudarGameLoop(), detenerGameLoop(), crearGameLoop(),
+ * actualizarLogica(), moverJugador(), actualizarAnimacionCaminata(), actualizarAnimacionQuieto(),
+ * verificarEncuentro(), manejarTeclaPresionada(), manejarTeclaLiberada(), cambiarEstadoTecla(),
+ * limpiarTeclas(), hayColision(), getColisiones(), setColisiones().
+ *
+ * @author Uriel
+ * @since 2026
+ * @version 1.0
+ */
 public class JuegoController {
 
     private static final long INTERVALO_ANIMACION = 120_000_000L;
@@ -36,6 +47,14 @@ public class JuegoController {
     private Runnable onEncuentroGenerado;
     private AnimationTimer gameLoop;
 
+    /**
+     * Construye el controlador del juego y establece las referencias al jugador y a las vistas.
+     *
+     * @param jugador jugador cuyo movimiento será controlado
+     * @param vista vista encargada de representar al jugador
+     * @param vistaJuego vista principal del juego
+     * @param colisiones lista de figuras que representan los obstáculos del mapa
+     */
     public JuegoController(Jugador jugador, VistaJugador vista,
                            VistaJuego vistaJuego, List<Shape> colisiones) {
         this.jugador = jugador;
@@ -44,10 +63,19 @@ public class JuegoController {
         this.colisiones = colisiones;
     }
 
+    /**
+     * Establece la función que se ejecutará cuando se genere un encuentro.
+     *
+     * @param callback función que se ejecutará al producirse un encuentro
+     */
     public void setOnEncuentroGenerado(Runnable callback) {
         this.onEncuentroGenerado = callback;
     }
 
+    /**
+     * Reanuda el ciclo principal del juego.
+     * Si todavía no existe, primero crea el GameLoop.
+     */
     public void reanudarGameLoop() {
         if (gameLoop == null) {
             crearGameLoop();
@@ -55,6 +83,10 @@ public class JuegoController {
         gameLoop.start();
     }
 
+    /**
+     * Detiene el ciclo principal del juego, limpia las teclas presionadas
+     * y establece que el jugador ya no se encuentra en movimiento.
+     */
     public void detenerGameLoop() {
         if (gameLoop != null) {
             gameLoop.stop();
@@ -63,8 +95,17 @@ public class JuegoController {
         jugador.setEnMovimiento(false);
     }
 
+    /**
+     * Crea el ciclo principal del juego mediante un AnimationTimer.
+     * En cada actualización ejecuta la lógica, renderiza al jugador y actualiza la cámara.
+     */
     private void crearGameLoop() {
         gameLoop = new AnimationTimer() {
+            /**
+             * Ejecuta las actualizaciones correspondientes a cada ciclo del AnimationTimer.
+             *
+             * @param now instante actual proporcionado por el AnimationTimer
+             */
             @Override
             public void handle(long now) {
                 actualizarLogica(now);
@@ -74,6 +115,12 @@ public class JuegoController {
         };
     }
 
+    /**
+     * Actualiza la lógica general del juego.
+     * Controla el movimiento, las colisiones, las animaciones y la generación de encuentros.
+     *
+     * @param ahora instante actual utilizado para controlar los intervalos de tiempo
+     */
     private void actualizarLogica(long ahora) {
         double xAnterior = jugador.getX();
         double yAnterior = jugador.getY();
@@ -107,6 +154,11 @@ public class JuegoController {
 
     }
 
+    /**
+     * Mueve al jugador según la dirección cuya tecla se encuentre presionada.
+     *
+     * @return true si se ejecutó un movimiento; false si no hay ninguna dirección activa
+     */
     private boolean moverJugador() {
         if (arriba) {
             jugador.moverArriba();
@@ -122,6 +174,11 @@ public class JuegoController {
         return true;
     }
 
+    /**
+     * Actualiza la animación de caminata cuando transcurre el intervalo establecido.
+     *
+     * @param ahora instante actual del ciclo de juego
+     */
     private void actualizarAnimacionCaminata(long ahora) {
         if (ahora - ultimoTiempoAnimacion >= INTERVALO_ANIMACION) {
             jugador.setFrameActual(jugador.getFrameActual() + 1);
@@ -130,6 +187,11 @@ public class JuegoController {
         ultimoTiempoIdle = ahora;
     }
 
+    /**
+     * Actualiza la animación del jugador cuando permanece quieto.
+     *
+     * @param ahora instante actual del ciclo de juego
+     */
     private void actualizarAnimacionQuieto(long ahora) {
         if (ultimoTiempoIdle == 0) ultimoTiempoIdle = ahora;
         if (ahora - ultimoTiempoIdle >= INTERVALO_IDLE) {
@@ -138,6 +200,12 @@ public class JuegoController {
         }
     }
 
+    /**
+     * Verifica si transcurrió el intervalo necesario para generar un encuentro aleatorio.
+     * Si se cumple la probabilidad establecida y existe un callback, lo ejecuta.
+     *
+     * @param ahora instante actual del ciclo de juego
+     */
     private void verificarEncuentro(long ahora) {
         if (ultimoTiempoEncuentro == 0) {
             ultimoTiempoEncuentro = ahora;
@@ -152,14 +220,30 @@ public class JuegoController {
         }
     }
 
+    /**
+     * Procesa una tecla presionada por el usuario y actualiza su estado.
+     *
+     * @param evento evento de teclado recibido
+     */
     public void manejarTeclaPresionada(KeyEvent evento) {
         cambiarEstadoTecla(evento.getCode(), true);
     }
 
+    /**
+     * Procesa una tecla liberada por el usuario y actualiza su estado.
+     *
+     * @param evento evento de teclado recibido
+     */
     public void manejarTeclaLiberada(KeyEvent evento) {
         cambiarEstadoTecla(evento.getCode(), false);
     }
 
+    /**
+     * Actualiza el estado de la dirección correspondiente a una tecla.
+     *
+     * @param codigo código de la tecla presionada o liberada
+     * @param presionada indica si la tecla se encuentra presionada
+     */
     private void cambiarEstadoTecla(KeyCode codigo, boolean presionada) {
         switch (codigo) {
             case W, UP -> arriba = presionada;
@@ -170,6 +254,9 @@ public class JuegoController {
         }
     }
 
+    /**
+     * Restablece el estado de todas las teclas de movimiento.
+     */
     private void limpiarTeclas() {
         arriba = false;
         abajo = false;
@@ -177,6 +264,13 @@ public class JuegoController {
         derecha = false;
     }
 
+    /**
+     * Comprueba si la posición propuesta para el jugador intersecta algún obstáculo.
+     *
+     * @param nuevoX coordenada horizontal propuesta para el jugador
+     * @param nuevoY coordenada vertical propuesta para el jugador
+     * @return true si existe una colisión; false en caso contrario
+     */
     private boolean hayColision(double nuevoX, double nuevoY) {
         double anchoJugador = 24;
         double altoJugador = 16;
@@ -196,10 +290,20 @@ public class JuegoController {
         return false;
     }
 
+    /**
+     * Obtiene la lista de figuras utilizadas para detectar colisiones.
+     *
+     * @return lista de obstáculos del mapa
+     */
     public List<Shape> getColisiones() {
         return colisiones;
     }
 
+    /**
+     * Establece la lista de figuras utilizadas para detectar colisiones.
+     *
+     * @param colisiones nueva lista de obstáculos del mapa
+     */
     public void setColisiones(List<Shape> colisiones) {
         this.colisiones = colisiones;
     }
