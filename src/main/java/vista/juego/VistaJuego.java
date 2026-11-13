@@ -65,6 +65,20 @@ public class VistaJuego extends PantallaBase {
     private boolean cambiandoMapa = false;
     private boolean encuentroEnCurso = false;
 
+    private Rectangle transicionInicial;
+
+    // MENÚ DE PAUSA
+    private StackPane menuPausa;
+    private boolean menuAbierto = false;
+
+    private Label mensajeMenu;
+    private Button botonConfirmarSalida;
+    private Button botonCancelarSalida;
+
+    // ANIMACIONES DE MENSAJES
+    private Timeline temporizadorMensaje;
+    private FadeTransition animacionMensaje;
+
     // --------------------------------------------------
     // CONSTRUCTOR
     // --------------------------------------------------
@@ -93,6 +107,7 @@ public class VistaJuego extends PantallaBase {
     protected Parent crearContenido() {
         root = new StackPane();
         root.setStyle("-fx-background-color: #514638;");
+        root.setFocusTraversable(true);
 
         StackPane.setAlignment(mundo, Pos.TOP_LEFT);
 
@@ -125,6 +140,10 @@ public class VistaJuego extends PantallaBase {
             StackPane.setMargin(panelAdmin, new Insets(18));
         }
 
+        // MENÚ DE PAUSA
+        menuPausa = crearMenuPausa();
+        root.getChildren().add(menuPausa);
+
         root.widthProperty().addListener((obs, antes, ahora) -> {
             recorte.setWidth(ahora.doubleValue());
             actualizarCamara();
@@ -134,6 +153,18 @@ public class VistaJuego extends PantallaBase {
             recorte.setHeight(ahora.doubleValue());
             actualizarCamara();
         });
+
+        // CAPA NEGRA PARA LA TRANSICIÓN INICIAL
+        transicionInicial = new Rectangle();
+
+        transicionInicial.setFill(Color.BLACK);
+        transicionInicial.setMouseTransparent(true);
+        transicionInicial.setOpacity(1);
+
+        transicionInicial.widthProperty().bind(root.widthProperty());
+        transicionInicial.heightProperty().bind(root.heightProperty());
+
+        root.getChildren().add(transicionInicial);
 
         return root;
     }
@@ -158,12 +189,37 @@ public class VistaJuego extends PantallaBase {
 
     @Override
     public void alMostrar() {
-        if (controlador != null) {
+
+        if (controlador != null && !menuAbierto) {
             controlador.reanudarGameLoop();
         }
 
         actualizarCamara();
         root.requestFocus();
+
+        if (transicionInicial != null) {
+
+            FadeTransition aparecer = new FadeTransition(
+                    Duration.millis(700),
+                    transicionInicial
+            );
+
+            aparecer.setFromValue(1);
+            aparecer.setToValue(0);
+
+            aparecer.setOnFinished(evento -> {
+
+                root.getChildren().remove(transicionInicial);
+
+                transicionInicial.widthProperty().unbind();
+                transicionInicial.heightProperty().unbind();
+
+                transicionInicial = null;
+                root.requestFocus();
+            });
+
+            aparecer.play();
+        }
     }
 
     @Override
@@ -181,23 +237,12 @@ public class VistaJuego extends PantallaBase {
         VBox panel = new VBox(10);
         panel.setAlignment(Pos.TOP_LEFT);
 
-        Button guardar = new Button("GUARDAR PARTIDA");
-        guardar.getStyleClass().add("boton-retro");
+        Button menu = new Button("MENÚ");
+        menu.getStyleClass().add("boton-retro");
 
-        guardar.setOnAction(e -> {
-            pantallas.guardarPartida(jugador);
+        menu.setOnAction(e -> alternarMenuPausa());
 
-            Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-            alerta.setTitle("Partida guardada");
-            alerta.setHeaderText(null);
-            alerta.setContentText(
-                    "¡Tu partida se guardó correctamente!"
-            );
-
-            alerta.showAndWait();
-        });
-
-        panel.getChildren().add(guardar);
+        panel.getChildren().add(menu);
 
         panel.setMaxSize(
                 Region.USE_PREF_SIZE,
@@ -205,6 +250,298 @@ public class VistaJuego extends PantallaBase {
         );
 
         return panel;
+    }
+
+    // --------------------------------------------------
+    // MENÚ DE PAUSA
+    // --------------------------------------------------
+
+    private StackPane crearMenuPausa() {
+        StackPane overlay = new StackPane();
+
+        overlay.setStyle(
+                "-fx-background-color: rgba(0, 0, 0, 0.78);"
+        );
+
+        overlay.setPickOnBounds(true);
+
+        VBox contenido = new VBox(20);
+        contenido.setAlignment(Pos.CENTER);
+        contenido.setPadding(new Insets(35));
+        contenido.setMaxWidth(420);
+
+        contenido.setStyle(
+                "-fx-background-color: #182329;" +
+                        "-fx-border-color: #8fbc45;" +
+                        "-fx-border-width: 4;" +
+                        "-fx-effect: dropshadow(gaussian, black, 20, 0.4, 0, 5);"
+        );
+
+        Label titulo = new Label("MENÚ DE PAUSA");
+        titulo.getStyleClass().add("texto-retro");
+        titulo.setStyle(
+                "-fx-font-size: 25px;" +
+                        "-fx-text-fill: #a8d957;"
+        );
+
+        Button continuar = new Button("VOLVER AL JUEGO");
+        Button guardar = new Button("GUARDAR PARTIDA");
+        Button volverMenu = new Button("VOLVER AL MENÚ");
+
+        mensajeMenu = new Label("");
+        mensajeMenu.setWrapText(true);
+        mensajeMenu.setMaxWidth(350);
+        mensajeMenu.setMinHeight(35);
+        mensajeMenu.setAlignment(Pos.CENTER);
+        mensajeMenu.setStyle(
+                "-fx-font-size: 13px;" +
+                        "-fx-text-fill: #a8d957;" +
+                        "-fx-font-family: Monospaced;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        botonConfirmarSalida = new Button("SÍ, SALIR");
+        botonCancelarSalida = new Button("CANCELAR");
+
+        for (Button boton : List.of(
+                continuar,
+                guardar,
+                volverMenu,
+                botonConfirmarSalida,
+                botonCancelarSalida
+        )) {
+            boton.getStyleClass().add("boton-retro");
+            boton.setMaxWidth(Double.MAX_VALUE);
+        }
+
+        // BOTÓN PARA CONTINUAR
+        continuar.setOnAction(e -> cerrarMenuPausa());
+
+        // BOTÓN PARA GUARDAR
+        guardar.setOnAction(e -> guardarPartida());
+
+        // BOTÓN PARA VOLVER AL MENÚ
+        volverMenu.setOnAction(e -> confirmarVolverAlMenu());
+
+        // CONFIRMAR SALIDA
+        botonConfirmarSalida.setOnAction(e -> {
+            detenerAnimacionesMensaje();
+            pantallas.mostrarInicio();
+        });
+
+        // CANCELAR SALIDA
+        botonCancelarSalida.setOnAction(e -> {
+            detenerAnimacionesMensaje();
+
+            mensajeMenu.setText("");
+            mensajeMenu.setOpacity(1);
+
+            botonConfirmarSalida.setVisible(false);
+            botonConfirmarSalida.setManaged(false);
+
+            botonCancelarSalida.setVisible(false);
+            botonCancelarSalida.setManaged(false);
+
+            root.requestFocus();
+        });
+
+        // OCULTAR BOTONES DE CONFIRMACIÓN INICIALMENTE
+        botonConfirmarSalida.setVisible(false);
+        botonConfirmarSalida.setManaged(false);
+
+        botonCancelarSalida.setVisible(false);
+        botonCancelarSalida.setManaged(false);
+
+        contenido.getChildren().addAll(
+                titulo,
+                continuar,
+                guardar,
+                volverMenu,
+                mensajeMenu,
+                botonConfirmarSalida,
+                botonCancelarSalida
+        );
+
+        overlay.getChildren().add(contenido);
+
+        overlay.setVisible(false);
+        overlay.setManaged(false);
+
+        return overlay;
+    }
+
+    private void alternarMenuPausa() {
+        if (menuAbierto) {
+            cerrarMenuPausa();
+        } else {
+            abrirMenuPausa();
+        }
+    }
+
+    private void abrirMenuPausa() {
+
+        if (menuAbierto || cambiandoMapa || menuPausa == null) {
+            return;
+        }
+
+        menuAbierto = true;
+
+        if (controlador != null) {
+            controlador.detenerGameLoop();
+        }
+
+        menuPausa.setManaged(true);
+        menuPausa.setVisible(true);
+
+        root.requestFocus();
+    }
+
+    private void cerrarMenuPausa() {
+
+        if (!menuAbierto) {
+            return;
+        }
+
+        menuAbierto = false;
+
+        detenerAnimacionesMensaje();
+
+        mensajeMenu.setText("");
+        mensajeMenu.setOpacity(1);
+
+        botonConfirmarSalida.setVisible(false);
+        botonConfirmarSalida.setManaged(false);
+
+        botonCancelarSalida.setVisible(false);
+        botonCancelarSalida.setManaged(false);
+
+        menuPausa.setVisible(false);
+        menuPausa.setManaged(false);
+
+        if (controlador != null) {
+            controlador.reanudarGameLoop();
+        }
+
+        root.requestFocus();
+    }
+
+    // --------------------------------------------------
+    // MENSAJES DEL MENÚ
+    // --------------------------------------------------
+
+    private void mostrarMensaje(String texto, boolean error) {
+
+        detenerAnimacionesMensaje();
+
+        mensajeMenu.setText(texto);
+        mensajeMenu.setOpacity(0);
+
+        mensajeMenu.setStyle(
+                "-fx-font-size: 13px;" +
+                        "-fx-text-fill: " +
+                        (error ? "#ff7777" : "#a8d957") + ";" +
+                        "-fx-font-family: Monospaced;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        animacionMensaje = new FadeTransition(
+                Duration.millis(250),
+                mensajeMenu
+        );
+
+        animacionMensaje.setFromValue(0);
+        animacionMensaje.setToValue(1);
+        animacionMensaje.play();
+
+        temporizadorMensaje = new Timeline(
+                new KeyFrame(Duration.seconds(3), e -> {
+
+                    animacionMensaje = new FadeTransition(
+                            Duration.millis(350),
+                            mensajeMenu
+                    );
+
+                    animacionMensaje.setFromValue(1);
+                    animacionMensaje.setToValue(0);
+
+                    animacionMensaje.setOnFinished(evento -> {
+                        mensajeMenu.setText("");
+                        mensajeMenu.setOpacity(1);
+                    });
+
+                    animacionMensaje.play();
+                })
+        );
+
+        temporizadorMensaje.play();
+    }
+
+    private void detenerAnimacionesMensaje() {
+
+        if (temporizadorMensaje != null) {
+            temporizadorMensaje.stop();
+            temporizadorMensaje = null;
+        }
+
+        if (animacionMensaje != null) {
+            animacionMensaje.stop();
+            animacionMensaje = null;
+        }
+    }
+
+    private void guardarPartida() {
+
+        detenerAnimacionesMensaje();
+
+        try {
+            pantallas.guardarPartida(jugador);
+
+            mostrarMensaje(
+                    "¡PARTIDA GUARDADA CORRECTAMENTE!",
+                    false
+            );
+
+        } catch (Exception ex) {
+
+            mostrarMensaje(
+                    "ERROR AL GUARDAR LA PARTIDA.",
+                    true
+            );
+
+            ex.printStackTrace();
+        }
+
+        root.requestFocus();
+    }
+
+    private void confirmarVolverAlMenu() {
+
+        detenerAnimacionesMensaje();
+
+        mensajeMenu.setText("¿QUERÉS ABANDONAR LA PARTIDA?");
+        mensajeMenu.setOpacity(0);
+
+        mensajeMenu.setStyle(
+                "-fx-font-size: 13px;" +
+                        "-fx-text-fill: #e8c66a;" +
+                        "-fx-font-family: Monospaced;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        animacionMensaje = new FadeTransition(
+                Duration.millis(300),
+                mensajeMenu
+        );
+
+        animacionMensaje.setFromValue(0);
+        animacionMensaje.setToValue(1);
+        animacionMensaje.play();
+
+        botonConfirmarSalida.setVisible(true);
+        botonConfirmarSalida.setManaged(true);
+
+        botonCancelarSalida.setVisible(true);
+        botonCancelarSalida.setManaged(true);
     }
 
     // --------------------------------------------------
@@ -305,7 +642,6 @@ public class VistaJuego extends PantallaBase {
 
     private void generarEncuentro() {
 
-        // Evitar encuentros dentro de la casa.
         if (vistaMapa.getCargador() instanceof MapaCasa) {
             return;
         }
@@ -341,7 +677,6 @@ public class VistaJuego extends PantallaBase {
 
         encuentroEnCurso = true;
 
-        // El GestorPantallas se encarga de ejecutar la animación.
         pantallas.iniciarCombate(jugador, salvaje);
     }
 
@@ -363,7 +698,6 @@ public class VistaJuego extends PantallaBase {
 
         root.getChildren().add(capaTransicion);
 
-        // Parpadeo blanco inicial.
         Rectangle flash = new Rectangle(
                 ancho,
                 alto,
@@ -531,7 +865,20 @@ public class VistaJuego extends PantallaBase {
     // --------------------------------------------------
 
     private void configurarTeclas(Scene escena) {
+
         escena.addEventFilter(KeyEvent.KEY_PRESSED, evento -> {
+
+            if (evento.getCode() == KeyCode.ESCAPE) {
+                alternarMenuPausa();
+                evento.consume();
+                return;
+            }
+
+            if (menuAbierto) {
+                evento.consume();
+                return;
+            }
+
             controlador.manejarTeclaPresionada(evento);
 
             if (evento.getCode() == KeyCode.TAB) {
@@ -546,7 +893,11 @@ public class VistaJuego extends PantallaBase {
 
         escena.addEventFilter(
                 KeyEvent.KEY_RELEASED,
-                controlador::manejarTeclaLiberada
+                evento -> {
+                    if (!menuAbierto) {
+                        controlador.manejarTeclaLiberada(evento);
+                    }
+                }
         );
     }
 

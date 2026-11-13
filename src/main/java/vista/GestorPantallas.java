@@ -1,28 +1,33 @@
+
 package vista;
 
 import DAO.guardarPartidaDAO;
 import controlador.CombateViewModel;
-import javafx.scene.input.KeyCode;
-import model.*;
-import vista.base.PantallaBase;
-import vista.combate.PantallaResultados;
-import vista.juego.CargadorMapaTiled;
-import vista.menu.PantallaLogin;
-import vista.menu.PantallaInicio;
-import vista.menu.PantallaPartidaNueva;
-import vista.menu.PantallaCargarPartida;
-import vista.equipo.PantallaEquipo;
-import vista.inventario.PantallaInventario;
-import vista.combate.PantallaCombate;
-import vista.juego.VistaJuego;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.input.KeyCode;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import model.*;
 import servicio.PartidaService;
+import vista.base.PantallaBase;
+import vista.base.PantallaMenuBase;
+import vista.combate.PantallaCombate;
+import vista.combate.PantallaResultados;
+import vista.equipo.PantallaEquipo;
+import vista.inventario.PantallaInventario;
+import vista.juego.CargadorMapaTiled;
+import vista.juego.VistaJuego;
+import vista.menu.PantallaCargarPartida;
+import vista.menu.PantallaInicio;
+import vista.menu.PantallaLogin;
+import vista.menu.PantallaPartidaNueva;
+
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 import java.net.URL;
 
-/** Centraliza la navegación y conserva las pantallas a las que se puede volver. */
 public class GestorPantallas {
 
     private final Stage stage;
@@ -36,16 +41,27 @@ public class GestorPantallas {
     private Jugador jugador;
     private boolean combateActivo;
     private VistaJuego vistaJuego;
+
     private TipoJugador tipo = TipoJugador.USUARIO;
+
     private guardarPartidaDAO partidaDAO;
+    private MediaPlayer reproductorMenu;
 
     public GestorPantallas(Stage stage) {
+
         this.stage = stage;
+
         configurarVentana();
+
         this.partidaDAO = new guardarPartidaDAO();
     }
 
+    // =====================================================
+    // CARGAR PARTIDA
+    // =====================================================
+
     public void cargarPartida(int jugadorId) {
+
         Jugador jugador = partidaDAO.recuperarJugador(jugadorId);
 
         if (jugador == null) {
@@ -55,17 +71,39 @@ public class GestorPantallas {
         this.jugador = jugador;
 
         vistaJuego = new VistaJuego(jugador, this);
+
         vistaJuego.mostrar(stage);
     }
 
+    // =====================================================
+    // GUARDAR PARTIDA
+    // =====================================================
+
     public void guardarPartida(Jugador jugador) {
+
         partidaDAO.guardarJugador(jugador);
     }
 
+    // =====================================================
+    // ELIMINAR PARTIDA
+    // =====================================================
+
+    public boolean eliminarPartida(int jugadorId) {
+
+        return partidaDAO.eliminarPartida(jugadorId);
+    }
+
+    // =====================================================
+    // CONFIGURAR VENTANA
+    // =====================================================
+
     private void configurarVentana() {
+
         stage.setTitle("Bichos feos");
 
-        URL icono = getClass().getResource("/images/pantallaMenu/icono.png");
+        URL icono =
+                getClass().getResource("/images/pantallaMenu/icono.png");
+
         if (icono != null) {
             stage.getIcons().setAll(new Image(icono.toExternalForm()));
         }
@@ -75,8 +113,14 @@ public class GestorPantallas {
         stage.setResizable(true);
     }
 
-    /** Método único para presentar una pantalla nueva. */
-    public void mostrarPantalla(PantallaBase pantalla, Scene escena) {
+    // =====================================================
+    // MOSTRAR PANTALLA
+    // =====================================================
+
+    public void mostrarPantalla(
+            PantallaBase pantalla,
+            Scene escena
+    ) {
 
         if (pantallaActual != null && pantallaActual != pantalla) {
             pantallaActual.alOcultar();
@@ -87,12 +131,15 @@ public class GestorPantallas {
         stage.setScene(escena);
 
         escena.setOnKeyPressed(evento -> {
+
             if (evento.getCode() == KeyCode.F11) {
                 alternarPantallaCompleta();
             }
         });
 
         stage.show();
+
+        actualizarVideoMenu(pantalla);
 
         pantalla.alMostrar();
     }
@@ -113,9 +160,14 @@ public class GestorPantallas {
         stage.setScene(pantalla.getEscena());
         stage.show();
 
+        actualizarVideoMenu(pantalla);
 
         pantalla.alMostrar();
     }
+
+    // =====================================================
+    // GETTERS Y SETTERS
+    // =====================================================
 
     public TipoJugador getTipo() {
         return tipo;
@@ -133,6 +185,10 @@ public class GestorPantallas {
         this.jugador = jugador;
     }
 
+    // =====================================================
+    // NAVEGACIÓN DE MENÚS
+    // =====================================================
+
     public void mostrarLogin() {
         new PantallaLogin(this).mostrar(stage);
     }
@@ -149,20 +205,37 @@ public class GestorPantallas {
         new PantallaCargarPartida(this).mostrar(stage);
     }
 
+    // =====================================================
+    // EQUIPO
+    // =====================================================
+
     public void mostrarEquipo() {
-        if (jugador == null) return;
+
+        if (jugador == null) {
+            return;
+        }
+
         pantallaAnteriorEquipo = pantallaActual;
+
         new PantallaEquipo(this, jugador).mostrar(stage);
     }
 
     public void volverDesdeEquipo() {
+
         restaurarPantalla(pantallaAnteriorEquipo);
+
         pantallaAnteriorEquipo = null;
     }
 
-    // Inventario desde el mapa
+    // =====================================================
+    // INVENTARIO
+    // =====================================================
+
     public void mostrarInventario() {
-        if (jugador == null) return;
+
+        if (jugador == null) {
+            return;
+        }
 
         pantallaAnteriorInventario = pantallaActual;
 
@@ -170,19 +243,47 @@ public class GestorPantallas {
     }
 
     public void mostrarInventario(CombateViewModel viewModel) {
-        if (jugador == null || viewModel == null) return;
+
+        if (jugador == null || viewModel == null) {
+            return;
+        }
 
         pantallaAnteriorInventario = pantallaActual;
 
-        new PantallaInventario(this, jugador,viewModel).mostrar(stage);
+        new PantallaInventario(this, jugador, viewModel).mostrar(stage);
     }
 
     public void volverDesdeInventario() {
+
         restaurarPantalla(pantallaAnteriorInventario);
+
         pantallaAnteriorInventario = null;
     }
 
+    // =====================================================
+    // INICIAR PARTIDA
+    // =====================================================
+
     public void iniciarPartida() {
+
+        // Verificar que haya espacio antes de crear el jugador.
+        if (!partidaDAO.hayLugarDisponible()) {
+
+            Alert alerta = new Alert(Alert.AlertType.WARNING);
+
+            alerta.setTitle("LÍMITE DE PARTIDAS");
+            alerta.setHeaderText("NO HAY ESPACIO DISPONIBLE");
+
+            alerta.setContentText(
+                    "Ya existen tres aventuras guardadas. " +
+                            "Eliminá una partida para comenzar otra."
+            );
+
+            alerta.showAndWait();
+
+            return;
+        }
+
         jugador = partidaService.crearJugadorInicial(this.tipo);
 
         vistaJuego = new VistaJuego(jugador, this);
@@ -190,29 +291,50 @@ public class GestorPantallas {
         vistaJuego.mostrar(stage);
     }
 
-    public void iniciarCombate(Jugador entrenadorJugador, Pokemon pokemon) {
+    // =====================================================
+    // COMBATE
+    // =====================================================
 
-        if (combateActivo || entrenadorJugador == null) return;
+    public void iniciarCombate(
+            Jugador entrenadorJugador,
+            Pokemon pokemon
+    ) {
+
+        if (combateActivo || entrenadorJugador == null) {
+            return;
+        }
 
         Pokemon activo = entrenadorJugador.getPokemonActivo();
 
-        if (activo == null) return;
+        if (activo == null) {
+            return;
+        }
 
-        if (pokemon == null) return;
+        if (pokemon == null) {
+            return;
+        }
 
         Pokemon pokemonSalvaje = pokemon;
 
         combateActivo = true;
         pantallaMapaAnterior = pantallaActual;
 
-        // Primero reproducimos la animación sobre el mapa.
+        // Primero reproducir la animación sobre el mapa.
         if (vistaJuego != null) {
-            vistaJuego.animarEncuentro(() -> mostrarPantallaCombate(
+
+            vistaJuego.animarEncuentro(() ->
+                    mostrarPantallaCombate(
+                            entrenadorJugador,
+                            pokemonSalvaje
+                    )
+            );
+
+        } else {
+
+            mostrarPantallaCombate(
                     entrenadorJugador,
                     pokemonSalvaje
-            ));
-        } else {
-            mostrarPantallaCombate(entrenadorJugador, pokemonSalvaje);
+            );
         }
     }
 
@@ -224,7 +346,10 @@ public class GestorPantallas {
         try {
 
             CombateViewModel viewModel =
-                    new CombateViewModel(entrenadorJugador, pokemonSalvaje);
+                    new CombateViewModel(
+                            entrenadorJugador,
+                            pokemonSalvaje
+                    );
 
             PantallaCombate pantallaCombate =
                     new PantallaCombate(viewModel, this);
@@ -248,29 +373,130 @@ public class GestorPantallas {
     }
 
     public void regresarAlMapa() {
+
         combateActivo = false;
+
         restaurarPantalla(pantallaMapaAnterior);
+
         pantallaMapaAnterior = null;
     }
 
+    // =====================================================
+    // SALIR Y PANTALLA COMPLETA
+    // =====================================================
+
     public void salir() {
+
         if (pantallaActual != null) {
             pantallaActual.alOcultar();
         }
+
+        liberarVideoMenu();
+
         stage.close();
     }
 
     public void alternarPantallaCompleta() {
+
         stage.setFullScreen(!stage.isFullScreen());
     }
 
-    public void cambiarMapa(CargadorMapaTiled mapa, double x, double y) {
-        if (vistaJuego == null) return;
+    // =====================================================
+    // CAMBIAR MAPA
+    // =====================================================
+
+    public void cambiarMapa(
+            CargadorMapaTiled mapa,
+            double x,
+            double y
+    ) {
+
+        if (vistaJuego == null) {
+            return;
+        }
 
         vistaJuego.cambiarMapa(mapa, x, y);
     }
 
+    // =====================================================
+    // RESULTADOS
+    // =====================================================
+
     public void mostrarResultados(CombateViewModel viewModel) {
+
         new PantallaResultados(viewModel, this).mostrar(stage);
+    }
+
+    // =====================================================
+    // VIDEO DEL MENÚ
+    // =====================================================
+
+    public MediaPlayer obtenerReproductorMenu() {
+
+        if (reproductorMenu == null) {
+
+            URL archivoVideo =
+                    getClass().getResource("/videos/fondo.mp4");
+
+            if (archivoVideo == null) {
+
+                throw new IllegalStateException(
+                        "No se encontró /videos/fondo.mp4"
+                );
+            }
+
+            Media media = new Media(archivoVideo.toExternalForm());
+
+            reproductorMenu = new MediaPlayer(media);
+
+            reproductorMenu.setCycleCount(MediaPlayer.INDEFINITE);
+
+            reproductorMenu.setOnReady(() -> {
+
+                if (pantallaActual instanceof PantallaMenuBase) {
+                    reproductorMenu.play();
+                }
+            });
+
+            reproductorMenu.setOnError(() -> {
+
+                System.err.println(
+                        "Error reproduciendo video: "
+                                + reproductorMenu.getError()
+                );
+            });
+        }
+
+        return reproductorMenu;
+    }
+
+    private void actualizarVideoMenu(PantallaBase pantalla) {
+
+        if (pantalla instanceof PantallaMenuBase) {
+
+            MediaPlayer reproductor = obtenerReproductorMenu();
+
+            if (reproductor.getStatus() == MediaPlayer.Status.READY
+                    || reproductor.getStatus() == MediaPlayer.Status.PAUSED
+                    || reproductor.getStatus() == MediaPlayer.Status.STOPPED) {
+
+                reproductor.play();
+            }
+
+        } else if (reproductorMenu != null) {
+
+            reproductorMenu.pause();
+        }
+    }
+
+    private void liberarVideoMenu() {
+
+        if (reproductorMenu != null) {
+
+            reproductorMenu.stop();
+            reproductorMenu.dispose();
+
+            reproductorMenu = null;
+        }
     }
 }

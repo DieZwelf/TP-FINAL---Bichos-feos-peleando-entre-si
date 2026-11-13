@@ -1,4 +1,6 @@
+
 package DAO;
+
 import java.sql.*;
 import java.util.*;
 
@@ -7,6 +9,12 @@ import conexion.Conexion;
 
 public class guardarPartidaDAO {
 
+    private static final int MAX_PARTIDAS = 3;
+
+    // =====================================================
+    // GUARDAR JUGADOR / PARTIDA
+    // =====================================================
+
     public void guardarJugador(Jugador jugador) {
 
         try (Connection conn = Conexion.crearConexion()) {
@@ -14,18 +22,30 @@ public class guardarPartidaDAO {
             conn.setAutoCommit(false);
 
             try {
+
+                // Impedir que se cree una cuarta partida.
+                if (jugador.getId() == 0 &&
+                        contarPartidas(conn) >= MAX_PARTIDAS) {
+
+                    throw new SQLException(
+                            "Ya existen tres partidas guardadas."
+                    );
+                }
+
                 Inventario inventario = jugador.getInventario();
 
                 int inventarioId;
 
                 if (jugador.getId() == 0) {
 
-                    // partida nueva: crear inventario
+                    // Partida nueva: crear inventario.
                     inventarioId = insertarInventario(inventario, conn);
                     inventario.setId(inventarioId);
 
-                    // Crear jugador
-                    String sql = " INSERT INTO jugadores (x, y, tipo, rango, inventario_id, pokemon_activo_id) VALUES (?, ?, ?, ?, ?, NULL) ";
+                    // Crear jugador.
+                    String sql = "INSERT INTO jugadores " +
+                            "(x, y, tipo, rango, inventario_id, pokemon_activo_id) " +
+                            "VALUES (?, ?, ?, ?, ?, NULL)";
 
                     try (PreparedStatement ps = conn.prepareStatement(
                             sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -42,19 +62,25 @@ public class guardarPartidaDAO {
                             if (rs.next()) {
                                 jugador.setId(rs.getInt(1));
                             } else {
-                                throw new SQLException("No se pudo crear el jugador.");
+                                throw new SQLException(
+                                        "No se pudo crear el jugador."
+                                );
                             }
                         }
                     }
 
                 } else {
 
-                    // PARTIDA EXISTENTE: actualizar jugador
+                    // Partida existente: actualizar jugador.
                     inventarioId = inventario.getId();
 
-                    String sql = " UPDATE jugadores SET x = ?, y = ?, tipo = ?, rango = ? WHERE id = ? ";
+                    String sql = "UPDATE jugadores " +
+                            "SET x = ?, y = ?, tipo = ?, rango = ? " +
+                            "WHERE id = ?";
 
-                    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                    try (PreparedStatement ps =
+                                 conn.prepareStatement(sql)) {
+
                         ps.setDouble(1, jugador.getX());
                         ps.setDouble(2, jugador.getY());
                         ps.setString(3, jugador.getTipo().name());
@@ -65,17 +91,22 @@ public class guardarPartidaDAO {
                     }
                 }
 
-                // Actualizar inventario
-                String sqlInventario = "UPDATE inventarios SET capacidad_maxima = ? WHERE id = ?";
+                // Actualizar inventario.
+                String sqlInventario =
+                        "UPDATE inventarios SET capacidad_maxima = ? WHERE id = ?";
 
-                try (PreparedStatement ps = conn.prepareStatement(sqlInventario)) {
+                try (PreparedStatement ps =
+                             conn.prepareStatement(sqlInventario)) {
+
                     ps.setInt(1, inventario.getCapacidad());
                     ps.setInt(2, inventarioId);
                     ps.executeUpdate();
                 }
 
-                // Reemplazar los ítems guardados
-                try (PreparedStatement ps = conn.prepareStatement("DELETE FROM inventario_items WHERE inventario_id = ?")) {
+                // Reemplazar ítems guardados.
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "DELETE FROM inventario_items WHERE inventario_id = ?")) {
+
                     ps.setInt(1, inventarioId);
                     ps.executeUpdate();
                 }
@@ -83,18 +114,27 @@ public class guardarPartidaDAO {
                 insertarItemsInventario(inventario, inventarioId, conn);
 
                 // Reemplazar Pokémon capturados.
-                try (PreparedStatement ps = conn.prepareStatement("DELETE FROM jugador_pokemones_capturados WHERE jugador_id = ?")) {
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "DELETE FROM jugador_pokemones_capturados WHERE jugador_id = ?")) {
+
                     ps.setInt(1, jugador.getId());
                     ps.executeUpdate();
                 }
 
                 if (jugador.getPokemonesCapturados() != null) {
-                    String sqlCapturados = " INSERT INTO jugador_pokemones_capturados (jugador_id, nombre_pokemon, orden) VALUES (?, ?, ?) ";
 
-                    try (PreparedStatement ps = conn.prepareStatement(sqlCapturados)) {
+                    String sqlCapturados =
+                            "INSERT INTO jugador_pokemones_capturados " +
+                                    "(jugador_id, nombre_pokemon, orden) VALUES (?, ?, ?)";
+
+                    try (PreparedStatement ps =
+                                 conn.prepareStatement(sqlCapturados)) {
+
                         int orden = 0;
 
-                        for (String nombre : jugador.getPokemonesCapturados()) {
+                        for (String nombre :
+                                jugador.getPokemonesCapturados()) {
+
                             ps.setInt(1, jugador.getId());
                             ps.setString(2, nombre);
                             ps.setInt(3, orden++);
@@ -105,23 +145,32 @@ public class guardarPartidaDAO {
                     }
                 }
 
-                // Reemplazar equipo
-                try (PreparedStatement ps = conn.prepareStatement("DELETE FROM jugador_equipo WHERE jugador_id = ?")) {
+                // Reemplazar equipo.
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "DELETE FROM jugador_equipo WHERE jugador_id = ?")) {
+
                     ps.setInt(1, jugador.getId());
                     ps.executeUpdate();
                 }
 
-                List<Pokemon> equipo = jugador.getEquipo();
+                List<Pokemon> equipo = jugador.getEquipoCompleto();
 
                 if (equipo != null) {
-                    String sqlEquipo = "INSERT INTO jugador_equipo (jugador_id, slot, pokemon_id) VALUES (?, ?, ?) ";
 
-                    try (PreparedStatement ps = conn.prepareStatement(sqlEquipo)) {
+                    String sqlEquipo =
+                            "INSERT INTO jugador_equipo " +
+                                    "(jugador_id, slot, pokemon_id) VALUES (?, ?, ?)";
+
+                    try (PreparedStatement ps =
+                                 conn.prepareStatement(sqlEquipo)) {
 
                         for (int slot = 0; slot < equipo.size(); slot++) {
+
                             Pokemon p = equipo.get(slot);
 
-                            if (p == null) continue;
+                            if (p == null) {
+                                continue;
+                            }
 
                             guardarPokemon(p, jugador.getId(), conn);
 
@@ -135,16 +184,18 @@ public class guardarPartidaDAO {
                     }
                 }
 
-                // Actualizar Pokémon activo
+                // Actualizar Pokémon activo.
                 Pokemon activo = jugador.getPokemonActivo();
 
                 if (activo != null) {
                     guardarPokemon(activo, jugador.getId(), conn);
                 }
 
-                String sqlActivo = "UPDATE jugadores SET pokemon_activo_id = ? WHERE id = ?";
+                String sqlActivo =
+                        "UPDATE jugadores SET pokemon_activo_id = ? WHERE id = ?";
 
-                try (PreparedStatement ps = conn.prepareStatement(sqlActivo)) {
+                try (PreparedStatement ps =
+                             conn.prepareStatement(sqlActivo)) {
 
                     if (activo != null) {
                         ps.setInt(1, activo.getId());
@@ -159,23 +210,210 @@ public class guardarPartidaDAO {
                 conn.commit();
 
             } catch (SQLException e) {
+
                 conn.rollback();
                 throw e;
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al guardar partida: " + e.getMessage());
+
+            System.out.println(
+                    "Error al guardar partida: " + e.getMessage()
+            );
         }
     }
 
-    private void guardarPokemon(Pokemon p, int jugadorId, Connection conn) throws SQLException {
+    // =====================================================
+    // CONTROL DEL LÍMITE DE PARTIDAS
+    // =====================================================
+
+    public boolean hayLugarDisponible() {
+
+        String sql = "SELECT COUNT(*) FROM jugadores";
+
+        try (Connection conn = Conexion.crearConexion();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1) < MAX_PARTIDAS;
+            }
+
+        } catch (SQLException e) {
+
+            System.out.println(
+                    "Error al consultar cantidad de partidas: "
+                            + e.getMessage()
+            );
+        }
+
+        return false;
+    }
+
+    private int contarPartidas(Connection conn) throws SQLException {
+
+        String sql = "SELECT COUNT(*) FROM jugadores";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+
+        return 0;
+    }
+
+    // =====================================================
+    // ELIMINAR PARTIDA
+    // =====================================================
+
+
+    public boolean eliminarPartida(int jugadorId) {
+
+        String sqlInventario =
+                "SELECT inventario_id FROM jugadores WHERE id = ?";
+
+        try (Connection conn = Conexion.crearConexion()) {
+
+            conn.setAutoCommit(false);
+
+            try {
+
+                int inventarioId;
+
+                // Obtener el inventario del jugador.
+                try (PreparedStatement ps =
+                             conn.prepareStatement(sqlInventario)) {
+
+                    ps.setInt(1, jugadorId);
+
+                    try (ResultSet rs = ps.executeQuery()) {
+
+                        if (!rs.next()) {
+                            throw new SQLException(
+                                    "No existe el jugador con ID: " + jugadorId
+                            );
+                        }
+
+                        inventarioId = rs.getInt("inventario_id");
+                    }
+                }
+
+                // Desvincular Pokémon activo.
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "UPDATE jugadores SET pokemon_activo_id = NULL WHERE id = ?")) {
+
+                    ps.setInt(1, jugadorId);
+                    ps.executeUpdate();
+                }
+
+                // Eliminar relaciones del equipo.
+                eliminarPorJugador(
+                        conn,
+                        "DELETE FROM jugador_equipo WHERE jugador_id = ?",
+                        jugadorId
+                );
+
+                // Eliminar Pokémon capturados.
+                eliminarPorJugador(
+                        conn,
+                        "DELETE FROM jugador_pokemones_capturados WHERE jugador_id = ?",
+                        jugadorId
+                );
+
+                // Eliminar Pokémon del jugador.
+                eliminarPorJugador(
+                        conn,
+                        "DELETE FROM pokemones WHERE jugador_id = ?",
+                        jugadorId
+                );
+
+                // Eliminar primero al jugador.
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "DELETE FROM jugadores WHERE id = ?")) {
+
+                    ps.setInt(1, jugadorId);
+
+                    int filasEliminadas = ps.executeUpdate();
+
+                    if (filasEliminadas == 0) {
+                        throw new SQLException(
+                                "No se eliminó ningún jugador con ID: " + jugadorId
+                        );
+                    }
+                }
+
+                // Eliminar ítems del inventario.
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "DELETE FROM inventario_items WHERE inventario_id = ?")) {
+
+                    ps.setInt(1, inventarioId);
+                    ps.executeUpdate();
+                }
+
+                // Eliminar inventario.
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "DELETE FROM inventarios WHERE id = ?")) {
+
+                    ps.setInt(1, inventarioId);
+                    ps.executeUpdate();
+                }
+
+                conn.commit();
+                return true;
+
+            } catch (SQLException e) {
+
+                conn.rollback();
+                throw e;
+            }
+
+        } catch (SQLException e) {
+
+            System.out.println(
+                    "Error al eliminar partida: " + e.getMessage()
+            );
+
+            return false;
+        }
+    }
+
+
+    private void eliminarPorJugador(
+            Connection conn,
+            String sql,
+            int jugadorId
+    ) throws SQLException {
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, jugadorId);
+            ps.executeUpdate();
+        }
+    }
+
+    // =====================================================
+    // GUARDAR POKÉMON
+    // =====================================================
+
+
+    private void guardarPokemon(
+            Pokemon p,
+            int jugadorId,
+            Connection conn
+    ) throws SQLException {
 
         if (p.getId() == 0) {
             insertarPokemon(p, jugadorId, conn);
             return;
         }
 
-        String sql = " UPDATE pokemones SET nombre = ?, vida_maxima = ?, vida = ?, danio = ?, defensa = ?, tipo = ?, nivel = ?, experiencia = ?, danio_base = ?, defensa_base = ? WHERE id = ? AND jugador_id = ? ";
+        String sql = "UPDATE pokemones SET " +
+                "nombre = ?, vida_maxima = ?, vida = ?, danio = ?, " +
+                "defensa = ?, tipo = ?, nivel = ?, experiencia = ?, " +
+                "danio_base = ?, defensa_base = ?, en_equipo = ? " +
+                "WHERE id = ? AND jugador_id = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -189,35 +427,71 @@ public class guardarPartidaDAO {
             ps.setInt(8, p.getExperiencia());
             ps.setInt(9, (int) p.getDanioBase());
             ps.setInt(10, (int) p.getDefensaBase());
-            ps.setInt(11, p.getId());
-            ps.setInt(12, jugadorId);
+            ps.setBoolean(11, p.isEnEquipo());
+            ps.setInt(12, p.getId());
+            ps.setInt(13, jugadorId);
 
             ps.executeUpdate();
         }
     }
 
-        private int insertarInventario(Inventario inv, Connection conn) throws SQLException {
-            String sql = "INSERT INTO inventarios (capacidad_maxima) VALUES (?)";
-            try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                int capacidad = (inv != null) ? inv.getCapacidad() : 50;
-                ps.setInt(1, capacidad);
-                ps.executeUpdate();
 
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        return rs.getInt(1);
-                    }
-                    throw new SQLException("No se pudo obtener el ID generado para el inventario.");
+    // =====================================================
+    // INSERTAR INVENTARIO
+    // =====================================================
+
+    private int insertarInventario(
+            Inventario inv,
+            Connection conn
+    ) throws SQLException {
+
+        String sql =
+                "INSERT INTO inventarios (capacidad_maxima) VALUES (?)";
+
+        try (PreparedStatement ps = conn.prepareStatement(
+                sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            int capacidad = (inv != null) ? inv.getCapacidad() : 50;
+
+            ps.setInt(1, capacidad);
+            ps.executeUpdate();
+
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+
+                if (rs.next()) {
+                    return rs.getInt(1);
                 }
+
+                throw new SQLException(
+                        "No se pudo obtener el ID generado para el inventario."
+                );
             }
         }
+    }
 
-    private void insertarItemsInventario(Inventario inv, int inventarioId, Connection conn) throws SQLException {
-        if (inv.getItems() == null || inv.getItems().isEmpty()) return;
+    // =====================================================
+    // INSERTAR ÍTEMS DEL INVENTARIO
+    // =====================================================
 
-        String sql = "INSERT INTO inventario_items (inventario_id, tipo_item, nombre, descripcion, cantidad, curacion, ocupada) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private void insertarItemsInventario(
+            Inventario inv,
+            int inventarioId,
+            Connection conn
+    ) throws SQLException {
+
+        if (inv.getItems() == null || inv.getItems().isEmpty()) {
+            return;
+        }
+
+        String sql = "INSERT INTO inventario_items " +
+                "(inventario_id, tipo_item, nombre, descripcion, cantidad, curacion, ocupada) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            for (Map.Entry<Item, Integer> entry : inv.getItems().entrySet()) {
+
+            for (Map.Entry<Item, Integer> entry :
+                    inv.getItems().entrySet()) {
+
                 Item item = entry.getKey();
                 int cantidad = entry.getValue();
 
@@ -227,77 +501,125 @@ public class guardarPartidaDAO {
                 ps.setInt(5, cantidad);
 
                 if (item instanceof Pocion pocion) {
+
                     ps.setString(2, "POCION");
-                    ps.setInt(6, (int)pocion.getCuracion());
+                    ps.setInt(6, (int) pocion.getCuracion());
                     ps.setNull(7, Types.BOOLEAN);
+
                 } else if (item instanceof Pokebola pokebola) {
+
                     ps.setString(2, "POKEBOLA");
                     ps.setNull(6, Types.INTEGER);
                     ps.setBoolean(7, pokebola.isOcupada());
+
                 } else {
-                    throw new SQLException("Tipo de ítem desconocido: " + item.getClass().getName());
+
+                    throw new SQLException(
+                            "Tipo de ítem desconocido: "
+                                    + item.getClass().getName()
+                    );
                 }
 
                 ps.addBatch();
             }
+
             ps.executeBatch();
         }
     }
 
-    private void insertarPokemon(Pokemon p, int jugadorId, Connection conn) throws SQLException {
-            String sql = "INSERT INTO pokemones (jugador_id, nombre, vida_maxima, vida, danio, defensa, tipo, nivel, experiencia, danio_base, defensa_base) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                ps.setInt(1, jugadorId);
-                ps.setString(2, p.getNombre());
-                ps.setDouble(3, p.getVidaMaxima());
-                ps.setDouble(4, p.getVida());
-                ps.setDouble(5, p.getDanio());
-                ps.setDouble(6, p.getDefensa());
-                ps.setString(7, p.getTipo().name());
-                ps.setInt(8, p.getNivel());
-                ps.setInt(9, p.getExperiencia());
-                ps.setInt(10, (int)p.getDanioBase());
-                ps.setInt(11, (int)p.getDefensaBase());
-                ps.executeUpdate();
+    // =====================================================
+    // INSERTAR POKÉMON
+    // =====================================================
 
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        p.setId(rs.getInt(1)); // Asignamos el ID generado al objeto Pokemon
-                    } else {
-                        throw new SQLException("No se pudo obtener el ID generado para el Pokémon: " + p.getNombre());
-                    }
+
+    private void insertarPokemon(
+            Pokemon p,
+            int jugadorId,
+            Connection conn
+    ) throws SQLException {
+
+        String sql = "INSERT INTO pokemones " +
+                "(jugador_id, nombre, vida_maxima, vida, danio, defensa, " +
+                "tipo, nivel, experiencia, danio_base, defensa_base, en_equipo) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = conn.prepareStatement(
+                sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            ps.setInt(1, jugadorId);
+            ps.setString(2, p.getNombre());
+            ps.setDouble(3, p.getVidaMaxima());
+            ps.setDouble(4, p.getVida());
+            ps.setDouble(5, p.getDanio());
+            ps.setDouble(6, p.getDefensa());
+            ps.setString(7, p.getTipo().name());
+            ps.setInt(8, p.getNivel());
+            ps.setInt(9, p.getExperiencia());
+            ps.setInt(10, (int) p.getDanioBase());
+            ps.setInt(11, (int) p.getDefensaBase());
+            ps.setBoolean(12, p.isEnEquipo());
+
+            ps.executeUpdate();
+
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+
+                if (rs.next()) {
+                    p.setId(rs.getInt(1));
+                } else {
+                    throw new SQLException(
+                            "No se pudo obtener el ID generado para el Pokémon: "
+                                    + p.getNombre()
+                    );
                 }
             }
         }
+    }
+
+
+    // =====================================================
+    // CONSULTAR PARTIDAS DISPONIBLES
+    // =====================================================
 
     public Map<Integer, String> obtenerPartidasDisponibles() {
+
         Map<Integer, String> partidas = new LinkedHashMap<>();
 
-        String sql = "SELECT id, tipo, rango FROM jugadores ORDER BY id DESC LIMIT 3";
+        String sql =
+                "SELECT id, tipo, rango FROM jugadores ORDER BY id DESC LIMIT 3";
 
         try (Connection conn = Conexion.crearConexion();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
+
                 int id = rs.getInt("id");
                 String tipo = rs.getString("tipo");
                 String rango = rs.getString("rango");
 
-                partidas.put(id, "Partida #" + id + " | " + rango + " | " + tipo);
+                partidas.put(
+                        id,
+                        "Partida #" + id + " | " + rango + " | " + tipo
+                );
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al consultar partidas: " + e.getMessage());
+
+            System.out.println(
+                    "Error al consultar partidas: " + e.getMessage()
+            );
         }
 
         return partidas;
     }
 
+    // =====================================================
+    // RECUPERAR JUGADOR
+    // =====================================================
+
     public Jugador recuperarJugador(int jugadorId) {
 
-        String sql = " SELECT * FROM jugadores WHERE id = ?";
+        String sql = "SELECT * FROM jugadores WHERE id = ?";
 
         try (Connection conn = Conexion.crearConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -313,44 +635,78 @@ public class guardarPartidaDAO {
                 double x = rs.getDouble("x");
                 double y = rs.getDouble("y");
 
-                TipoJugador tipo = TipoJugador.valueOf(rs.getString("tipo"));
+                TipoJugador tipo =
+                        TipoJugador.valueOf(rs.getString("tipo"));
 
                 String rango = rs.getString("rango");
                 int inventarioId = rs.getInt("inventario_id");
 
-                int pokemonActivoId = rs.getInt("pokemon_activo_id");
+                int pokemonActivoId =
+                        rs.getInt("pokemon_activo_id");
+
                 boolean tienePokemonActivo = !rs.wasNull();
 
                 // Recuperar inventario.
-                Inventario inventario = recuperarInventario(inventarioId, conn);
+                Inventario inventario =
+                        recuperarInventario(inventarioId, conn);
 
                 // Recuperar Pokémon capturados.
-                LinkedHashSet<String> capturados = recuperarPokemonesCapturados(jugadorId, conn);
+                LinkedHashSet<String> capturados =
+                        recuperarPokemonesCapturados(jugadorId, conn);
 
                 // Recuperar equipo.
                 Map<Integer, Pokemon> pokemones = new HashMap<>();
 
-                List<Pokemon> equipo = recuperarEquipo(jugadorId, conn, pokemones);
+                List<Pokemon> equipo =
+                        recuperarEquipo(jugadorId, conn, pokemones);
 
                 // Recuperar Pokémon activo.
                 Pokemon activo = null;
 
                 if (tienePokemonActivo) {
-                    activo = recuperarPokemon(pokemonActivoId, jugadorId, conn, pokemones);
+
+                    activo = recuperarPokemon(
+                            pokemonActivoId,
+                            jugadorId,
+                            conn,
+                            pokemones
+                    );
                 }
 
-                return new Jugador(jugadorId, x, y, tipo, capturados, equipo, rango, null, inventario);
+                return new Jugador(
+                        jugadorId,
+                        x,
+                        y,
+                        tipo,
+                        capturados,
+                        equipo,
+                        rango,
+                        activo,
+                        inventario
+                );
             }
 
         } catch (SQLException e) {
-            System.out.println("Error al recuperar jugador: " + e.getMessage());
+
+            System.out.println(
+                    "Error al recuperar jugador: " + e.getMessage()
+            );
+
             return null;
         }
     }
 
-    private Inventario recuperarInventario(int inventarioId, Connection conn) throws SQLException {
+    // =====================================================
+    // RECUPERAR INVENTARIO
+    // =====================================================
 
-        String sql = "SELECT capacidad_maxima FROM inventarios WHERE id = ?";
+    private Inventario recuperarInventario(
+            int inventarioId,
+            Connection conn
+    ) throws SQLException {
+
+        String sql =
+                "SELECT capacidad_maxima FROM inventarios WHERE id = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -367,16 +723,25 @@ public class guardarPartidaDAO {
                 Inventario inventario = new Inventario(items);
                 inventario.setId(inventarioId);
 
-                recuperarItemsInventario(inventario, inventarioId, conn);
+                recuperarItemsInventario(
+                        inventario,
+                        inventarioId,
+                        conn
+                );
 
                 return inventario;
             }
         }
     }
 
-    private void recuperarItemsInventario(Inventario inventario, int inventarioId, Connection conn) throws SQLException {
+    private void recuperarItemsInventario(
+            Inventario inventario,
+            int inventarioId,
+            Connection conn
+    ) throws SQLException {
 
-        String sql = " SELECT * FROM inventario_items WHERE inventario_id = ?";
+        String sql =
+                "SELECT * FROM inventario_items WHERE inventario_id = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -400,10 +765,14 @@ public class guardarPartidaDAO {
                         item = new Pokebola(
                                 rs.getString("nombre"),
                                 rs.getString("descripcion"),
-                                rs.getBoolean("ocupada"));
+                                rs.getBoolean("ocupada")
+                        );
 
                     } else {
-                        throw new SQLException("Tipo de objeto desconocido: " + tipo);
+
+                        throw new SQLException(
+                                "Tipo de objeto desconocido: " + tipo
+                        );
                     }
 
                     inventario.getItems().put(item, cantidad);
@@ -412,11 +781,20 @@ public class guardarPartidaDAO {
         }
     }
 
-    private LinkedHashSet<String> recuperarPokemonesCapturados(int jugadorId, Connection conn) throws SQLException {
+    // =====================================================
+    // RECUPERAR POKÉMON CAPTURADOS
+    // =====================================================
+
+    private LinkedHashSet<String> recuperarPokemonesCapturados(
+            int jugadorId,
+            Connection conn
+    ) throws SQLException {
 
         LinkedHashSet<String> capturados = new LinkedHashSet<>();
 
-        String sql = " SELECT nombre_pokemon FROM jugador_pokemones_capturados WHERE jugador_id = ? ORDER BY orden ";
+        String sql =
+                "SELECT nombre_pokemon FROM jugador_pokemones_capturados " +
+                        "WHERE jugador_id = ? ORDER BY orden";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -433,11 +811,21 @@ public class guardarPartidaDAO {
         return capturados;
     }
 
-    private List<Pokemon> recuperarEquipo(int jugadorId, Connection conn, Map<Integer, Pokemon> pokemones) throws SQLException {
+    // =====================================================
+    // RECUPERAR EQUIPO
+    // =====================================================
+
+    private List<Pokemon> recuperarEquipo(
+            int jugadorId,
+            Connection conn,
+            Map<Integer, Pokemon> pokemones
+    ) throws SQLException {
 
         List<Pokemon> equipo = new ArrayList<>();
 
-        String sql = " SELECT slot, pokemon_id FROM jugador_equipo WHERE jugador_id = ? ORDER BY slot";
+        String sql =
+                "SELECT slot, pokemon_id FROM jugador_equipo " +
+                        "WHERE jugador_id = ? ORDER BY slot";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -450,9 +838,14 @@ public class guardarPartidaDAO {
                     int slot = rs.getInt("slot");
                     int pokemonId = rs.getInt("pokemon_id");
 
-                    Pokemon pokemon = recuperarPokemon(pokemonId, jugadorId, conn, pokemones);
+                    Pokemon pokemon = recuperarPokemon(
+                            pokemonId,
+                            jugadorId,
+                            conn,
+                            pokemones
+                    );
 
-                    // Mantiene la posición original del Pokémon.
+                    // Mantener la posición original del Pokémon.
                     while (equipo.size() <= slot) {
                         equipo.add(null);
                     }
@@ -465,14 +858,24 @@ public class guardarPartidaDAO {
         return equipo;
     }
 
-    private Pokemon recuperarPokemon(int pokemonId, int jugadorId, Connection conn, Map<Integer, Pokemon> pokemones) throws SQLException {
+    // =====================================================
+    // RECUPERAR UN POKÉMON
+    // =====================================================
 
-        // Si ya fue recuperado, reutiliza el mismo objeto.
+    private Pokemon recuperarPokemon(
+            int pokemonId,
+            int jugadorId,
+            Connection conn,
+            Map<Integer, Pokemon> pokemones
+    ) throws SQLException {
+
+        // Si ya fue recuperado, reutilizar el mismo objeto.
         if (pokemones.containsKey(pokemonId)) {
             return pokemones.get(pokemonId);
         }
 
-        String sql = " SELECT * FROM pokemones WHERE id = ? AND jugador_id = ?";
+        String sql =
+                "SELECT * FROM pokemones WHERE id = ? AND jugador_id = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -498,7 +901,7 @@ public class guardarPartidaDAO {
                         rs.getInt("defensa_base")
                 );
 
-                pokemon.setId(pokemonId);
+                pokemon.setEnEquipo(rs.getBoolean("en_equipo"));
 
                 pokemones.put(pokemonId, pokemon);
 
@@ -507,4 +910,3 @@ public class guardarPartidaDAO {
         }
     }
 }
-
