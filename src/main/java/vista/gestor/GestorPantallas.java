@@ -70,25 +70,26 @@ public class GestorPantallas {
      */
     public void mostrarPantalla(PantallaBase pantalla, Scene escena) {
 
-        if (pantallaActual != null && pantallaActual != pantalla) {
+        if (pantallaActual != null && pantallaActual != pantalla) { // Comprueba que exista una pantalla actualmente abierta
             pantallaActual.alOcultar();
         }
 
-        pantallaActual = pantalla;
+        pantallaActual = pantalla; // Asigna que la pantalla que se le pasa sea la actual
 
         stage.setScene(escena);
 
-        escena.setOnKeyPressed(evento -> {
+        escena.setOnKeyPressed(evento -> { //Asigna la tecla F11 para la pantalla completa
             if (evento.getCode() == KeyCode.F11) {
-                alternarPantallaCompleta();
+                alternarPantallaCompleta(); //Llama al metodo de esta clase que llama al metodo de gestor ventana
             }
         });
 
         stage.show();
 
-        gestorVideoMenu.actualizar(pantalla);
+        gestorVideoMenu.actualizar(pantalla); //Este metodo actualiza la reproduccion del video
+                                              // si es una pantalla que no es de menu lo cierra
 
-        pantalla.alMostrar();
+        pantalla.alMostrar(); // Metodo que se sobreescribe según que pantalla es
     }
 
     /**
@@ -97,22 +98,25 @@ public class GestorPantallas {
     private void restaurarPantalla(PantallaBase pantalla) {
 
         if (pantalla == null || pantalla.getEscena() == null) {
-            mostrarInicio();
+            mostrarInicio(); // Si la el objeto pantalla o la escena esta vacio llama al metodo mostrar incio
+                             // y muestra la primer pantalla
             return;
         }
 
         if (pantallaActual != null && pantallaActual != pantalla) {
-            pantallaActual.alOcultar();
+            pantallaActual.alOcultar(); // Esto permite que la pantalla anterior realice sus acciones antes de desaparecer
+            //Por ejemplo, si estamos en el inventario y queremos volver al mapa, se podría detener el Game Loop del inventario, si su implementación lo requiere
         }
 
         pantallaActual = pantalla;
 
         stage.setScene(pantalla.getEscena());
-        stage.show();
+        stage.show(); // Muestra la pantalla
 
-        gestorVideoMenu.actualizar(pantalla);
+        gestorVideoMenu.actualizar(pantalla); //Este metodo actualiza la reproduccion del video
+                                              // si es una pantalla que no es de menu lo cierra
 
-        pantalla.alMostrar();
+        pantalla.alMostrar(); // Metodo que se sobreescribe según que pantalla es
     }
 
     // -----------------------------------------------------
@@ -145,12 +149,12 @@ public class GestorPantallas {
             return;
         }
 
-        pantallaAnteriorEquipo = pantallaActual;
+        pantallaAnteriorEquipo = pantallaActual; // guardar cuál era la pantalla en la que estabas antes de abrir el equipo
 
         new PantallaEquipo(this, jugador).mostrar(stage);
     }
 
-    public void volverDesdeEquipo() {
+    public void volverDesdeEquipo() { //Restaura la pantalla en la que estabamos antes
         restaurarPantalla(pantallaAnteriorEquipo);
         pantallaAnteriorEquipo = null;
     }
@@ -159,6 +163,7 @@ public class GestorPantallas {
     // INVENTARIO
     // -----------------------------------------------------
 
+    // Este metodo funciona practicamente igual  que mostrar equipo
     public void mostrarInventario() {
 
         if (jugador == null) {
@@ -170,6 +175,7 @@ public class GestorPantallas {
         new PantallaInventario(this, jugador, null).mostrar(stage);
     }
 
+    // Este metodo a comparacion del anterior funciona para un combate, por eso se debe pasar combateViewModel
     public void mostrarInventario(CombateViewModel viewModel) {
 
         if (jugador == null || viewModel == null) {
@@ -181,7 +187,7 @@ public class GestorPantallas {
         new PantallaInventario(this, jugador, viewModel).mostrar(stage);
     }
 
-    public void volverDesdeInventario() {
+    public void volverDesdeInventario() { //Restaura la pantalla en la que estabamos antes de abrir el inventario
         restaurarPantalla(pantallaAnteriorInventario);
         pantallaAnteriorInventario = null;
     }

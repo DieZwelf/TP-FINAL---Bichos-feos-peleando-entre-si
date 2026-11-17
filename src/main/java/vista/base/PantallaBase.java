@@ -35,7 +35,7 @@ public abstract class PantallaBase implements IPantalla {
     }
 
     /** Se ejecuta antes de abandonar la pantalla. */
-    public void alOcultar() {
+    public void alOcultar() { // Este metodo abstracto se utiliza
     }
 
 

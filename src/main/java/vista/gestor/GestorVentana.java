@@ -1,10 +1,9 @@
 
 package vista.gestor;
 
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
-
-import java.net.URL;
+import javafx.scene.image.Image; //Cargar imágenes
+import javafx.stage.Stage; //Administrar ventanas de JavaFX
+import java.net.URL; // Representar ubicaciones de recursos
 
 /**
  * Administra las propiedades y acciones de la ventana principal.
@@ -28,28 +27,31 @@ public class GestorVentana {
                 "/images/pantallaMenu/icono.png"
         );
 
-        if (icono != null) {
+        if (icono != null) { // Comprobar que icono no sea null
             stage.getIcons().setAll(
-                    new Image(icono.toExternalForm())
+                    new Image(icono.toExternalForm()) //Convierte la referencia del recurso icono en una dirección
+                                                      // que JavaFX puede utilizar para cargar la imagen
             );
         }
 
         stage.setWidth(1400);
-        stage.setHeight(800);
-        stage.setResizable(true);
+        stage.setHeight(800); // Tamaño de la ventana
+        stage.setResizable(true); // Este método permite que el usuario pueda modificar las dimensiones de la ventana del juego.
+                                  // Al pasarle true, habilitamos esa posibilidad
     }
 
     /**
      * Alterna el modo de pantalla completa.
      */
     public void alternarPantallaCompleta() {
-        stage.setFullScreen(!stage.isFullScreen());
+        stage.setFullScreen(!stage.isFullScreen()); //Este método alterna el estado de pantalla completa de la ventana.
+        // Utiliza isFullScreen() para consultar el estado actual y el operador ! para invertirlo. Después, setFullScreen() aplica el nuevo estado
     }
 
     /**
      * Cierra la ventana principal.
      */
     public void cerrar() {
-        stage.close();
+        stage.close(); //Cierra la ventana
     }
 }
