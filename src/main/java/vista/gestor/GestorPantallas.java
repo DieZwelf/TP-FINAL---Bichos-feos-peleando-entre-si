@@ -264,7 +264,7 @@ public class GestorPantallas {
      * Abre la pantalla de combate.
      * Método interno utilizado por GestorCombate.
      */
-    void abrirPantallaCombate(
+    public void abrirPantallaCombate(
             Jugador entrenadorJugador,
             Pokemon pokemonSalvaje
     ) {

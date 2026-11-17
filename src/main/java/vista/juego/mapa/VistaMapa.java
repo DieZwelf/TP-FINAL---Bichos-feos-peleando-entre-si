@@ -1,3 +1,14 @@
+/**
+ * Representa visualmente el mapa del juego.
+ *
+ * Hereda de Pane para poder contener y mostrar el Canvas donde se
+ * dibuja el mapa. También almacena las figuras que representan las
+ * zonas de colisión y una referencia al cargador encargado de
+ * obtener los datos del mapa.
+ *
+ * Se encarga de cargar el mapa, establecer sus dimensiones y
+ * proporcionar acceso a las colisiones y al cargador utilizado.
+ */
 
 package vista.juego.mapa;
 

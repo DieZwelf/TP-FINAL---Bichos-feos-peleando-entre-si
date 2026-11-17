@@ -29,7 +29,7 @@ public class GestorCombate {
      * @param entrenadorJugador jugador que participa
      * @param pokemon Pokémon salvaje
      */
-    public void iniciarCombate(
+    public void iniciarCombate( // metood que inicia el combate
             Jugador entrenadorJugador,
             Pokemon pokemon
     ) {
@@ -53,7 +53,7 @@ public class GestorCombate {
 
         if (gestorPantallas.getVistaJuegoInterna() != null) {
 
-            gestorPantallas.getVistaJuegoInterna().animarEncuentro(() ->
+            gestorPantallas.getVistaJuegoInterna().animarEncuentro(() -> // Es lambda para poder ejecutar la animacion
                     mostrarPantallaCombate(
                             entrenadorJugador,
                             pokemon
@@ -72,7 +72,7 @@ public class GestorCombate {
     /**
      * Construye el ViewModel y muestra la pantalla de combate.
      */
-    public void mostrarPantallaCombate(
+    public void mostrarPantallaCombate( //Metodo que muestra la pantalla de combate
             Jugador entrenadorJugador,
             Pokemon pokemonSalvaje
     ) {
@@ -88,7 +88,7 @@ public class GestorCombate {
                     new PantallaCombate(viewModel, gestorPantallas);
 
             viewModel.setOnTerminarCombateCallback(
-                    pantallaCombate::mostrarResultados
+                    pantallaCombate::mostrarResultados // Es equivalente a escribir () -> pantallaCombate.mostrarResultados()
             );
 
             pantallaCombate.mostrar(

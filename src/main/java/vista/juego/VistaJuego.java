@@ -51,9 +51,9 @@ public class VistaJuego extends PantallaBase {
 
     private VistaMapa vistaMapa;
 
-    private final Pane mundo = new Pane();
-    private final Affine transformacionCamara = new Affine();
-    private final Rectangle recorte = new Rectangle();
+    private final Pane mundo = new Pane(); // Contenedor
+    private final Affine transformacionCamara = new Affine(); // se usa para mover la camara
+    private final Rectangle recorte = new Rectangle(); // Se usa como limite de lo que se ve en la camara
 
     private StackPane root;
     private Scene escena;
@@ -123,7 +123,7 @@ public class VistaJuego extends PantallaBase {
         StackPane.setMargin(panelJugador, new Insets(18));
 
         // Panel de herramientas del administrador.
-        if (pantallas.isModoAdministrador()) {
+        if (pantallas.isModoAdministrador()) { // SE ACTIVA SI ES ADMIN
 
             panelAdministrador = new PanelAdministrador(
                     jugador,
@@ -416,23 +416,24 @@ public class VistaJuego extends PantallaBase {
         double anchoVentana = escena.getWidth();
         double altoVentana = escena.getHeight();
 
-        if (anchoVentana <= 0 || altoVentana <= 0) {
+        if (anchoVentana <= 0 || altoVentana <= 0) { // Comprobamos que el ancho y el alto sean mayores que cero
             return;
         }
 
-        double anchoEscalado = vistaMapa.getPrefWidth() * ZOOM;
+        double anchoEscalado = vistaMapa.getPrefWidth() * ZOOM; // Acá calculamos cuánto mide el mapa después de aplicar el zoom
         double altoEscalado = vistaMapa.getPrefHeight() * ZOOM;
 
         double centroX = jugador.getX() + 24;
-        double centroY = jugador.getY() + 24;
+        double centroY = jugador.getY() + 24;//¿Por qué sumamos 24? Porque en este proyecto el jugador ocupa un espacio de 48 × 48 píxeles.
+        // Si obtenemos su posición con getX() y getY(), estamos tomando su posición inicial (esquina superior izquierda)
 
         double x = anchoVentana / 2 - centroX * ZOOM;
         double y = altoVentana / 2 - centroY * ZOOM;
 
-        x = limitarCamara(x, anchoEscalado, anchoVentana);
+        x = limitarCamara(x, anchoEscalado, anchoVentana); // Llama al metodo limitar camara
         y = limitarCamara(y, altoEscalado, altoVentana);
 
-        transformacionCamara.setToTransform(
+        transformacionCamara.setToTransform( // Finalmente aplicamos la transformación a la cámara
                 ZOOM, 0, x,
                 0, ZOOM, y
         );
@@ -453,15 +454,15 @@ public class VistaJuego extends PantallaBase {
             double tamanoVentana
     ) {
 
-        if (tamanoMapa >= tamanoVentana) {
+        if (tamanoMapa >= tamanoVentana) { // Verifica que el mapa sea mas grande que la ventana
 
             return Math.max(
-                    tamanoVentana - tamanoMapa,
+                    tamanoVentana - tamanoMapa, // Calcular los límites del desplazamiento
                     Math.min(0, posicion)
             );
         }
 
-        return (tamanoVentana - tamanoMapa) / 2;
+        return (tamanoVentana - tamanoMapa) / 2; // significa que el mapa es más pequeño que la ventana
     }
 
     /**
@@ -477,7 +478,7 @@ public class VistaJuego extends PantallaBase {
 
             if (evento.getCode() == KeyCode.ESCAPE) {
                 menuPausa.alternar();
-                evento.consume();
+                evento.consume(); // marca el evento como atendido
                 return;
             }
 

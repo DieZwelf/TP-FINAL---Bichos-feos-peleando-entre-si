@@ -1,3 +1,11 @@
+/**
+ * Representa el mapa del pueblo del juego.
+ * Hereda de CargadorMapaIndividual para cargar y dibujar el mapa
+ * utilizando imágenes individuales para cada tile.
+ *
+ * Define las rutas de los archivos del mapa y del tileset,
+ * y las transiciones que permiten acceder a otros mapas.
+ */
 
 package vista.juego.mapa;
 

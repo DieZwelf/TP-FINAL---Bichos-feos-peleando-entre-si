@@ -29,7 +29,13 @@ public class GestorCambioMapa {
     private final VistaJugador vistaJugador;
 
     private final Runnable actualizarCamara;
-    private final Consumer<VistaMapa> actualizarControlador;
+    private final Consumer<VistaMapa> actualizarControlador; // Esta línea declara un atributo que almacena una acción que recibe un objeto VistaMapa y no devuelve ningún resultado.
+    /*
+    ¿Por qué se utiliza Consumer y no un método normal?
+    Porque permite que GestorCambioMapa reciba una acción desde otra clase, sin necesitar conocer exactamente cómo está implementada.
+
+    Es decir, el gestor sabe que tiene que avisar al controlador sobre la nueva vista, pero no necesita saber qué instrucciones utiliza el controlador para actualizarse.
+     */
 
     private VistaMapa vistaMapa;
     private List<TransicionMapa> transiciones = new ArrayList<>();

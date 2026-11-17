@@ -1,6 +1,7 @@
 
 package DAO;
 
+import excepciones.PokemonInexistenteException;
 import model.*;
 
 import java.sql.*;
@@ -146,7 +147,7 @@ public class EquipoDAO {
             int jugadorId,
             Connection conn,
             Map<Integer, Pokemon> pokemones
-    ) throws SQLException {
+    ) throws SQLException, PokemonInexistenteException {
 
         List<Pokemon> equipo = new ArrayList<>();
 

@@ -1,6 +1,7 @@
 
 package DAO;
 
+import excepciones.PokemonInexistenteException;
 import model.*;
 import java.sql.*;
 import java.util.Map;
@@ -121,7 +122,7 @@ public class PokemonDAO implements IPokemonDAO {
             try (ResultSet rs = ps.executeQuery()) {
 
                 if (!rs.next()) {
-                    return null;
+
                 }
 
                 Pokemon pokemon = new Pokemon(

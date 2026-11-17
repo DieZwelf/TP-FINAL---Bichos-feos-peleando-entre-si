@@ -57,6 +57,25 @@ public class CargadorMapaPlanilla extends CargadorMapaTiled {
         }
     }
 
+    /**
+     * Dibuja una capa del mapa utilizando una planilla de imágenes (tileset).
+     *
+     * Recorre las filas y columnas de la capa, obtiene el GID de cada posición
+     * y calcula qué tile corresponde dentro del tileset. Luego determina las
+     * coordenadas de origen en la imagen y las coordenadas de destino en el
+     * Canvas, aplicando la escala correspondiente.
+     *
+     * Las posiciones vacías (GID 0) se ignoran y los tiles restantes se
+     * dibujan mediante GraphicsContext.
+     *
+     * @param datos identificadores de los tiles de la capa
+     * @param anchoCapa cantidad de tiles de ancho de la capa
+     * @param altoCapa cantidad de tiles de alto de la capa
+     * @param anchoTile ancho de cada tile en píxeles
+     * @param altoTile alto de cada tile en píxeles
+     * @param firstGid primer identificador global del tileset
+     * @param gc contexto gráfico utilizado para dibujar en el Canvas
+     */
     @Override
     protected void dibujarCapaTiles(
             JsonArray datos,

@@ -1,3 +1,11 @@
+/**
+ * Representa el mapa del interior de la casa.
+ * Hereda de CargadorMapaIndividual para cargar y dibujar el mapa
+ * utilizando imágenes individuales para cada tile.
+ *
+ * Define las rutas de los archivos del mapa y del tileset,
+ * y establece las transiciones disponibles para regresar al pueblo.
+ */
 
 package vista.juego.mapa;
 

@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class CargadorMapaIndividual extends CargadorMapaTiled {
 
-    private final Map<Integer, Image> imagenesTiles = new HashMap<>();
+    private final Map<Integer, Image> imagenesTiles = new HashMap<>(); // Porque necesitamos poder buscar rápidamente la imagen correspondiente a un identificador.
 
     @Override
     protected String obtenerRutaMapa() {
@@ -34,10 +34,24 @@ public class CargadorMapaIndividual extends CargadorMapaTiled {
         return "";
     }
 
+
+
+    /**
+     * Carga las imágenes individuales definidas en el archivo JSON del tileset.
+     *
+     * Primero lee el JSON y obtiene la lista de tiles. Luego recorre cada uno,
+     * recupera su ID y la ruta de su imagen, carga el archivo correspondiente
+     * y almacena la imagen en el mapa imagenesTiles asociándola con su ID.
+     *
+     * De esta manera, las imágenes quedan disponibles para ser utilizadas
+     * posteriormente al dibujar las capas del mapa.
+     *
+     * @throws Exception si ocurre algún error al leer el JSON o cargar las imágenes
+     */
     @Override
     protected void prepararTileset() throws Exception {
 
-        imagenesTiles.clear();
+        imagenesTiles.clear(); // Elimina todos los elementos que tenga almacenados el Map
 
         JsonObject tileset = leerJson(obtenerRutaTileset());
 
@@ -82,6 +96,24 @@ public class CargadorMapaIndividual extends CargadorMapaTiled {
         }
     }
 
+    /**
+     * Dibuja una capa del mapa utilizando imágenes individuales para cada tile.
+     *
+     * Recorre las filas y columnas de la capa, obtiene el GID de cada posición
+     * y calcula el ID local correspondiente. Luego busca la imagen asociada
+     * en el mapa imagenesTiles y la dibuja en el Canvas aplicando la escala.
+     *
+     * Las imágenes de mayor altura se alinean desde la parte inferior de su
+     * celda para mantener una correcta ubicación dentro del mapa.
+     *
+     * @param datos identificadores globales de los tiles de la capa
+     * @param anchoCapa cantidad de tiles de ancho de la capa
+     * @param altoCapa cantidad de tiles de alto de la capa
+     * @param anchoTile ancho de cada tile en píxeles
+     * @param altoTile alto de cada tile en píxeles
+     * @param firstGid primer identificador global del tileset
+     * @param gc contexto gráfico utilizado para dibujar en el Canvas
+     */
     @Override
     protected void dibujarCapaTiles(
             JsonArray datos,

@@ -2,6 +2,7 @@
 package DAO;
 
 import conexion.Conexion;
+import excepciones.PokemonInexistenteException;
 import model.*;
 import java.sql.*;
 import java.util.*;
@@ -408,6 +409,9 @@ public class GuardarPartidaDAO {
                 );
             }
 
+        } catch (PokemonInexistenteException e) {
+            System.out.println("Error al recuperar Pokémon: " + e.getMessage());
+            return null;
         } catch (SQLException e) {
             System.out.println(
                     "Error al recuperar jugador: " + e.getMessage()
